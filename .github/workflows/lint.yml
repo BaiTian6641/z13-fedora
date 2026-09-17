@@ -44,3 +44,18 @@ jobs:
                   yaml.safe_load(fh)
           print(f"parsed {len(files)} recipe files")
           PY
+
+      # Same tool the image build uses, and it validates the `from-file` fragments transitively —
+      # so a bad module config fails here in seconds instead of 20 minutes into a build.
+      - name: Install the BlueBuild CLI
+        run: |
+          set -euo pipefail
+          sudo docker create --name blue-build-installer ghcr.io/blue-build/cli:latest-installer
+          sudo docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
+          sudo docker rm blue-build-installer
+          bluebuild --version
+
+      - name: Validate the recipes
+        run: |
+          set -euo pipefail
+          bluebuild validate recipes/recipe.yml
