@@ -33,6 +33,11 @@ permissions:
   contents: write # attaching assets to a release
   packages: read
 
+concurrency:
+  # Never run two ISO builds at once (they are heavy and share the artifact name space).
+  group: iso-${{ github.repository }}
+  cancel-in-progress: false
+
 jobs:
   iso:
     name: Build installer ISO
@@ -43,6 +48,7 @@ jobs:
           || (github.event.workflow_run.conclusion == 'success'
               && github.event.workflow_run.event != 'pull_request') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 90 # a stuck ISO build must not burn six runner hours
     steps:
       - uses: actions/checkout@v4
 

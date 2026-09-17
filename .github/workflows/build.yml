@@ -48,3 +48,11 @@ jobs:
           registry_namespace: ${{ steps.ns.outputs.owner }}
           pr_event_number: ${{ github.event.number }}
           maximize_build_space: true
+
+          # The ublue base image carries 259 layers, and the build-container-installer version the
+          # BlueBuild CLI pins (v1.4.0, Oct 2025) predates the "allow images with more than 128
+          # layers" fix (BCI PR #205, merged 2026-07-13) — so an un-chunked image may not be
+          # pullable while generating the installer ISO. Rechunking caps the layer count at 128 and
+          # gives much smaller update deltas on the tablet as a bonus.
+          build_chunked_oci: true
+          max_layers: 128
