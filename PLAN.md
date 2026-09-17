@@ -561,7 +561,7 @@ all GPU values now go through a validating `gpu_query()`.
    (`process/drivers/cosign_driver.rs`) — a password-protected keypair would never sign.
    Until the secret exists, every push runs the unsigned `validate` job instead of `publish` (see §12.2), so the
    pipeline stays green and the recipe is exercised — but no image is published.
-2. **First CI run** — with the repo and the secret in place, `build.yml` publishes
+2. **First publishing CI run** — with the secret in place, `build.yml` publishes
    `ghcr.io/baitian6641/z13-fedora:44` and `:latest` (daily, plus on push), and `iso.yml` turns that image
    into the offline installer ISO with a checksum. That is milestone **M0** green.
 3. **Track B** (`recipe-dgpu.yml`, `waydroid-dgpu.yml`) — created at **M4B**, gated on the MUX spike (`ujust z13-mux`) run on the real machine.
