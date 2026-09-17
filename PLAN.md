@@ -638,8 +638,21 @@ eight job-list payloads, including a green `validate` beside a skipped `publish`
 
 **Outstanding (user action):** add the repository secret `SIGNING_SECRET` with the contents of
 `/tmp/z13-signing/cosign.key` (move that file somewhere permanent first — `/tmp` is wiped on reboot), then
-trigger a build. If you prefer your own keypair, replace `cosign.pub` in the repo instead; a mismatch fails
-fast with the error above rather than producing a broken image.
+trigger a build.
+
+If that private key is gone — it lives in `/tmp`, which any reboot clears — generate a replacement pair rather
+than hunting for it. The password must be **empty** (the CLI hardcodes `COSIGN_PASSWORD: ""`), and only the public
+half is committed, so the repo's `cosign.pub` has to be updated in the same breath:
+
+```bash
+cd ~/z13-fedora
+COSIGN_PASSWORD="" cosign generate-key-pair     # verified: writes cosign.key + cosign.pub, no prompts
+git add cosign.pub && git commit -m "chore(signing): rotate the signing key" && git push
+cat cosign.key                                   # this is the new SIGNING_SECRET value
+```
+
+Either keypair works as long as the secret and the committed `cosign.pub` are a pair — a mismatch fails at the
+matching step before anything is built, never producing a broken image.
 
 **What happens the moment the secret exists** (no further decisions needed):
 
