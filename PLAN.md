@@ -659,9 +659,11 @@ matching step before anything is built, never producing a broken image.
 1. a real (non-`[skip ci]`) push triggers `bluebuild`; `detect` flips it to `publish`, whose first step re-checks
    the secret against `cosign.pub` (seconds, not a whole build), and the action then signs, rechunks to ≤128
    layers and pushes;
-2. I verify criteria 1–3 from the APIs: the workflow conclusion, `:44` and `:latest` resolving, **≤128 layers in
-   the pushed manifest** (the whole premise for the ISO step), and `cosign verify --key cosign.pub` exiting 0 —
-   or hand you the two commands if the package starts private, since `GITHUB_TOKEN` pushes publish private;
+2. the same run then re-verifies the published image in two dedicated steps — `cosign verify --key cosign.pub` on
+   both `:44` and `:latest`, and the manifest's layer count against the 128-layer ceiling — so the substance of
+   criteria 2 and 3 is visible in the run's **public** job list even while the package is private; I check those
+   conclusions plus the workflow result (`GITHUB_TOKEN` pushes publish private, so an anonymous `tags/list` may
+   not resolve even on success);
 3. `iso.yml` fires on its own via `workflow_run`; its preflight sees the publishing job, and the installer +
    checksum land as a workflow artifact retained **7 days**. It is re-runnable at any time from
    *Actions → iso → Run workflow* (`image` and `tag` inputs), which is also the path to a fresh ISO once the

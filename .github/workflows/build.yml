@@ -64,12 +64,25 @@ jobs:
           # that the compositor can actually be moved onto the NVIDIA GPU on this machine.
           # - recipe-dgpu.yml
     steps:
+      # The action checks the repository out itself, but that happens *inside* the action - and the
+      # steps below need cosign.pub and the recipe before it runs.
+      - uses: actions/checkout@v4
+
       # GHCR rejects mixed-case namespaces ("repository name must be lowercase"), and GitHub
       # usernames are case-preserving — so derive a lowercase namespace explicitly.
       - name: Compute lowercase registry namespace
         id: ns
         shell: bash
         run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+
+      - name: Read the image name from the recipe
+        id: img
+        shell: bash
+        run: |
+          set -euo pipefail
+          name=$(awk '/^name:/{print $2; exit}' "recipes/${{ matrix.recipe }}")
+          [ -n "${name}" ] || { echo "::error::no name: in recipes/${{ matrix.recipe }}"; exit 1; }
+          echo "name=${name}" >> "$GITHUB_OUTPUT"
 
       # The action's log is only reachable through an authenticated API call, so a publish failure
       # inside it is hard to diagnose from the outside. A mismatched secret is the likeliest such
@@ -110,6 +123,42 @@ jobs:
           # gives much smaller update deltas on the tablet as a bonus.
           build_chunked_oci: true
           max_layers: 128
+
+      # The CLI verifies what it pushed internally, but that output is only readable through an
+      # authenticated API call. These two steps make the *substance* of criteria 2 and 3 public in
+      # the run's job list: a signature that validates against the committed cosign.pub, and a layer
+      # count within the 128 the installer ISO needs to pull (checkout needs the repo for cosign.pub;
+      # the action already logged docker in, which cosign reuses).
+      - name: Re-verify the published image against cosign.pub
+        env:
+          OWNER: ${{ steps.ns.outputs.owner }}
+          IMAGE: ${{ steps.img.outputs.name }}
+        run: |
+          set -euo pipefail
+          for tag in 44 latest; do
+            cosign verify --key cosign.pub "ghcr.io/${OWNER}/${IMAGE}:${tag}"
+          done
+
+      - name: Check the published layer count is <= 128
+        env:
+          OWNER: ${{ steps.ns.outputs.owner }}
+          IMAGE: ${{ steps.img.outputs.name }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if ! command -v skopeo >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y skopeo
+          fi
+          # skopeo does not reliably reuse the Docker credentials, and a fresh GHCR package is
+          # private, so log in with its own auth file rather than relying on a fallback.
+          skopeo login ghcr.io -u "${{ github.actor }}" --password-stdin <<< "${GH_TOKEN}"
+          layers=$(skopeo inspect --raw "docker://ghcr.io/${OWNER}/${IMAGE}:latest" | jq '.layers | length')
+          echo "published layers: ${layers}"
+          if [ "${layers}" -gt 128 ]; then
+            echo "::error::${layers} layers exceeds the 128-layer limit the installer ISO depends on"
+            exit 1
+          fi
 
   validate:
     name: Validate recipe (build only, publishes nothing)
