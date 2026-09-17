@@ -103,13 +103,18 @@ write_grub_entries() {
   done
   [[ -n "$grubconf" ]] || die "could not find the ISO's boot configuration under $MNT"
 
-  # lorax writes entries like:  linux /images/pxeboot/vmlinuz <options>
-  cmdline=$(grep -m1 -oE 'linu[x]?efi?[[:space:]]+[^[:space:]]+[[:space:]]+.*' "$grubconf" | sed -E 's/^[^[:space:]]+[[:space:]]+[^[:space:]]+[[:space:]]+//' || true)
-  kpath=$(grep -m1 -oE 'linu[x]?efi?[[:space:]]+[^[:space:]]+' "$grubconf" | awk '{print $2}' || true)
-  ipath=$(grep -m1 -oE 'initrd[[:space:]]+[^[:space:]]+' "$grubconf" | awk '{print $2}' || true)
+  # lorax writes the kernel line as (note the leading tab):
+  #   <TAB>linux /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=<isolabel> quiet
+  # Anchor on the line, or "linux" inside "--class gnu-linux" lines matches first.
+  cmdline=$(awk '/^[[:space:]]*(linux|linuxefi)[[:space:]]/ { sub(/^[[:space:]]*(linux|linuxefi)[[:space:]]+[^[:space:]]+[[:space:]]*/, ""); print; exit }' "$grubconf")
+  kpath=$(awk '/^[[:space:]]*(linux|linuxefi)[[:space:]]/ { print $2; exit }' "$grubconf")
+  ipath=$(awk '/^[[:space:]]*initrd[[:space:]]/ { print $2; exit }' "$grubconf")
 
   kpath="${kpath:-/images/pxeboot/vmlinuz}"
   ipath="${ipath:-/images/pxeboot/initrd.img}"
+  # An unsubstituted lorax placeholder (@KERNELPATH@) means we parsed a template, not a real ISO.
+  [[ "$kpath" == *"@"* ]] && kpath="/images/pxeboot/vmlinuz"
+  [[ "$ipath" == *"@"* ]] && ipath="/images/pxeboot/initrd.img"
   if [[ -z "$cmdline" ]]; then
     info "no kernel options found in $grubconf — using inst.stage2=hd:LABEL=$LABEL only"
     cmdline="inst.stage2=hd:LABEL=$LABEL"
@@ -120,8 +125,8 @@ write_grub_entries() {
   else
     cmdline="inst.stage2=hd:LABEL=$LABEL $cmdline"
   fi
-  # Drop options that only make sense on real installation media.
-  cmdline=$(tr ' ' '\n' <<<"$cmdline" | grep -vE '^(rd\.live\.check|check|mediacheck)$' | paste -sd' ' -)
+  # Drop options that only make sense on real installation media, and any unsubstituted placeholder.
+  cmdline=$(tr ' ' '\n' <<<"$cmdline" | grep -vE '^(rd\.live\.check|check|mediacheck|@.*@)$' | paste -sd' ' -)
 
   info "kernel:  $kpath"
   info "initrd:  $ipath"
