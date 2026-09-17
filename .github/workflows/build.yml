@@ -73,6 +73,16 @@ jobs:
       # outside any action, so this is not optional.
       - uses: actions/checkout@v4
 
+      # Non-optional in the same way: the build holds the base image, the built image, the staging
+      # push of the unchunked image and chunkah's work simultaneously - roughly 3x the image size.
+      # The captured failure log from 44f10c1 shows the process dying silently mid-push with no error
+      # message, which is what disk exhaustion looks like; dropping this step when the action was
+      # replaced was a regression (the validation job kept it, which is why it never failed).
+      - name: Maximize build space
+        uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2
+        with:
+          skip-if-available: "80G"
+
       - name: Compute lowercase registry namespace
         id: ns
         shell: bash
