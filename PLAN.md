@@ -522,8 +522,17 @@ all GPU values now go through a validating `gpu_query()`.
 
 **Blocked on you / not yet done**
 
-1. **GitHub username** — everything CI-related derives from it (`ghcr.io/<username>/z13-fedora`). Nothing else blocks the first build.
-2. **Signing** — create the repo through `workshop.blue-build.org` and it generates the cosign keypair and the `SIGNING_SECRET` repository secret; until then the `signing` module and the ISO workflow's verification step are inert.
+1. **Create the empty GitHub repository `BaiTian6641/z13-fedora`** — `git remote origin` is already set to
+   `git@github.com:BaiTian6641/z13-fedora.git` and SSH auth as `BaiTian6641` works from this workstation, so
+   the moment the repository exists: `git push -u origin main`.
+   Create it **through `workshop.blue-build.org`** rather than the web form: that also generates the cosign
+   keypair and stores it as the `SIGNING_SECRET` repository secret. Without that secret the `signing` module
+   and the ISO workflow's verification step stay inert (builds still work, images are unsigned).
+   Note the namespace is lowercased on purpose — GHCR rejects mixed-case paths, so images publish to
+   `ghcr.io/baitian6641/z13-fedora` (`build.yml` derives the lowercase owner itself).
+2. **First CI run** — with the repo and the secret in place, `build.yml` publishes
+   `ghcr.io/baitian6641/z13-fedora:44` and `:latest` (daily, plus on push), and `iso.yml` turns that image
+   into the offline installer ISO with a checksum. That is milestone **M0** green.
 3. **Track B** (`recipe-dgpu.yml`, `waydroid-dgpu.yml`) — created at **M4B**, gated on the MUX spike (`ujust z13-mux`) run on the real machine.
 4. **Recovery install path** — `z13-recovery-install` cannot be exercised on this workstation (needs root, a `RECOVERY` partition and an ISO); it is exercised at **M6b** in a UEFI VM, which is also where the GRUB stanzas get proven end to end.
 5. `/etc/asusd/asusd.ron` is patched at runtime by `z13-oobe` rather than shipped as a static file, because asusd owns that file and a partial copy could clobber it.

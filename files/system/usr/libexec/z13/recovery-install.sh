@@ -34,7 +34,8 @@ ISO_MNT="/run/z13-recovery-iso"
 BEGIN_MARK="# z13-fedora recovery begin"
 END_MARK="# z13-fedora recovery end"
 MENU_MATCH="Z13 Fedora recovery"
-REPO="${Z13_REPO:-}"
+# Default to this project's own releases; override with Z13_REPO=owner/name or --repo owner/name.
+REPO="${Z13_REPO:-BaiTian6641/z13-fedora}"
 
 say()  { printf '\n== %s\n' "$*"; }
 info() { printf '   %s\n' "$*"; }

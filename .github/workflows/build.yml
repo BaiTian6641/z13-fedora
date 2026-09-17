@@ -31,11 +31,19 @@ jobs:
           # that the compositor can actually be moved onto the NVIDIA GPU on this machine.
           # - recipe-dgpu.yml
     steps:
+      # GHCR rejects mixed-case namespaces ("repository name must be lowercase"), and GitHub
+      # usernames are case-preserving — so derive a lowercase namespace explicitly.
+      - name: Compute lowercase registry namespace
+        id: ns
+        shell: bash
+        run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+
       - name: Build Custom Image
         uses: blue-build/github-action@v1.11
         with:
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}
+          registry_namespace: ${{ steps.ns.outputs.owner }}
           pr_event_number: ${{ github.event.number }}
           maximize_build_space: true
