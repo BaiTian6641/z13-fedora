@@ -557,6 +557,11 @@ all GPU values now go through a validating `gpu_query()`.
    somewhere permanent — `/tmp` is wiped on reboot).
    Note the namespace is lowercased on purpose — GHCR rejects mixed-case paths, so images publish to
    `ghcr.io/baitian6641/z13-fedora` (`build.yml` derives the lowercase owner itself).
+   If a `SIGNING_SECRET` already exists — e.g. left over from creating the repository through
+   `workshop.blue-build.org`, which an earlier draft of this plan recommended — it holds a **different** keypair,
+   so `publish` will stop at its `Check that SIGNING_SECRET matches the committed cosign.pub` step (visible in
+   seconds, per the run's job list). The fix is to overwrite that secret with this file's content, not to replace
+   the committed public key: nothing else has been published against it yet.
    Paste the **raw PEM content** of the file verbatim — the CLI feeds the secret's value straight to
    `cosign --key` (`PrivateKey::Env` → `get_env_var`, `process/drivers/opts/signing.rs`), so a base64-wrapped
    copy would simply fail the matching check below rather than being decoded.
