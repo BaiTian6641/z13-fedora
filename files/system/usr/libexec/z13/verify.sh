@@ -82,8 +82,12 @@ else
 fi
 if [[ -n "$src_var" && "$src_var" != "$src_root" ]]; then
   ok "/var is a separate partition: $src_var — survives a reinstall"
+  case "$src_var" in
+    /dev/mapper/*|/dev/dm-*) ok "/var sits on an encrypted device: $src_var" ;;
+    *) bad "/var is not on a LUKS-encrypted device ($src_var) — the design encrypts / and /var" ;;
+  esac
 else
-  warn "/var is not a separate partition: reinstalling will destroy /var/home and containers"
+  bad "/var is not a separate partition — the design gives it its own LUKS2 partition so /var/home and containers survive a reinstall"
 fi
 if [[ -n "$(findmnt -no SOURCE /etc 2>/dev/null || true)" ]]; then
   bad "/etc is a separate mount, which bootc does not support"
@@ -92,7 +96,7 @@ else
 fi
 case "$src_root" in
   /dev/mapper/*|/dev/dm-*) ok "root device is encrypted: $src_root" ;;
-  *) warn "root device is not LUKS-encrypted ($src_root)" ;;
+  *) bad "root device is not LUKS-encrypted ($src_root) — the design requires LUKS2 on /" ;;
 esac
 
 if [[ $QUICK -eq 0 ]]; then
@@ -128,7 +132,7 @@ if [[ -n "$rec_dev" ]]; then
     warn "GRUB menu timeout not set — the boot menu may not appear (add 'set timeout=5' to /boot/grub2/user.cfg)"
   fi
 else
-  warn "no partition labelled RECOVERY (see PLAN.md §5.2 — create it at install time)"
+  bad "no partition labelled RECOVERY (design §5.2 — create it at install time; 'ujust z13-recovery-status' shows what is missing)"
 fi
 if have ostree; then
   if [[ "$(ostree admin status 2>/dev/null | grep -c pinned || true)" -gt 0 ]]; then

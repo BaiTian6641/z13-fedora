@@ -32,6 +32,7 @@ on:
 permissions:
   contents: write # attaching assets to a release
   packages: read
+  actions: read # the preflight job reads the triggering run's job list
 
 concurrency:
   # Never run two ISO builds at once (they are heavy and share the artifact name space).
