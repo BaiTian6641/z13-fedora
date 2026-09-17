@@ -209,12 +209,30 @@ else
 fi
 info "before risky changes, protect a known-good deployment:  sudo ostree admin pin 0"
 
+say "Bundled applications (your earlier list)"
+info "default flatpaks : ONLYOFFICE, VS Code, Chromium, Krita, Rnote (stylus notes), Xournal++ (stylus notes+PDF), VLC, Steam, ProtonPlus, Loupe"
+info "layered tools    : btop, ksystemlog, brightnessctl, wireguard-tools, fprintd"
+info "optional VPNs    : Tailscale + ZeroTier are installed; enable with: systemctl enable --now tailscaled / zerotier-one (unit name varies)"
+info "not shippable    : Oh My Pi is the assistant platform itself - it cannot be packaged or bundled"
+
 say "Next"
 info "Full hardware check:  ujust z13-verify          (add -- --suspend for a suspend test)"
 info "GPU report:           ujust z13-gpu"
 info "MUX details:          ujust z13-mux"
 
-say "Fingerprint (#3 of the acceptance list)"
+say "Fingerprint"
+# Two halves of usable fingerprint auth, per KDE/Arch + Fedora docs: enrol a finger with fprintd,
+# and let PAM use it for sudo/SDDM via authselect (discussion.fedoraproject.org#127928,
+# community.frame.work fingerprint guide).
+if command -v authselect >/dev/null 2>&1 && authselect current 2>/dev/null | grep -qi fingerprint; then
+  info "PAM fingerprint feature already enabled"
+else
+  if sudo authselect enable-feature with-fingerprint >/dev/null 2>&1; then
+    info "PAM fingerprint feature enabled (authselect): sudo + login can use the reader"
+  else
+    info "authselect: could not enable with-fingerprint (enable later: sudo authselect enable-feature with-fingerprint)"
+  fi
+fi
 if command -v fprintd-enroll >/dev/null 2>&1; then
   if fprintd-list "$USER" 2>/dev/null | grep -qi finger; then
     info "a fingerprint is already enrolled"

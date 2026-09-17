@@ -198,7 +198,7 @@ jobs:
             -v /cache/dnf:/cache/dnf \
             ghcr.io/jasonn3/build-container-installer:v1.5.0 \
             "/github/workspace/${ISO_NAME}-CHECKSUM" \
-            ADDITIONAL_TEMPLATES="" \
+            ADDITIONAL_TEMPLATES="/github/workspace/files/lorax_templates/z13-layout.tmpl" \
             ARCH="x86_64" \
             DNF_CACHE="/cache/dnf" \
             ENROLLMENT_PASSWORD="universalblue" \

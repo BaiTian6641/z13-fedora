@@ -374,6 +374,18 @@ set** and no network is needed to install.
 | Language / keyboard / time | your locale (KDE variant of the ISO asks for the **user account during installation**, not at first boot) |
 | Installation Destination | the single NVMe → *Automatic* for a first install, or *Manual* for the §5.2 layout |
 
+**Default layout is now pre-seeded.** From this build on, the ISO's installer ships a Lorax template
+(`files/lorax_templates/z13-layout.tmpl`, passed to BCI via `ADDITIONAL_TEMPLATES`) that appends the
+five-partition design to Anaconda's `interactive-defaults.ks` — so the default install produces the
+full layout without manual partitioning. `clearpart` is pinned to `nvme0n1` so the installer USB is
+never wiped, and both LUKS volumes use `--encrypted` **without** `--passphrase`, which makes
+Anaconda **prompt for the passphrase** during installation (one passphrase covers both).
+
+If you already installed with Anaconda's automatic layout (3 partitions: ESP, /boot, single btrfs),
+reinstalling from the new ISO is the path — online migration to a LUKS `/var` is **not** possible on
+this image: the initramfs is composed at image-build time, so a second LUKS volume created after
+install can never be unlocked at boot. The manual recipe below remains the fallback.
+
 **Manual partitioning recipe** (Installation Destination → Custom / Manual). Five partitions on the NVMe:
 
 | Partition | Mount | Size | Format | Label | Encrypt |

@@ -1,0 +1,15 @@
+# z13 five-partition layout, pre-seeded into the installer's interactive defaults so the layout
+# comes out by default rather than requiring manual partitioning at install time.
+#
+# LUKS: `--encrypted` WITHOUT `--passphrase` makes Anaconda prompt for the passphrase at install
+# time (pykickstart: "if you use --encrypted without --passphrase, the installer asks for a
+# passphrase interactively"). One passphrase covers both LUKS volumes.
+#
+# clearpart is pinned to nvme0n1 explicitly so a USB stick (the installer itself) is never wiped.
+append usr/share/anaconda/interactive-defaults.ks "clearpart --all --drives=nvme0n1"
+append usr/share/anaconda/interactive-defaults.ks "zerombr"
+append usr/share/anaconda/interactive-defaults.ks "part /boot/efi --fstype=efi --size=1024"
+append usr/share/anaconda/interactive-defaults.ks "part /boot --fstype=ext4 --size=2048"
+append usr/share/anaconda/interactive-defaults.ks "part / --fstype=btrfs --size=102400 --encrypted"
+append usr/share/anaconda/interactive-defaults.ks "part /var/mnt/recovery --fstype=ext4 --label=RECOVERY --size=10240"
+append usr/share/anaconda/interactive-defaults.ks "part /var --fstype=xfs --encrypted --grow"

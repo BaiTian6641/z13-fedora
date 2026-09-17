@@ -18,6 +18,7 @@ modules:
         - btop                              # interactive process/resource monitor
         - ksystemlog                        # kernel + service log viewer (GUI)
         - brightnessctl                     # keyboard backlight: /sys/class/leds/asus::kbd_backlight
+        - fprintd                           # ELAN 04f3:0c6e fingerprint reader (was missing -> silent skip)
         - wireguard-tools                   # wg client plumbing under NetworkManager
         - tailscale                         # optional mesh VPN: 'systemctl enable --now tailscaled'
         - zerotier                          # optional mesh VPN (F44 renamed the package from zerotier-one)
