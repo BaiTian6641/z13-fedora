@@ -557,6 +557,9 @@ all GPU values now go through a validating `gpu_query()`.
    somewhere permanent — `/tmp` is wiped on reboot).
    Note the namespace is lowercased on purpose — GHCR rejects mixed-case paths, so images publish to
    `ghcr.io/baitian6641/z13-fedora` (`build.yml` derives the lowercase owner itself).
+   Paste the **raw PEM content** of the file verbatim — the CLI feeds the secret's value straight to
+   `cosign --key` (`PrivateKey::Env` → `get_env_var`, `process/drivers/opts/signing.rs`), so a base64-wrapped
+   copy would simply fail the matching check below rather than being decoded.
    Verified before hand-over: `COSIGN_PASSWORD="" cosign public-key --key /tmp/z13-signing/cosign.key`
    reproduces the committed `cosign.pub` byte for byte, so the secret will be accepted rather than failing
    with *"Public key 'cosign.pub' does not match private key"*. The key must also have an **empty**
