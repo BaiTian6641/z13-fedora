@@ -483,7 +483,7 @@ must have its own ESP and `/boot`.
 
 | # | Milestone | Acceptance |
 |---|---|---|
-| **M0** | Repo + CI green | Both images publish; `cosign verify` passes |
+| **M0** | Repo + CI green | **Done (2026-09-17)**: `bluebuild` success on `1580f7e`; `:44`/`:latest` publish and `cosign verify --key cosign.pub` exits 0 for both; ISO run `35204266532` produced the `z13-fedora-iso` artifact (8.16 GiB, ISO + CHECKSUM) — criteria 1–3 met |
 | **M0.5** | Pre-wipe prep | MSDM key saved; Cloud Recovery confirmed; BIOS v322 flashed; 16 GB USB written and checksum-verified |
 | **M1** | Installs and boots (whole disk, LUKS) | Anaconda install completes offline; §5.4 layout verification passes; Plasma Wayland at 120 Hz; §7.1 items 2–8 green |
 | **M2** | ASUS layer | profiles switch; `platform_profile` shows the right value (not `custom`); battery limit applies |
@@ -642,10 +642,9 @@ eight job-list payloads, including a green `validate` beside a skipped `publish`
 
 **Package visibility — required for the ISO, not just for checking it.** GHCR packages pushed with `GITHUB_TOKEN` start **private**, and `generate-iso image` cannot authenticate the pull that matters: it mounts only the output directory and a DNF cache into the build-container-installer container (`src/commands/generate_iso.rs`, `run_volumes!`), so the fetch inside that container is anonymous and a private package yields no ISO. Flip *Settings → Packages → z13-fedora → Change visibility → Public* after the first publish — or set the account's *Packages → Package creation → default visibility* to Public beforehand — which also makes the anonymous `tags/list` check work. The ISO job's own `docker`/`podman` logins (including root's, added for the `sudo bluebuild generate-iso` call) cover the CLI's side only.
 
-**Outstanding (user action):** add the repository secret `SIGNING_SECRET` with the contents of
-`~/z13-fedora/cosign.key` — the key now lives **in the working tree**, where `.gitignore` keeps it out of commits
-and a reboot cannot delete it. (It used to live in `/tmp`; a workstation crash on 2026-09-17 wiped it, which is
-exactly the failure mode this location fixes.) Then trigger a build:
+**Done (2026-09-17):** `SIGNING_SECRET` is configured and verified against the committed `cosign.pub`; the image
+publishes and verifies; the installer ISO exists as the `z13-fedora-iso` artifact. (The keypair lives in the working
+tree, `~/z13-fedora/cosign.key`, gitignored — relocated after a workstation crash wiped `/tmp`.)
 
 ```bash
 cat ~/z13-fedora/cosign.key      # copy the whole PEM block into the secret
@@ -666,6 +665,8 @@ cat cosign.key                                   # the new SIGNING_SECRET value
 
 Either keypair works as long as the secret and the committed `cosign.pub` are a pair — a mismatch fails at the
 matching step before anything is built, never producing a broken image.
+
+**Remaining: the hardware session only (criteria 4–7).** Download `z13-fedora-iso` from the successful ISO run, verify it against the `.iso-CHECKSUM`, write it to a >=16 GB stick, install with the §6.3 layout, run `ujust z13-oobe`, and paste `ujust z13-report` back - it covers criteria 4, 5 and 6 and the raw facts for 7.
 
 **What happens the moment the secret exists** (no further decisions needed):
 
