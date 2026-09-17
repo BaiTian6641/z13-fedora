@@ -92,6 +92,20 @@ else
   info "skipping GRUB polish (no writable /etc/default/grub or no grub2-mkconfig)"
 fi
 
+# --- optional mesh VPNs stay off until chosen -----------------------------------------
+# zerotier's unit name has changed between package revisions, so this is runtime-guarded rather
+# than a build-time systemd-module entry (which hard-fails on a missing unit - the exact failure
+# this image hit on 2026-09-17).
+for unit in zerotier-one.service zerotier.service; do
+  if systemctl list-unit-files "${unit}" 2>/dev/null | grep -q "^${unit}"; then
+    sudo systemctl disable --now "${unit}" >/dev/null 2>&1 || true
+    info "${unit}: disabled (enable with: systemctl enable --now ${unit})"
+  fi
+done
+if systemctl list-unit-files tailscaled.service 2>/dev/null | grep -q '^tailscaled.service'; then
+  info "tailscaled: disabled (enable with: systemctl enable --now tailscaled)"
+fi
+
 # asusd-user is a per-session *user* unit (Aura/keyboard settings). Upstream's Makefile installs the
 # binary but has no rule for the unit file, so it is not reliably packaged — enable it here, at
 # runtime, only if it actually exists, rather than failing the image build over it.

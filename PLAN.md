@@ -730,7 +730,7 @@ disposition, with sources where research was involved:
 | 10 | WSA-style integration | multi-window mode is already on (per-app windows); deeper single-display integration is upstream Waydroid work, not configurable here - recorded as a known limit |
 | 11 | BTOP | layered |
 | 12 | ONLYOFFICE/VS Code/WireGuard/Oh My Pi | ONLYOFFICE ships as a post-boot flatpak (network needed on first boot - the oobe note says so); VS Code added as a flatpak; `wireguard-tools` layered; **Oh My Pi is the assistant platform itself and is not distributable as a package** - it cannot be shipped |
-| 13 | Optional extras | layered but service-disabled: Tailscale (`systemctl enable --now tailscaled`), ZeroTier (`zerotier-one`); flatpaks added: Chromium, Krita; stylus notes apps (Rnote, Xournal++) were already shipped |
+| 13 | Optional extras | layered but service-disabled: Tailscale (`systemctl enable --now tailscaled`), ZeroTier (package `zerotier` — F44 renamed it from `zerotier-one`; its unit is disabled at runtime by the oobe because the unit's name varies by revision); flatpaks added: Chromium, Krita; stylus notes apps (Rnote, Xournal++) were already shipped |
 | 14 | Waydroid stylus/camera/Bluetooth | camera: `persist.waydroid.camera true` now set by the setup script; stylus: broken **upstream** (waydroid#423, documented since §7); Bluetooth: not supported by Waydroid at all |
 
 ## 14. Second-session direction: toward a ChromeOS-grade tablet

@@ -20,7 +20,7 @@ modules:
         - brightnessctl                     # keyboard backlight: /sys/class/leds/asus::kbd_backlight
         - wireguard-tools                   # wg client plumbing under NetworkManager
         - tailscale                         # optional mesh VPN: 'systemctl enable --now tailscaled'
-        - zerotier-one                      # optional mesh VPN: 'systemctl enable --now zerotier-one'
+        - zerotier                          # optional mesh VPN (F44 renamed the package from zerotier-one)
         # metric-compatible fonts so documents from Windows users keep their layout in ONLYOFFICE
         - google-carlito-fonts            # Calibri metrics
         - google-crosextra-caladea-fonts  # Cambria metrics
@@ -42,10 +42,8 @@ modules:
       disabled:
         # Waydroid is started on demand (ujust z13-waydroid-setup), not at every boot.
         - waydroid-container.service
-        # Optional mesh VPNs ship enabled-by-default in their RPMs; leave them OFF until chosen.
-        # Enable with: systemctl enable --now tailscaled   /   zerotier-one
+        # Optional mesh VPN, off until chosen: systemctl enable --now tailscaled
         - tailscaled.service
-        - zerotier-one.service
       # NOTE: asusd-user.service is a *user* unit whose unit file upstream does not reliably install
       # (the Makefile installs the binary but has no rule for the .service), so it is enabled at
       # runtime by z13-oobe only if present — never at build time, where a missing unit fails the build.
