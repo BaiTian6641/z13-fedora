@@ -190,7 +190,7 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
-          mkdir -p .ci
+          mkdir -p /tmp/ci-body
           {
             echo "# Last ISO failure"
             echo
@@ -199,12 +199,19 @@ jobs:
             echo '```'
             tail -c 40000 /tmp/iso.log 2>/dev/null || echo "(no builder output captured)"
             echo '```'
-          } > .ci/last-failure.md
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          } > /tmp/ci-body
+          # main may have moved on since this run checked out - rebuild the commit on top of the
+          # remote tip, otherwise the push is rejected as a non-fast-forward and the log dies with
+          # the runner (which is exactly what happened the first time).
+          git fetch -q origin main
+          git checkout -q -B main origin/main
+          mkdir -p .ci
+          cp /tmp/ci-body .ci/last-failure.md
           git add .ci/last-failure.md
-          git commit -q -m "ci: record the last ISO failure [skip ci]" || true
-          git push -q origin HEAD:main || echo "could not push the ISO failure log"
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "ci: record the last ISO failure [skip ci]" || true
+          git push -q origin main || echo "could not push the failure log"
 
       - name: Upload ISO as a workflow artifact
         uses: actions/upload-artifact@v4
