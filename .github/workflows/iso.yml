@@ -51,43 +51,39 @@ jobs:
     outputs:
       published: ${{ steps.check.outputs.published }}
     steps:
-      - name: Inspect the triggering run
+      - name: Check that the image is published and pullable
         id: check
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          EVENT: ${{ github.event_name }}
-          RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
           set -euo pipefail
-          if [[ "${EVENT}" != "workflow_run" ]]; then
-            # Manual dispatch or release publication: the operator asked for this ISO explicitly.
-            echo "published=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          succeeded=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/jobs" --paginate \
-                        --jq '.jobs[] | select(.conclusion == "success") | .name' 2>/dev/null || true)
-          printf 'successful jobs in run %s:\n%s\n' "${RUN_ID}" "${succeeded:-<none>}"
-          if grep -qF "Build and publish the image" <<< "${succeeded}"; then
-            echo "published=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "published=false" >> "$GITHUB_OUTPUT"
-            echo "That run published nothing (signing secret missing, so only the unsigned validation ran)."
-            exit 0
-          fi
-
-          # The build-container-installer container pulls the image anonymously (see PLAN.md), so a
-          # private package can never produce an ISO. Fail here, with the fix, rather than 20 minutes
-          # into the ISO build.
           owner="${GITHUB_REPOSITORY_OWNER,,}"
           image="${{ inputs.image || 'z13-fedora' }}"
+          tag="${{ inputs.tag || 'latest' }}"
+
+          # The triggering run's job list is only a proxy for "is there an image to embed". Test the
+          # premise directly: can this tag be pulled anonymously? That is also exactly what the
+          # builder container does (generate-iso mounts no credentials), so it folds in the visibility
+          # check - a private package yields no ISO.
           tok=$(curl -s "https://ghcr.io/token?scope=repository:${owner}/${image}:pull&service=ghcr.io" \
                   | jq -r '.token // empty')
           if [[ -z "${tok}" ]]; then
-            echo "::error::ghcr.io/${owner}/${image} is not anonymously pullable, so the installer container cannot fetch it. The publish itself succeeded - set *Settings -> Packages -> ${image} -> Change visibility* to Public, then re-run this workflow."
-            exit 1
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "ghcr.io/${owner}/${image}:${tag} is not anonymously pullable - either nothing has been published yet, or the package is private. If the publish succeeded, set *Settings -> Packages -> ${image} -> Change visibility* to Public and re-run this workflow."
+            exit 0
           fi
-          echo "ghcr.io/${owner}/${image} is anonymously pullable; proceeding"
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+                   -H "Authorization: Bearer ${tok}" \
+                   -H 'Accept: application/vnd.oci.image.index.v1+json, application/vnd.oci.image.manifest.v1+json' \
+                   "https://ghcr.io/v2/${owner}/${image}/manifests/${tag}")
+          if [[ "${code}" != "200" ]]; then
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "ghcr.io/${owner}/${image}:${tag} is pullable but the tag does not resolve (HTTP ${code})"
+            exit 0
+          fi
+          echo "published=true" >> "$GITHUB_OUTPUT"
+          echo "ghcr.io/${owner}/${image}:${tag} resolves and is anonymously pullable; proceeding"
 
   iso:
     name: Build installer ISO
