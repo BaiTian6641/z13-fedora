@@ -221,7 +221,7 @@ jobs:
             echo "Commit: ${{ github.sha }}"
             echo
             echo '```'
-            tail -c 60000 /tmp/iso.log 2>/dev/null | tail -120 || echo "(no builder output captured)"
+            tail -c 200000 /tmp/iso.log 2>/dev/null | tail -400 || echo "(no builder output captured)"
             echo '```'
           } > /tmp/ci-body || true
           rm -rf /tmp/ci-repo

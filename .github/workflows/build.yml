@@ -153,7 +153,7 @@ jobs:
             echo "Commit: ${{ github.sha }}"
             echo
             echo '```'
-            tail -c 60000 /tmp/build.log 2>/dev/null | tail -120 || echo "(no build log captured)"
+            tail -c 200000 /tmp/build.log 2>/dev/null | tail -400 || echo "(no build log captured)"
             echo '```'
           } > /tmp/ci-body || true
           rm -rf /tmp/ci-repo
