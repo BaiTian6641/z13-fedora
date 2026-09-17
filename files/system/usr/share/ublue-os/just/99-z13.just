@@ -38,3 +38,16 @@ z13-gpu:
     #!/usr/bin/env bash
     set -uo pipefail
     exec /usr/libexec/z13/gpu-status.sh
+
+# Install or refresh the on-disk recovery environment on the RECOVERY partition
+# (pass an ISO path, or --latest to fetch the newest release ISO)
+z13-recovery-install *args:
+    #!/usr/bin/env bash
+    set -uo pipefail
+    exec /usr/libexec/z13/recovery-install.sh "$@"
+
+# Report the state of the on-disk recovery environment (reads only)
+z13-recovery-status:
+    #!/usr/bin/env bash
+    set -uo pipefail
+    exec /usr/libexec/z13/recovery-install.sh --status

@@ -99,6 +99,24 @@ else
   info "Android images are not downloaded yet (~1.6 GB). Run:  ujust z13-waydroid-setup"
 fi
 
+say "Recovery"
+if [[ -n "$(blkid -L RECOVERY 2>/dev/null || true)" ]]; then
+  if [[ -f /mnt/recovery/.treeinfo ]]; then
+    info "on-disk recovery environment is installed — manage it with: ujust z13-recovery-status"
+  else
+    info "RECOVERY partition exists but is empty. Install the environment: ujust z13-recovery-install --latest"
+  fi
+else
+  info "no partition labelled RECOVERY — it has to be created at install time (PLAN.md §5.2)"
+fi
+if [[ -f /boot/grub2/user.cfg ]] && grep -qE '^[[:space:]]*set[[:space:]]+timeout=' /boot/grub2/user.cfg; then
+  info "GRUB menu timeout: configured (you can pick the previous deployment at boot)"
+else
+  info "GRUB menu timeout is NOT set — the menu may not appear, leaving no way to pick the previous deployment"
+  info "  fix: echo 'set timeout=5' | sudo tee -a /boot/grub2/user.cfg"
+fi
+info "before risky changes, protect a known-good deployment:  sudo ostree admin pin 0"
+
 say "Next"
 info "Full hardware check:  ujust z13-verify          (add -- --suspend for a suspend test)"
 info "GPU report:           ujust z13-gpu"

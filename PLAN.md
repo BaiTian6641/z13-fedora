@@ -79,7 +79,8 @@ z13-fedora/                          # git repo, initial commit 731d97c (18 file
 │   │   ├── gpu-status.sh            # which GPU does what        (ujust z13-gpu)
 │   │   ├── waydroid-setup.sh        # Android 16 GAPPS bootstrap (ujust z13-waydroid-setup)
 │   │   ├── oobe.sh                  # post-install setup         (ujust z13-oobe)
-│   │   └── mux-spike.sh             # MUX / asus-armoury probe   (ujust z13-mux)
+│   │   ├── mux-spike.sh             # MUX / asus-armoury probe   (ujust z13-mux)
+│   │   └── recovery-install.sh      # on-disk recovery env       (ujust z13-recovery-install)
 │   └── usr/share/ublue-os/just/99-z13.just
 ├── .github/workflows/
 │   ├── build.yml                    # image build: daily cron + push + PR, recipe matrix
@@ -187,12 +188,13 @@ exchange is via a shared folder, not drag-and-drop — document this rather than
 
 ### 5.2 v1 layout (single boot, 512 GB) — recommended
 
-| # | Mount | Size | FS | Flags | Why |
+| # | Mount | Size | FS | Label | Why |
 |---|---|---|---|---|---|
-| 1 | `/boot/efi` (ESP) | **1 GiB** (2 GiB if you plan §5.3) | vfat | `boot,esp` | Fedora warns below 500 MiB; bootc default ESP ≥ 512 MiB. The ESP holds shim + GRUB, and later possibly UKIs. |
-| 2 | `/boot` | **2 GiB** | ext4 | `nosuid,nodev` if you set flags manually | **This is the kernel isolation.** Kernel, initramfs and BLS entries live here, outside the OS payload; it is the Fedora default size and mandatory with LUKS. |
-| 3 | `/` | **100 GiB** | btrfs (or xfs) | — | Holds `/sysroot/ostree` + composefs images for the running and previous deployment (each a few GB). 100 GiB is comfortable, not tight. |
-| 4 | `/var` | **remainder (~380 GiB)** | xfs or ext4 | — | Machine state that must survive a reinstall: `/var/home` (your data), `/var/lib/containers`, VMs, Waydroid's 1.5 GB of Android images, logs. |
+| 1 | `/boot/efi` (ESP) | **1 GiB** (2 GiB if you plan §5.3) | vfat | - | bootloader lives here alone; Fedora warns below 500 MiB |
+| 2 | `/boot` | **2 GiB** | ext4 | - | **kernel isolation**: kernel + initramfs + BLS entries, outside the OS payload; mandatory once LUKS is on |
+| 3 | `/` | **100 GiB** | btrfs (LUKS2) | - | holds `/sysroot/ostree` plus the composefs images of two deployments |
+| 4 | `/var` | **~360 GiB** | xfs (LUKS2) | - | `/var/home`, containers, VMs, Waydroid images - survives a reinstall |
+| 5 | `/mnt/recovery` | **10 GiB** | ext4 | `RECOVERY` | the on-disk recovery environment (§5.5); **deliberately unencrypted** |
 
 Notes:
 - If you prefer one filesystem, let `/var` stay a btrfs subvolume/bind of root — but then a reinstall
@@ -235,6 +237,65 @@ sudo ostree admin pin 0        # pin a known-good deployment before risky experi
 
 Deployment retention is **2 bootable deployments**; extra space per deployment is roughly the size of the
 image (`rpm-ostree cleanup --rollback` prunes; `ostree admin pin` protects).
+
+---
+
+### 5.5 Recovery: what happens when it will not boot
+
+Four tiers, in the order to reach for them. The first two cost nothing and come from Fedora itself;
+tiers 3 and 4 are what this project adds.
+
+**T0 - boot the previous deployment (built in).** rpm-ostree/bootc keeps **two bootable deployments**;
+the GRUB menu lists them as `Fedora Linux ... (ostree:0|1)`. Protect a known-good one before risky work:
+
+```bash
+sudo ostree admin pin 0                  # protect the booted deployment from pruning
+sudo rpm-ostree rollback                 # or: bootc rollback
+sudo rpm-ostree cleanup --rollback       # prunes only unpinned old deployments
+```
+
+The caveat that bites people: on Atomic the GRUB menu is hidden by default, so "just pick the previous
+deployment" is not reachable until a timeout is set. `/boot/grub2/user.cfg` is sourced by bootupd's static
+config, so `set timeout=5` there is the supported way - `z13-recovery-install` writes it, and
+`ujust z13-verify` checks it.
+
+**T1 - repair in place.** In the GRUB menu press `e` on a deployment entry and append one of
+`init=/bin/bash` (Fedora's documented root-shell recipe), `rd.break`, or `systemd.unit=emergency.target`.
+Covers a broken userspace or config while `/boot` is intact.
+
+**T2 - the on-disk recovery environment (this project).** A 10 GiB ext4 partition labelled `RECOVERY`,
+mounted at `/mnt/recovery`, holding an **extracted copy of the installer ISO**. Menu entries are written to
+**`/boot/grub2/custom.cfg`** - the hook bootupd's static configuration actually sources (`41_custom.cfg` ->
+`$config_directory/custom.cfg`) - so they survive deployments without touching the generated `grub.cfg`:
+
+```text
+menuentry 'Z13 Fedora recovery (install / repair)' {
+    insmod part_gpt; insmod ext2
+    search --no-floppy --set=root --label RECOVERY
+    linux /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=RECOVERY <iso options>
+    initrd /images/pxeboot/initrd.img
+}
+menuentry 'Z13 Fedora recovery (rescue shell)' { ...same, plus: inst.rescue }
+```
+
+Why the *extracted tree* rather than a loop-mounted ISO file: `inst.stage2=hd:LABEL=RECOVERY` makes
+Anaconda mount that filesystem at `/run/install/repo`, find its runtime image through `.treeinfo`
+(`stage2 mainimage = images/install.img`), and - because the installer's kickstart uses
+`ostreecontainer --url=/run/install/repo/<image_name>` - the **embedded OCI payload resolves as well**, so a
+full **offline reinstall** works from the internal disk, with no USB stick and no network.
+
+Manage it with `ujust z13-recovery-install --latest` (fetches the newest release ISO), `--status`, `--remove`.
+
+> **Do not** add entries via `/etc/grub.d/*` + `grub2-mkconfig`. On Fedora 41+ Atomic the GRUB config is
+> static and owned by bootupd, `/etc/default/grub` no longer exists, ostree stops generating GRUB configs
+> once `bootupd-state.json` carries a `static-configs` key, and `grub2-mkconfig` would overwrite that
+> config - Fedora maintainers call this unsupported. `z13-recovery-install` refuses to do it.
+
+**T3 - a second, independent OS instance (documented, not built).** The only fully independent recovery is
+another OS with its **own ESP and `/boot`** (a shared ESP risks bootc/bootupd wiping the wrong one):
+`ostree admin stateroot-init rescue` plus
+`bootc install to-filesystem --stateroot=rescue ...` onto its own partition. Cost: another 10-20 GiB and
+permanent boot-menu complexity. The zero-cost equivalent is the CI-built ISO on a USB stick.
 
 ---
 
@@ -367,6 +428,12 @@ is already in the image.
 
 ---
 
+**Recovery-specific risks.** The `RECOVERY` partition can only be created at install time - XFS cannot be
+shrunk, so adding it later means repartitioning - so get the layout right in Anaconda. `custom.cfg` is
+sourced only while bootupd keeps `41_custom.cfg` in its static config; `ujust z13-verify` checks the entries
+every run so such a change shows up in a routine check instead of during an outage. A second OS instance
+must have its own ESP and `/boot`.
+
 ## 9. Milestones
 
 | # | Milestone | Acceptance |
@@ -381,6 +448,7 @@ is already in the image.
 | **M4B** | dGPU Android (experimental) | `dumpsys SurfaceFlinger \| grep GLES` shows `ANGLE (NVIDIA … Venus …)`; playable; host stable 30 min; Track A deployment still bootable |
 | **M5** | ONLYOFFICE | opens `.docx`/`.xlsx` with correct metrics; associations set |
 | **M6** | Installer kit | two ISOs (A/B) with checksums; clean UEFI-VM install reproduces M1–M5; rollback verified |
+| **M6b** | Recovery path | `ujust z13-recovery-install --latest` populates the partition and adds both menu entries; booting "install / repair" in a UEFI VM reaches Anaconda with the payload found offline; `ujust z13-verify` reports the recovery checks green |
 | **M7** | Reinstall drill | Reinstall over the existing system with `/var` preserved (manual partitioning, no reformat) — data intact |
 | **M8** | Upkeep | two weeks of unattended rebuilds; F44 → F45 rehearsal in a VM (F45 lands 2026-10-20) |
 

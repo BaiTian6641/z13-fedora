@@ -105,6 +105,39 @@ if [[ $QUICK -eq 0 ]]; then
   fi
 fi
 
+# ---------------------------------------------------------------- recovery
+section "Recovery"
+rec_dev=$(blkid -L RECOVERY 2>/dev/null || true)
+if [[ -n "$rec_dev" ]]; then
+  ok "recovery partition present: $rec_dev ($(lsblk -no SIZE "$rec_dev" 2>/dev/null | head -1))"
+  if [[ -f /mnt/recovery/images/pxeboot/vmlinuz && -f /mnt/recovery/.treeinfo ]]; then
+    ok "on-disk recovery environment installed ($(du -sh /mnt/recovery 2>/dev/null | cut -f1))"
+  else
+    warn "recovery partition is empty — run: ujust z13-recovery-install --latest"
+  fi
+  if grep -qF 'Z13 Fedora recovery' /boot/grub2/custom.cfg 2>/dev/null; then
+    ok "GRUB recovery entries present in /boot/grub2/custom.cfg"
+  elif grep -qF 'Z13 Fedora recovery' /boot/grub2/grub.cfg 2>/dev/null; then
+    ok "GRUB recovery entries present in /boot/grub2/grub.cfg"
+  else
+    warn "no GRUB recovery entries — re-run: ujust z13-recovery-install"
+  fi
+  if [[ -f /boot/grub2/user.cfg ]] && grep -qE '^[[:space:]]*set[[:space:]]+timeout=' /boot/grub2/user.cfg; then
+    ok "GRUB menu timeout configured (previous deployment reachable at boot)"
+  else
+    warn "GRUB menu timeout not set — the boot menu may not appear (add 'set timeout=5' to /boot/grub2/user.cfg)"
+  fi
+else
+  warn "no partition labelled RECOVERY (see PLAN.md §5.2 — create it at install time)"
+fi
+if have ostree; then
+  if [[ "$(ostree admin status 2>/dev/null | grep -c pinned || true)" -gt 0 ]]; then
+    ok "a deployment is pinned (protected from pruning)"
+  else
+    info "no pinned deployment — pin a good one before risky changes: sudo ostree admin pin 0"
+  fi
+fi
+
 # ---------------------------------------------------------------- ASUS platform
 section "ASUS platform"
 if systemctl is-active --quiet asusd.service 2>/dev/null; then
