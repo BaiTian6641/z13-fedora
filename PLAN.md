@@ -750,3 +750,5 @@ appear as normal windows, everything works out of the box, the shell stays borin
 | WSA-style windows | multi-window mode is the mechanism and is already on: each Android app opens as its own window. The Android-drawn window buttons/status remain (upstream waydroid#2204); the Settings app appears in the KDE menu once a session has run (handled) | ArchWiki Waydroid; waydroid#2204 |
 | OTA links | the setup script sets and now **prints** both OTA channels (system + vendor) so the provenance of the running Android is visible | - |
 
+
+<!-- lint-proof: 2026-09-17T20:35:35Z -->
