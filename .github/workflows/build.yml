@@ -99,24 +99,50 @@ jobs:
       contents: read
       packages: read
     steps:
+      # GHCR rejects mixed-case namespaces; GitHub usernames are case-preserving.
       - name: Compute lowercase registry namespace
         id: ns
         shell: bash
         run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
 
-      - name: Build the image without pushing it
-        uses: blue-build/github-action@v1.11
+      - name: Maximize build space
+        uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2
         with:
-          recipe: recipe.yml
-          cosign_private_key: ""
-          push: false
-          registry_token: ${{ github.token }}
-          registry_namespace: ${{ steps.ns.outputs.owner }}
-          pr_event_number: 0
-          maximize_build_space: true
-          # Mirror the publishing build exactly, including the rechunk the ISO step depends on:
-          # chunkah runs locally (it writes an OCI layout into a temp dir, coreos/chunkah) and the
-          # driver only pushes `if opts.push` (process/drivers/podman_driver.rs), so this validates
-          # the same 259 -> <=128 layer path without publishing anything.
-          build_chunked_oci: true
-          max_layers: 128
+          skip-if-available: "80G"
+
+      # The official action runs the CLI as one opaque step, and its log is only reachable through
+      # an authenticated API call - which makes a red build undiagnosable from the outside. Running
+      # the CLI directly costs a few lines and produces a build log that is uploaded as an artifact.
+      - name: Install the BlueBuild CLI
+        run: |
+          set -euo pipefail
+          sudo docker create --name blue-build-installer ghcr.io/blue-build/cli:latest-installer
+          sudo docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
+          sudo docker rm blue-build-installer
+          bluebuild --version
+
+      - name: Build the image without pushing it
+        env:
+          # Same flags the publishing job passes through the action.
+          BB_BUILD_PUSH: "false"
+          BB_BUILD_CHUNKED_OCI: "true"
+          BB_BUILD_CHUNKED_OCI_MAX_LAYERS: "128"
+          BB_BUILD_REMOVE_BASE_IMAGE: "true"
+          BB_REGISTRY: ghcr.io
+          BB_REGISTRY_NAMESPACE: ${{ steps.ns.outputs.owner }}
+          GH_TOKEN: ${{ github.token }}
+          RUST_LOG_STYLE: always
+          CLICOLOR_FORCE: "1"
+        run: |
+          set -o pipefail
+          bluebuild build -v recipes/recipe.yml 2>&1 | tee /tmp/build.log
+          echo "build finished with status ${PIPESTATUS[0]}"
+
+      - name: Upload the build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validate-build-log
+          path: /tmp/build.log
+          if-no-files-found: warn
+          retention-days: 7
