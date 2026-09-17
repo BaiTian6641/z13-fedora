@@ -573,3 +573,23 @@ A local-only variant avoids the registry entirely: `bluebuild build recipes/reci
 `--push false`, then `bootc switch ostree-unverified-registry:...` on a target machine, or install from a
 Fedora live environment with `bootc install to-filesystem`. The ISO route above is the one the install
 runbook (§6) assumes.
+
+
+### 12.2 CI log
+
+| Run | Commit | Result | Root cause / notes |
+|---|---|---|---|
+| `lint` | `16193e8` | success | actionlint + shellcheck + recipe YAML parse all green on the very first push |
+| `bluebuild` | `16193e8` | **no run created** | the first push to the brand-new repo triggered only `lint`; the same workflow fired normally on the next push — a GitHub quirk on initial pushes, not a configuration error |
+| `bluebuild` | `80fd9e9` | **failure** (~23 s) | signing is on by default and `CosignDriver::check_signing_files()` requires a committed `./cosign.pub` plus a matching private key; the repo was created empty, so neither existed |
+| — | `0a74d62` | no run (`[skip ci]`) | committed `cosign.pub` (keypair generated locally with cosign 3.1.3) and a `.gitignore` that blocks `cosign.key`/`cosign.private`; `[skip ci]` avoided burning a full build before the secret exists |
+
+The diagnosis is taken from the CLI source, not guessed: `process/drivers/cosign_driver.rs` reads `./cosign.pub`,
+derives the public key from `COSIGN_PRIVATE_KEY`, and bails with *"Public key 'cosign.pub' does not match
+private key"* when they disagree — so the private key must arrive through the `SIGNING_SECRET` repository
+secret and must match the committed public key.
+
+**Outstanding (user action):** add the repository secret `SIGNING_SECRET` with the contents of
+`/tmp/z13-signing/cosign.key` (move that file somewhere permanent first — `/tmp` is wiped on reboot), then
+trigger a build. If you prefer your own keypair, replace `cosign.pub` in the repo instead; a mismatch fails
+fast with the error above rather than producing a broken image.
