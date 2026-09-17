@@ -218,18 +218,19 @@ jobs:
               || echo "(step summary unavailable)"
             echo '```'
           } > /tmp/ci-body
-          # main may have moved on since this run checked out - rebuild the commit on top of the
-          # remote tip, otherwise the push is rejected as a non-fast-forward and the log dies with
-          # the runner (which is exactly what happened the first time).
-          git fetch -q origin main
-          git checkout -q -B main origin/main
-          mkdir -p .ci
-          cp /tmp/ci-body .ci/last-failure.md
-          git add .ci/last-failure.md
-          git -c user.name="github-actions[bot]" \
-              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-              commit -q -m "ci: record the last publish failure [skip ci]" || true
-          git push -q origin main || echo "could not push the failure log"
+          # Commit through the API rather than git: the workspace here is the action's checkout, where
+          # `git checkout -B main` can fail on local modifications - which is how the previous two
+          # failures lost their logs. gh is preinstalled on GitHub-hosted runners.
+          sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/.ci/last-failure.md" --jq .sha 2>/dev/null || true)
+          args=(--method PUT "repos/${GITHUB_REPOSITORY}/contents/.ci/last-failure.md"
+                -f "message=ci: record the last failure log [skip ci]"
+                -f "content=$(base64 -w0 /tmp/ci-body)")
+          if [ -n "${sha}" ]; then args+=(-f "sha=${sha}"); fi
+          if gh api "${args[@]}" >/dev/null; then
+            echo "failure log committed to .ci/last-failure.md"
+          else
+            echo "could not commit the failure log"
+          fi
 
   validate:
     name: Validate recipe (build only, publishes nothing)
@@ -331,15 +332,16 @@ jobs:
             tail -c 40000 /tmp/build.log 2>/dev/null || echo "(no build log was produced)"
             echo '```'
           } > /tmp/ci-body
-          # main may have moved on since this run checked out - rebuild the commit on top of the
-          # remote tip, otherwise the push is rejected as a non-fast-forward and the log dies with
-          # the runner (which is exactly what happened to the first ISO failure).
-          git fetch -q origin main
-          git checkout -q -B main origin/main
-          mkdir -p .ci
-          cp /tmp/ci-body .ci/last-failure.md
-          git add .ci/last-failure.md
-          git -c user.name="github-actions[bot]" \
-              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-              commit -q -m "ci: record the last validation failure log [skip ci]" || true
-          git push -q origin main || echo "could not push the failure log"
+          # Commit through the API rather than git: the workspace here is the action's checkout, where
+          # `git checkout -B main` can fail on local modifications - which is how the previous two
+          # failures lost their logs. gh is preinstalled on GitHub-hosted runners.
+          sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/.ci/last-failure.md" --jq .sha 2>/dev/null || true)
+          args=(--method PUT "repos/${GITHUB_REPOSITORY}/contents/.ci/last-failure.md"
+                -f "message=ci: record the last failure log [skip ci]"
+                -f "content=$(base64 -w0 /tmp/ci-body)")
+          if [ -n "${sha}" ]; then args+=(-f "sha=${sha}"); fi
+          if gh api "${args[@]}" >/dev/null; then
+            echo "failure log committed to .ci/last-failure.md"
+          else
+            echo "could not commit the failure log"
+          fi

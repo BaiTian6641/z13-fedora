@@ -608,6 +608,7 @@ runbook (§6) assumes.
 | `lint` | `16193e8` | success | actionlint + shellcheck + recipe YAML parse all green on the very first push |
 | `bluebuild` | `16193e8` | **no run created** | the first push to the brand-new repo triggered only `lint`; the same workflow fired normally on the next push — a GitHub quirk on initial pushes, not a configuration error |
 | `iso` | `6563bf0` | success, ISO **skipped** | same gate, reached from a *superseded* (cancelled) build run: it still skipped rather than building an ISO for an image that was never pushed |
+| `bluebuild` | `f258488` | failure (13 min) | `Build Custom Image` died mid-build with no log: the failure-capture step itself failed in 0 s, because `git checkout -B main` conflicts with the action's workspace. The capture now commits through the GitHub API (`gh api`), and the publish was retried |
 | `bluebuild` | `5598cb2` | **success** (20 min) | first green run of the hand-rolled validate job: checkout + podman + chunked build, no failure log written |
 | `bluebuild` | `cb9cb05`, `2621288` | failure (seconds) | the hand-rolled job was missing `actions/checkout` (the official action performs it internally), so the CLI found no recipe — the ~300-byte build log gave that away; podman was missing too |
 | `bluebuild` | `6563bf0` | failure (600 s) | failed inside the build step with the *action*; the identical recipe built green before and after it, so this was transient infrastructure rather than a code defect — noting it because it cost a diagnosis cycle |
