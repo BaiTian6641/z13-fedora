@@ -1,0 +1,8 @@
+# Signing material — NEVER commit the private key
+cosign.key
+cosign.private
+*.key
+
+# Build/ISO artifacts
+*.iso
+*.iso-CHECKSUM
