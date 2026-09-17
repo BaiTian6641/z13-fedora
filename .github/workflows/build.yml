@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120 # a hung NVIDIA/kmods build should not burn six runner hours
     permissions:
-      contents: read
+      contents: write # only for committing the failure pointer to .ci/
       packages: write
       id-token: write
     strategy:
@@ -179,6 +179,33 @@ jobs:
           else
             echo "publicly pullable: the ISO step can fetch ghcr.io/${OWNER}/${IMAGE}"
           fi
+
+      # The action's own log needs an authenticated API call, so a publish failure would otherwise
+      # leave no trace anyone without a token can read. Mirrors the validate job: on failure, commit a
+      # pointer (plus the run link) into .ci/, which a plain `git pull` reads.
+      - name: Record a failure pointer in the repository
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          STEP_SUMMARY: ${{ toJSON(job) }}
+        run: |
+          set -euo pipefail
+          mkdir -p .ci
+          {
+            echo "# Last publish failure"
+            echo
+            echo "Run: ${RUN_URL}"
+            echo
+            echo '```'
+            echo "${STEP_SUMMARY}" | jq -r '.steps[] | "\(.conclusion)\t\(.name)"' 2>/dev/null || echo "(step summary unavailable)"
+            echo '```'
+          } > .ci/last-failure.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .ci/last-failure.md
+          git commit -q -m "ci: record the last publish failure [skip ci]" || true
+          git push -q origin HEAD:main || echo "could not push the failure pointer"
 
   validate:
     name: Validate recipe (build only, publishes nothing)
