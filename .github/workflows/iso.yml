@@ -1,0 +1,115 @@
+name: iso
+
+# Builds an offline installer ISO from an already-published image.
+# The ISO embeds the image as an OCI payload (JasonN3/build-container-installer → Anaconda
+# `ostreecontainer`), so installation needs no network. Write it to a >=16 GB USB stick with
+# Fedora Media Writer or `dd` — the file is ~6 GiB, well past the 4 GiB FAT32 limit.
+#
+# Requires the image to be built and pushed by .github/workflows/build.yml first.
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: Image repository name to build an installer for
+        type: choice
+        options:
+          - z13-fedora
+          - z13-fedora-dgpu
+        default: z13-fedora
+      tag:
+        description: Image tag
+        type: string
+        default: latest
+  release:
+    types: [published]
+
+permissions:
+  contents: write # attaching assets to a release
+  packages: read
+
+jobs:
+  iso:
+    name: Build installer ISO
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Maximize build space
+        uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2
+        with:
+          skip-if-available: "80G"
+
+      - name: Install podman (used by the ISO builder)
+        run: |
+          set -euo pipefail
+          if ! command -v podman >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y podman
+          fi
+          podman --version
+
+      - name: Install the BlueBuild CLI
+        run: |
+          set -euo pipefail
+          CLI_IMAGE="ghcr.io/blue-build/cli:latest-installer"
+          sudo docker create --name blue-build-installer "${CLI_IMAGE}"
+          sudo docker cp blue-build-installer:/out/bluebuild /usr/bin/bluebuild
+          sudo docker rm blue-build-installer
+          bluebuild --version
+
+      - name: Log in to GHCR (only needed while the image package is private)
+        run: |
+          echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin || true
+          if command -v podman >/dev/null; then
+            echo "${{ github.token }}" | podman login ghcr.io -u "${{ github.actor }}" --password-stdin || true
+          fi
+
+      - name: Verify the image signature
+        if: ${{ hashFiles('cosign.pub') != '' }}
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        with:
+          install-dir: /usr/bin
+          use-sudo: true
+
+      - name: Verify signature (cosign)
+        if: ${{ hashFiles('cosign.pub') != '' }}
+        env:
+          IMAGE: ${{ inputs.image || 'z13-fedora' }}
+          TAG: ${{ inputs.tag || 'latest' }}
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY_OWNER,,}"
+          cosign verify --key cosign.pub "ghcr.io/${OWNER}/${IMAGE}:${TAG}"
+
+      - name: Build ISO
+        env:
+          IMAGE: ${{ inputs.image || 'z13-fedora' }}
+          TAG: ${{ inputs.tag || 'latest' }}
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY_OWNER,,}"
+          ISO_NAME="${IMAGE}-${TAG}-$(date -u +%Y%m%d).iso"
+          # --variant kinoite is BlueBuild's default and matches our KDE base image; it makes the
+          # installer ask for the user account before installing.
+          sudo bluebuild generate-iso --iso-name "${ISO_NAME}" image "ghcr.io/${OWNER}/${IMAGE}:${TAG}"
+          ls -lh "${ISO_NAME}"
+          sha256sum "${ISO_NAME}" | tee "${ISO_NAME}-CHECKSUM"
+
+      - name: Upload ISO as a workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: z13-fedora-iso
+          path: |
+            *.iso
+            *.iso-CHECKSUM
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Attach ISO to the release
+        if: ${{ github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            *.iso
+            *.iso-CHECKSUM

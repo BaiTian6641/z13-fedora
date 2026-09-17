@@ -1,0 +1,17 @@
+---
+# NVIDIA userspace + kernel modules from Universal Blue's prebuilt akmods streams
+# (ghcr.io/ublue-os/akmods:main-44 and ghcr.io/ublue-os/akmods-nvidia-open:main-44).
+#
+# The module also writes the kernel arguments itself, into
+# /usr/lib/bootc/kargs.d/00-bluebuild-nvidia-kargs.toml:
+#   rd.driver.blacklist=nouveau, modprobe.blacklist=nouveau, nvidia-drm.modeset=1,
+#   initcall_blacklist=simpledrm_platform_driver_init
+#
+# Why nvidia-open: GA107 (RTX 3050 Laptop) is supported by the open kernel modules, and the open
+# module is REQUIRED by the optional dGPU Waydroid stack (the closed module has no DMA-BUF support).
+modules:
+  - type: akmods
+    base: main
+    # No extra ublue kmods are needed on this device; the key is required by the module schema.
+    install: []
+    nvidia-driver: nvidia-open

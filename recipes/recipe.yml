@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+name: z13-fedora
+description: Fedora Atomic (KDE Plasma) for the ASUS ROG Flow Z13 2022 (GZ301ZC) — asusctl, NVIDIA RTX 3050 open kmod, Waydroid Android 16 + GMS, ONLYOFFICE.
+base-image: ghcr.io/ublue-os/kinoite-main
+image-version: 44
+
+# Module order matters:
+#   files -> repo/package installs -> kernel modules -> flatpaks -> desktop -> branding -> signing
+# os-release/branding runs LAST because changing ID before package installs can break
+# COPR/repo identification (see the os-release module docs).
+modules:
+  - from-file: system.yml
+  - from-file: asus.yml
+  - from-file: nvidia.yml
+  - from-file: waydroid.yml
+  - from-file: desktop.yml
+  - from-file: apps.yml
+  - from-file: branding.yml
+  - type: signing

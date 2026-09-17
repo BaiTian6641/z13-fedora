@@ -1,0 +1,18 @@
+---
+# ASUS ROG userspace. asusctl is not in any Fedora repo, so it comes from the project's
+# official COPR (has a live Fedora 44 chroot).
+#
+# Deliberately NOT installed:
+#   supergfxctl      deprecated upstream, and its MUX path is broken on kernels >= 6.19
+#                    (asus-armoury replaced the legacy asus-wmi attributes)
+#   rog-control-center  open crash report against GZ301ZC specifically
+#   power-profiles-daemon  conflicts with Fedora 44's tuned-ppd (see desktop.yml)
+modules:
+  - type: dnf
+    repos:
+      copr:
+        - lukenukem/asus-linux
+    install:
+      skip-unavailable: true
+      packages:
+        - asusctl

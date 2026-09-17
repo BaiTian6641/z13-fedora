@@ -1,0 +1,476 @@
+# `z13-fedora` — Custom Fedora Atomic for the ASUS ROG Flow Z13 (2022, **GZ301ZC**)
+
+A personal, hybrid-GPU, Android-capable KDE workstation on Fedora Atomic, built with BlueBuild,
+installed from a self-produced offline ISO onto the **whole** internal SSD (no Windows), with the
+**kernel isolated on its own partition**, and upgradeable atomically forever after.
+
+**Target hardware: GZ301ZC** — i7-12700H (6P+8E) + **RTX 3050 Laptop 4 GB (GA107, Ampere)** + Iris Xe,
+**MUX + Optimus**, 13.4" FHD+ 1920×1200 120 Hz touch + ASUS Pen (MPP 2.0), 512 GB M.2 2230 NVMe,
+16 GB LPDDR5 soldered, Wi-Fi 6E + BT 5.2, ELAN fingerprint reader, 56 Wh / 100 W USB-C PD,
+detachable 1-zone-RGB folio keyboard, ROG XG Mobile port. Latest ASUS BIOS for this model: **v322 (2025-05-15)**.
+
+---
+
+## 0. Decisions (as agreed)
+
+| Axis | Decision | Rationale |
+|---|---|---|
+| Base image | `ghcr.io/ublue-os/kinoite-main:44` (KDE **Plasma 6.7.x**, kernel 7.2.x) | KDE first per your call; Kinoite is what the dGPU-Waydroid stack is tested against. |
+| Boot model | **Single boot, whole 512 GB disk, no Windows.** Layout isolates the kernel (§5) | Your call. Reversible later via firmware-level **ASUS Cloud Recovery** (§6.1). |
+| Kernel isolation | **Separate `/boot` (2 GiB, ext4)** holding kernel + initramfs + GRUB/BLS entries, plus ESP; root carries only the OS payload. Phase-2 option: sealed **systemd-boot + UKI** layout (§5.3) | Fedora Atomic is GRUB2 + BLS + bootupd with `/boot` split from root, and **LUKS forces the split anyway** because GRUB cannot read an encrypted `/boot`. |
+| Encryption | **LUKS2 on root** ("Encrypt my data" in Anaconda; `/boot` and ESP stay plaintext), TPM2 auto-unlock enrolled post-install | Laptop that travels. TPM2 binding documented via `systemd-cryptenroll --tpm2-pcrs=7:sha256`. |
+| Secure Boot | **OFF for v1** | Debugging freedom. kmods are pre-signed by uBlue, so re-enabling later = `mokutil --import …/akmods-ublue.der` (password `universalblue`). |
+| Power stack | **`tuned`/`tuned-ppd`** (Fedora 44's default PPD provider) — **not** `power-profiles-daemon`; no TLP; `asusd` configured not to double-write `platform_profile` | F44 ships tuned-ppd by default; shipping PPD alongside it is a documented conflict, and two writers degrade `platform_profile` to `custom`. |
+| ASUS userspace | COPR `lukenukem/asus-linux` → **`asusctl` only** | No `supergfxctl` (deprecated **and broken for MUX on ≥ 6.19 kernels**), no `rog-control-center` (known crash on GZ301ZC), no fan curves (Ryzen-only). |
+| NVIDIA | BlueBuild `akmods` module: `base: main`, `nvidia-driver: nvidia-open` | GA107 supported; open KM is **mandatory** for the dGPU-Waydroid stack (DMA-BUF). |
+| Android (Track A, default) | Fedora `waydroid` 1.6.3 + **Android 16 QPR2 GAPPS** (WayDroid-ATV `20260717`), rendering on the **Iris Xe** iGPU | Binder is in-kernel; iGPU is Waydroid's best-supported path. |
+| Android (Track B, experimental) | `waydroid-nvidia` v0.1.2 (Vulkan/Venus proxy) — **only viable with the MUX in dGPU mode**, which now has no Windows fallback (§4.3) | Requested; feasibility spike first, shipped as a separate image variant. |
+| Office | Flathub `org.onlyoffice.desktopeditors` **9.4.0**, deployed on first boot | Official Flatpak; no second RPM repo in the image. |
+| Installer | `bluebuild generate-iso` (BCI, **offline** OCI payload) → Fedora Media Writer/dd to a **16 GB** USB | ISO ≈ 5.9 GiB > the 4 GiB FAT32 limit, so raw device write only. |
+
+**Not promised:** pen input inside Android apps (waydroid#423); Play Integrity DEVICE/STRONG (banking/DRM
+apps refuse); the 8 MP rear camera; Intel-ROG fan curves; hibernation.
+
+---
+
+## 1. Hardware × driver matrix
+
+Kernel options verified in the **Fedora 44 kernel config** (`CONFIG_VMD=m`, `CONFIG_ANDROID_BINDER_IPC=y`, `CONFIG_HID_ASUS=m`, `I2C_HID_ACPI=m`, `HID_MULTITOUCH=m`, `CONFIG_DRM_NOVA` **unset**, `CONFIG_ZRAM=m`).
+
+| Subsystem | Facts | Userspace | Verification |
+|---|---|---|---|
+| Touchscreen | I²C-HID panel; drivers in-tree. Vendor still unidentified for 2022 SKUs | libinput/KWin | `libinput list-devices` |
+| Stylus | ASUS Pen SA201H, **MPP 2.0**, 4096 pressure + tilt; shows up as a libinput tablet tool | Plasma **Drawing Tablet KCM** (pressure curve, area mapping, button remap, calibration since 6.3); `KWIN_WAYLAND_EMULATE_TABLET=1` for apps without tablet support | draw in Xournal++/Rnote; check KCM sees the pen |
+| Folio keyboard | USB HID `0b05:1a30`, mainline quirk `USB_DEVICE_ID_ASUSTEK_ROG_Z13_FOLIO` → touchpad handled by `hid-multitouch` | — | keys + touchpad + hot-reattach |
+| Tablet mode | Hinge sensor (`HID_SENSOR_CUSTOM_INTEL_HINGE=m`); Plasma Touch Mode is triggered **only** by libinput's tablet-mode switch | Plasma Touch Mode = "Automatically enable as needed" | `libinput debug-events` shows `SW_TABLET_MODE`; detach the folio and watch Touch Mode |
+| Fingerprint | ELAN `04f3:0c6e` (in libfprint's *development* list) | `fprintd` + `libfprint` | `lsusb`; `fprintd-enroll` |
+| MUX / GPU modes | Kernel exposes `/sys/devices/platform/asus-nb-wmi/gpu_mux_mode` (0 = dGPU-only, 1 = hybrid) **but it is deprecated**; Linux 6.19+ replaces it with **`asus-armoury`** (`/sys/class/fw_attributes/*`), which also carries `ppt_pl1_spl` / `ppt_pl2_sppt` | `asusctl` for profiles; MUX via armoury attribute (§4.3) | `ls /sys/class/fw_attributes/`, `cat /sys/firmware/acpi/platform_profile` |
+| Power | `platform_profile` written by **both** `asusd` and tuned-ppd → second writer degrades it to `custom` | `asusctl` + `tuned-ppd`, with `change_platform_profile_on_{ac,battery}=false` and `platform_profile_linked_epp=false` in `/etc/asusd/asusd.ron` | `cat /sys/firmware/acpi/platform_profile`, `powerprofilesctl`/`tuned-adm` |
+| dGPU | RTX 3050 (GA107); nouveau blacklisted; NOVA not enabled in F44 | uBlue/negativo17 nvidia-open userspace | `nvidia-smi`; driver ≥ 595.71 for Track B |
+| iGPU | Iris Xe; feeds Waydroid Track A | `libva-intel-media-driver`, `mesa-vulkan-drivers` | `vainfo` |
+| GPU/compositor | **Plasma 6.7's Vulkan path can put `kwin_wayland` on the dGPU** (battery/heat regression, KDE bug 521914) | env guard: `KWIN_DISABLE_VULKAN=1` (verify on hardware); `KWIN_DRM_DEVICES` to pin the primary GPU | `nvidia-smi pmon` while idle on the desktop |
+| Audio | Realtek **ALC285** (`1043:1c42`), no mainline quirk; legacy HDA expected, not SOF | `alsa-ucm-conf` | speakers/mic test |
+| Wi-Fi/BT | Wi-Fi 6E + BT 5.2; **chip unidentified** for 2022 SKUs (`iwlwifi`/`mt7922` both in-tree) | `linux-firmware` | `lspci -nnk` |
+| Suspend | s2idle; owner reports of suspend/hibernation trouble on this generation | — | 5× suspend/resume cycle |
+| Swap | **No disk swap**; zram-generator default `zram-size = min(ram, 8192)` → 8 GiB zram on 16 GB | `zram-generator` | `zramctl` |
+| Battery | 56 Wh; ~6 h light use measured on this class | — | `upower -i` |
+
+---
+
+## 2. Repository layout
+
+```
+z13-fedora/
+├── recipes/
+│   ├── recipe.yml            # Track A: kinoite-main + stock waydroid
+│   ├── recipe-dgpu.yml       # Track B: patched waydroid + waydroid-nvidia
+│   ├── system.yml            # files/, systemd, os-release
+│   ├── asus.yml              # COPR asus-linux → asusctl (+ asusd config)
+│   ├── nvidia.yml            # akmods: base main, nvidia-driver nvidia-open
+│   ├── waydroid.yml          # stock waydroid + SELinux policy
+│   ├── waydroid-dgpu.yml     # stage-built patched waydroid + waydroid-nvidia stack
+│   ├── desktop.yml           # Plasma defaults, fonts, file associations, env guards
+│   └── apps.yml              # daily-driver RPMs + system Flatpaks
+├── files/system/
+│   ├── etc/xdg/plasma-workspace/env/z13-guards.sh   # KWIN_DISABLE_VULKAN etc. (verified first)
+│   ├── etc/asusd/asusd.ron                          # no double-writing of platform_profile
+│   ├── usr/libexec/z13/{waydroid-setup,verify,oobe}.sh
+│   └── usr/share/ublue-os/just/99-z13.just
+├── .github/workflows/{build.yml,iso.yml}
+└── PLAN.md
+```
+
+---
+
+## 3. Recipes
+
+`recipes/recipe.yml`
+
+```yaml
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+name: z13-fedora
+description: Fedora Atomic (KDE Plasma) for the ASUS ROG Flow Z13 2022 GZ301ZC — asusctl, NVIDIA RTX 3050 (open kmod), Waydroid Android 16 + GMS, ONLYOFFICE.
+base-image: ghcr.io/ublue-os/kinoite-main
+image-version: 44
+
+modules:
+  - from-file: system.yml
+  - from-file: asus.yml
+  - from-file: nvidia.yml
+  - from-file: waydroid.yml
+  - from-file: desktop.yml
+  - from-file: apps.yml
+  - type: signing
+```
+
+`recipes/asus.yml`
+
+```yaml
+---
+modules:
+  - type: dnf
+    repos:
+      copr:
+        - lukenukem/asus-linux      # F44 chroot live; asusctl 6.3.8-2
+    install:
+      skip-unavailable: true
+      packages:
+        - asusctl
+        # NOT: supergfxctl (deprecated + broken MUX path on ≥6.19 kernels)
+        # NOT: rog-control-center (crash report filed against GZ301ZC)
+        # NOT: power-profiles-daemon (conflicts with Fedora 44's tuned-ppd)
+```
+
+`recipes/nvidia.yml`
+
+```yaml
+---
+modules:
+  - type: akmods
+    base: main
+    nvidia-driver: nvidia-open
+```
+
+`recipes/desktop.yml` — the out-of-box layer (§7):
+
+```yaml
+---
+modules:
+  - type: dnf
+    install:
+      skip-unavailable: true
+      packages:
+        - plasma-keyboard                  # Plasma 6.6+ OSK (watch KDE bug 522675)
+        - maliit-keyboard                  # fallback OSK if plasma-keyboard misbehaves
+        - google-carlito-fonts             # Calibri-metric (ONLYOFFICE fidelity)
+        - google-crosextra-caladea-fonts   # Cambria-metric
+        - google-arimo-fonts               # Arial-metric
+        - liberation-fonts                 # Arial/Times/Courier-metric
+        - tuned tuned-ppd                  # Fedora 44 default power stack
+  - type: systemd
+    system:
+      # verify exact unit names at first build: `systemctl list-unit-files | grep -E 'tuned|asusd'`
+      enabled:
+        - tuned-ppd.service                # tuned is the daemon; tuned-ppd is the PPD-compatible API layer
+        - asusd.service
+      disabled:
+        - waydroid-container.service       # on demand only
+```
+
+`recipes/apps.yml`
+
+```yaml
+---
+modules:
+  - type: default-flatpaks
+    configurations:
+      - notify: true
+        scope: system
+        install:
+          - org.onlyoffice.desktopeditors   # 9.4.0, deployed on first boot (needs network)
+          - com.github.flxzt.rnote
+          - com.github.xournalpp.xournalpp
+          - org.gnome.Loupe
+      - scope: user
+```
+
+`recipes/waydroid.yml` / `waydroid-dgpu.yml`: as in the previous revision (stock `waydroid` + `waydroid-selinux`
+for Track A; stage-built patched waydroid + attested `waydroid-nvidia` v0.1.2 tarballs for Track B).
+
+---
+
+## 4. Layer rationale (deltas from the previous revision)
+
+### 4.1 ASUS: MUX and power, corrected for kernel 7.2
+
+- `supergfxctl` is **not** shipped: asus-armoury (merged for Linux 6.19) deprecates the old
+  `/sys/devices/platform/asus-nb-wmi/*` attributes, supergfxctl 5.2.7 still reads the old paths, and
+  forcing `AsusMuxDgpu` on ≥ 6.19 breaks `supergfxd`. **`cardwire` does not do MUX at all** — it is an
+  eBPF-LSM tool that blocks/unblocks the dGPU (Integrated/Hybrid/Manual).
+- The MUX is therefore driven by writing the **asus-armoury attribute** (expected under
+  `/sys/class/fw_attributes/`) — an M4B-0 spike item, since the exact path could not be verified from
+  documentation alone. `gpu_mux_mode` (legacy sysfs) remains a fallback.
+- Power: `asusd` and the PPD provider both write `platform_profile` and EPP. Following asusctl's MANUAL,
+  the image ships `/etc/asusd/asusd.ron` with `change_platform_profile_on_ac: false`,
+  `change_platform_profile_on_battery: false`, `platform_profile_linked_epp: false`, leaving tuned-ppd in
+  charge. TLP is not installed (documented conflict with PPD providers). `thermald` is optional.
+
+### 4.2 NVIDIA — unchanged verdict
+
+`akmods` → `nvidia-open` for the stock `main` kernel; kargs written by the module; no `NVreg_*` tuning on
+Ampere; MOK enrolment only if Secure Boot is re-enabled. For Track B the driver must read **≥ 595.71**.
+
+### 4.3 Android, two tracks — with the Windows-free MUX consequence
+
+Track A (default) is unchanged: Fedora `waydroid` + Android 16 QPR2 GAPPS from WayDroid-ATV, iGPU
+rendering, Play-Protect certification, ARM translation via `waydroid_script`.
+
+Track B (dGPU) now has **one hard prerequisite that can no longer be satisfied from Windows**: the
+compositor must run on NVIDIA, which on this chassis requires **MUX → dGPU-only mode**. Options, in order:
+
+1. Write the asus-armoury MUX attribute from Linux (spike; expected to work on kernel 7.2, path unverified).
+2. Legacy `/sys/devices/platform/asus-nb-wmi/gpu_mux_mode` if still present on this kernel.
+3. Temporary Windows on an **external USB SSD** solely to flip the MUX once (the setting lives in the EC and
+   persists) — ugly, only if (1)/(2) fail and you still want Track B.
+
+If none work, Track B is parked and documented as blocked; Track A remains fully functional. All the other
+Track B mechanics (patched Waydroid, venus proxy, `run-probe.sh`, MUX-dGPU mode, rollback via a second
+deployment) are unchanged from the previous revision.
+
+### 4.4 ONLYOFFICE and fonts
+
+Flathub `org.onlyoffice.desktopeditors` **9.4.0** as a system Flatpak. With Windows gone there are no
+Microsoft fonts on the machine, so the image ships the metric-compatible set (`google-carlito-fonts`,
+`google-crosextra-caladea-fonts`, `google-arimo-fonts`, `liberation-fonts`) and associates
+`.docx/.xlsx/.pptx` with ONLYOFFICE — this is the single biggest out-of-box fidelity win for documents.
+
+### 4.5 Waydroid desktop integration (new)
+
+Fedora's `waydroid` 1.6.3 ships a **"Waydroid" submenu** in the app menu (`X-WayDroid-App` category,
+`/etc/xdg/menus/applications-merged/waydroid.menu`) with stop/re-initialise actions; per-app launchers
+appear in `~/.local/share/applications/*waydroid*`; 1.6.0+ forwards Android notifications (image
+dependent) and hides system apps. Clipboard sync is flaky (upstream issues 2341/892/1131) and file
+exchange is via a shared folder, not drag-and-drop — document this rather than promise it.
+
+---
+
+## 5. Disk layout — isolating the kernel
+
+### 5.1 What Fedora Atomic gives you (verified)
+
+- Fedora Atomic is **GRUB2 + BLS entries with a static, bootupd-managed config** (F41 change, F42 auto-migration).
+- **`/boot` was raised from 1 GiB to 2 GiB in Fedora 43 across all Anaconda configurations**, including Atomic.
+- The kernel + initramfs live in `/boot`; the OS payload lives in the root filesystem, which on F42+ is
+  **composefs-backed** (the ostree repo stays at `/sysroot/ostree`, `/` itself is tiny and reads ~100 % full).
+- **`/etc` can never be a separate partition** (3-way merged machine state), **`/home` is a symlink to
+  `/var/home`** on Atomic, and there is exactly one `/var`.
+- Anaconda on Atomic accepts manual mounts only for `/`, `/boot`, `/boot/efi`, `/var` and subpaths of
+  `/var` — and it will *not* validate a bad layout. Fedora's own docs still call Atomic manual
+  partitioning "not fully functional" (tracker #110) and recommend automatic partitioning.
+- **LUKS forces a separate `/boot`**: GRUB cannot read an encrypted `/boot`, so bootc's guidance is to do
+  LUKS independently (Anaconda `--encrypted` + `systemd-cryptenroll` post-install) with `/boot` and the
+  ESP left plaintext.
+
+### 5.2 v1 layout (single boot, 512 GB) — recommended
+
+| # | Mount | Size | FS | Flags | Why |
+|---|---|---|---|---|---|
+| 1 | `/boot/efi` (ESP) | **1 GiB** (2 GiB if you plan §5.3) | vfat | `boot,esp` | Fedora warns below 500 MiB; bootc default ESP ≥ 512 MiB. The ESP holds shim + GRUB, and later possibly UKIs. |
+| 2 | `/boot` | **2 GiB** | ext4 | `nosuid,nodev` if you set flags manually | **This is the kernel isolation.** Kernel, initramfs and BLS entries live here, outside the OS payload; it is the Fedora default size and mandatory with LUKS. |
+| 3 | `/` | **100 GiB** | btrfs (or xfs) | — | Holds `/sysroot/ostree` + composefs images for the running and previous deployment (each a few GB). 100 GiB is comfortable, not tight. |
+| 4 | `/var` | **remainder (~380 GiB)** | xfs or ext4 | — | Machine state that must survive a reinstall: `/var/home` (your data), `/var/lib/containers`, VMs, Waydroid's 1.5 GB of Android images, logs. |
+
+Notes:
+- If you prefer one filesystem, let `/var` stay a btrfs subvolume/bind of root — but then a reinstall
+  destroys your data, and you lose the blast-radius isolation that a separate partition gives.
+- **No swap partition.** Fedora's zram-generator gives 8 GiB zram on 16 GB RAM; hibernation would need a
+  swap ≥ RAM plus resume configuration and is out of scope (suspend is already a risk item).
+- Anaconda's *automatic* partitioning creates a working layout of the same shape (ESP + 2 GiB `/boot` +
+  btrfs root); choose **manual** only if you want the explicit `/var` split above, and expect no validation
+  from the installer.
+
+### 5.3 Phase 2 — kernel as a single signed artifact (sealed/UKI layout)
+
+Fedora's Atomic maintainers shipped **sealed bootable-container images** (test images, announced 2026-04-28):
+`systemd-boot` as bootloader + a **Unified Kernel Image** (kernel + initrd + command line in one `.efi`)
+in the ESP + composefs root with **fs-verity**, everything signed for Secure Boot.
+
+| | v1 classic (this plan) | Phase 2 sealed |
+|---|---|---|
+| Partitions | ESP + `/boot` + `/` (+`/var`) | **ESP (2 GiB) + encrypted btrfs root**; no `/boot` |
+| Kernel artifact | `vmlinuz` + `initramfs` in `/boot`, GRUB/BLS | one UKI per deployment in the ESP (`/boot/EFI/Linux/<kver>.efi`) |
+| Verified boot | no (GRUB static config) | yes (systemd-boot + UKI both signed), requires Secure Boot **on** |
+| TPM2 unlock | possible but weaker (PCR 7 alone) | "reasonably secure by default" thanks to the verified chain |
+| Status | supported, what Anaconda/BCI installs today | **test images only**; no installer ISO (install via `bootc install to-filesystem --bootloader=systemd --composefs-backend` from a live environment); blueprint partitioning customizations disabled |
+| Initramfs | generic | per-vendor trimmed (`-intel`, `-nvidia`, …) to keep UKI size (and therefore boot time) sane |
+
+Recommendation: **do not adopt in v1** (it would fork the whole build pipeline and needs Secure Boot on,
+which we deliberately keep off while debugging). Do size the ESP at **2 GiB** if you want that migration to
+be a re-install rather than a repartition. Note that Fedora has explicitly said the classic split
+kernel+initramfs layout is not going away.
+
+### 5.4 Verify the layout after install
+
+```bash
+lsblk -f                       # expect esp vfat + /boot ext4 + / btrfs/xfs + /var
+findmnt /boot /boot/efi /var   # each a separate device
+bootc status; rpm-ostree status
+sudo ostree admin status       # deployments kept: max 2 bootable
+sudo ostree admin pin 0        # pin a known-good deployment before risky experiments
+```
+
+Deployment retention is **2 bootable deployments**; extra space per deployment is roughly the size of the
+image (`rpm-ostree cleanup --rollback` prunes; `ostree admin pin` protects).
+
+---
+
+## 6. Installation runbook (Linux-only, whole disk)
+
+### 6.1 Before you wipe (30–60 minutes, do not skip)
+
+| Step | Action | Why |
+|---|---|---|
+| 1 | Save the Windows key: `strings /sys/firmware/acpi/tables/MSDM` from any Linux live USB | The OEM licence lives in firmware; no key needed for a future Windows install, but record it anyway |
+| 2 | Confirm **ASUS Cloud Recovery** works: F2 at power → F7 (Advanced) → ASUS Cloud Recovery | It is a **firmware** feature, not a disk partition, so wiping is reversible and it works even after an SSD swap |
+| 3 | Update **BIOS/EC to v322** before wiping | ASUS ships Windows packages for this model; the `.CAP` inside can also be flashed with **EZ Flash** from a FAT32 USB, but doing it now is the least-friction moment |
+| 4 | Download the ASUS driver/BIOS archive for GZ301ZC to external storage | After the wipe, ASUS support pages are the only source; keep them offline |
+| 5 | Build & verify the ISO, write it to a **16 GB** USB with Fedora Media Writer (or `dd`) | The BlueBuild ISO is ≈ 5.9 GiB — **above the 4 GiB FAT32 file limit**, so raw device write is the only correct method |
+| 6 | Keep a Fedora live USB (stock Kinoite or Workstation) in your bag | Rescue, `wipefs`/`sgdisk` if the installer sees leftovers, and `efibootmgr` surgery |
+
+### 6.2 Firmware settings (F2 at power; F7 = Advanced; F10 = save; Esc or F8 = boot menu)
+
+| Setting | Value | Note |
+|---|---|---|
+| Fast Boot | **Disabled** | Boot → Fast Boot |
+| Secure Boot | **Disabled** (v1) | Security → Secure Boot → Secure Boot Control |
+| **VMD/RST** | **Disabled** (Advanced → VMD setup menu) | Documented cause of "no disk found" at install; no RAID use on this machine |
+| Boot order | USB first for the install, internal NVMe afterwards | Esc-held-at-power or F8 in the UEFI UI |
+
+### 6.3 Anaconda (the BCI ISO is an **offline** installer)
+
+The ISO embeds your image as an OCI layout and pre-seeds the payload
+(`ostreecontainer --url=/run/install/repo/<image> --transport=oci`), so **Installation Source is already
+set** and no network is needed to install.
+
+| Screen | What to choose |
+|---|---|
+| Language / keyboard / time | your locale (KDE variant of the ISO asks for the **user account during installation**, not at first boot) |
+| Installation Destination | the single NVMe → *Automatic* for a first install, or *Manual* for the §5.2 layout |
+| Reclaim space | **Delete all** (this is where the old Windows/recovery partitions die) or `wipefs`/`sgdisk -Z` from a live USB first |
+| Encryption | **Encrypt my data** → LUKS2 passphrase. `/boot` stays plaintext by design |
+| Root password | set one (or leave root locked and use `sudo` from your user) |
+| User creation | create your account here (Kinoite variant) |
+| Software selection | leave as-is |
+
+> The installer will not validate Atomic-incompatible manual layouts — if you go manual, use exactly the
+> mount set from §5.2.
+
+### 6.4 First boot (see §7 for the checklist)
+
+Post-install, the ISO's `%post` runs
+`bootc switch --mutate-in-place --transport registry ghcr.io/<owner>/z13-fedora:<tag>`, so **future updates
+come from your registry**, not from the ISO. Then: Plasma Welcome → `ujust z13-oobe` → verify.
+
+### 6.5 Updates, rollback, reinstall
+
+```bash
+bootc update && systemctl reboot        # or ujust update
+sudo bootc rollback                     # or pick the previous entry in the boot menu
+sudo ostree admin pin 0                 # before experiments
+```
+
+**Reinstall / repair later:** keep the `/var` partition and **do not reformat it**; Anaconda's automatic
+reclaim path destroys it, so choose manual partitioning and mount the existing `/var` in place. `bootc`
+offers `bootc install to-existing-root` (reinitializes `/boot` and the ESP, leaves the rest of root,
+including `/var`, intact) and the newer `system-reinstall-bootc` wrapper — both expect a live environment,
+not the installer ISO.
+
+Firmware updates after the wipe: ASUS publishes a Windows-only BIOS package for this model, but the `.CAP`
+flashes via **EZ Flash** from a FAT32 USB; `fwupdmgr` coverage for GZ301ZC is unverified — check
+`fwupdmgr get-devices` once installed.
+
+---
+
+## 7. Out-of-box experience (Track A)
+
+### 7.1 What must work within the first 30 minutes
+
+| # | Check | Command / action |
+|---|---|---|
+| 1 | Plasma 6.7 session on Wayland, panel at 1920×1200 @ 120 Hz | System Settings → Display; `kscreen-doctor -o` |
+| 2 | Touch + pen pressure | `libinput debug-events`; draw in Xournal++ |
+| 3 | Folio keyboard + touchpad, hot-reattach | detach/attach; Touch Mode flips (`SW_TABLET_MODE`) |
+| 4 | Audio out/in | `aplay -l`, PipeWire device test |
+| 5 | Wi-Fi/BT, fingerprint | `fprintd-enroll` |
+| 6 | Platform profiles + battery limit | `asusctl profile -P`, `asusctl battery`, `cat /sys/firmware/acpi/platform_profile` |
+| 7 | dGPU present, iGPU accelerates | `nvidia-smi`; `vainfo` |
+| 8 | kwin is **not** idling on the dGPU (§4.1 guard) | `nvidia-smi pmon` at idle; if it is, keep `KWIN_DISABLE_VULKAN=1` |
+| 9 | ONLYOFFICE installed and associated | open a `.docx` from Files |
+| 10 | Android apps in the menu, Play Store working | `ujust z13-waydroid-setup`; then `waydroid status` |
+
+### 7.2 Baked-in defaults (what the image ships so you do not have to fiddle)
+
+- **Fonts**: Carlito/Caladea/Arimo/Liberation (metric-compatible with Calibri/Cambria/Arial) — documents
+  from Windows users render with correct metrics.
+- **File associations**: `.docx/.xlsx/.pptx` → ONLYOFFICE.
+- **Power**: `tuned-ppd` + `asusd` configured to not fight over `platform_profile`; no TLP.
+- **Compositor guards**: `/etc/xdg/plasma-workspace/env/z13-guards.sh` (starts with `KWIN_DISABLE_VULKAN=1`
+  pending §7.1-8 verification; `KWIN_DRM_DEVICES` pinning documented).
+- **OSK**: `plasma-keyboard` (Plasma 6.6+ OSK) with `maliit-keyboard` as fallback — note the open 6.7
+  regression where the virtual keyboard can stick to "always show" (KDE bug 522675); the guard file can
+  set `KWIN_IM_SHOW_ALWAYS=1` deliberately if you'd rather have it always on in tablet mode.
+- **Waydroid**: submenu with per-app launchers, `persist.waydroid.multi_windows true`, notification
+  forwarding (image dependent), shared-folder file exchange documented (no DnD).
+- **Recovery tooling**: `ujust z13-verify` (the §7.1 checklist as a script), `ujust z13-restore-waydroid`,
+  documented boot-menu rollback.
+
+### 7.3 Needs the network on first boot
+
+The `default-flatpaks` mechanism deploys system Flatpaks (ONLYOFFICE, Rnote, Xournal++) on **first boot**,
+so the machine needs internet once. Everything else — the OS, NVIDIA, asusctl, Waydroid packages, fonts —
+is already in the image.
+
+---
+
+## 8. Risk register (updated)
+
+| # | Risk | Evidence | Mitigation |
+|---|---|---|---|
+| R1 | **MUX cannot be switched from Linux** (no Windows fallback) | asus-armoury deprecates the old attribute on ≥ 6.19; supergfxctl 5.2.7 broken there; cardwire has no MUX; exact armoury path unverified | M4B-0 spike: enumerate `/sys/class/fw_attributes/`; park Track B if it fails; last resort = one-time Windows USB to flip the EC setting |
+| R2 | **Suspend/hibernation unreliable** on this generation | owner reports; s0ix quirks on sibling models | test 5+ s2idle cycles; no hibernation; no `mem_sleep_default` hacks |
+| R3 | **Atomic manual partitioning is "not fully functional"** and unvalidated | Fedora Atomic docs, tracker #110 | prefer automatic partitioning; if manual, use exactly §5.2 and verify with §5.4 |
+| R4 | **Firmware updates post-wipe depend on EZ Flash** (no Windows, LVFS coverage unverified) | ASUS support page lists Windows packages; `fwupdmgr` unverified | keep the BIOS `.CAP` on a FAT32 USB; check `fwupdmgr get-devices` |
+| R5 | **Plasma 6.7 regressions**: OSK "always shows" (bug 522675) and kwin on dGPU via Vulkan (bug 521914) | KDE bug tracker | env guards shipped; `maliit-keyboard` fallback; verify at M1 |
+| R6 | **Two writers of `platform_profile`** (asusd vs tuned-ppd) degrade it to `custom` | asusctl MANUAL; kernel ABI docs | ship `asusd.ron` with profile/Epp coupling disabled |
+| R7 | Fingerprint (`04f3:0c6e`) may not enrol | listed only in libfprint's development list | verify; document if unsupported |
+| R8 | Audio (ALC285) untested for this family | no mainline quirk | verify speakers/mic early; targeted quirk only if needed |
+| R9 | akmods/NVIDIA build lag → CI failure | documented module failure mode | pinned `image-version: 44`; failures are build-time |
+| R10 | Track B incompatibility with Android 16 community images | unverified pairing | test A16 first, stock A13 GAPPS as fallback |
+| R11 | Waydroid project is thinly maintained; pen input in Android broken | issue commentary; waydroid#423 | document; host-side ink workflow |
+| R12 | Unknown Wi-Fi/BT chip and touchscreen vendor for 2022 SKUs | no hardware probe available | probe at M1 |
+| R13 | 16 GB RAM shared by Plasma + Waydroid + browser | hardware | zram 8 GiB, Waydroid resolution caps, avoid heavy VMs |
+| R14 | First boot needs network for Flatpaks | `default-flatpaks` design | documented; nothing else needs the network |
+
+---
+
+## 9. Milestones
+
+| # | Milestone | Acceptance |
+|---|---|---|
+| **M0** | Repo + CI green | Both images publish; `cosign verify` passes |
+| **M0.5** | Pre-wipe prep | MSDM key saved; Cloud Recovery confirmed; BIOS v322 flashed; 16 GB USB written and checksum-verified |
+| **M1** | Installs and boots (whole disk, LUKS) | Anaconda install completes offline; §5.4 layout verification passes; Plasma Wayland at 120 Hz; §7.1 items 2–8 green |
+| **M2** | ASUS layer | profiles switch; `platform_profile` shows the right value (not `custom`); battery limit applies |
+| **M3** | NVIDIA layer | `nvidia-smi` OK; driver ≥ 595.71; PRIME offload works; external display works; idle desktop is **not** on the dGPU |
+| **M4A** | Android 16 GAPPS on iGPU | `waydroid status` RUNNING; Play Store installs; certified; multi-window; touch OK |
+| **M4B-0** | MUX spike | A writable MUX attribute found on kernel 7.2; otherwise Track B parked |
+| **M4B** | dGPU Android (experimental) | `dumpsys SurfaceFlinger \| grep GLES` shows `ANGLE (NVIDIA … Venus …)`; playable; host stable 30 min; Track A deployment still bootable |
+| **M5** | ONLYOFFICE | opens `.docx`/`.xlsx` with correct metrics; associations set |
+| **M6** | Installer kit | two ISOs (A/B) with checksums; clean UEFI-VM install reproduces M1–M5; rollback verified |
+| **M7** | Reinstall drill | Reinstall over the existing system with `/var` preserved (manual partitioning, no reformat) — data intact |
+| **M8** | Upkeep | two weeks of unattended rebuilds; F44 → F45 rehearsal in a VM (F45 lands 2026-10-20) |
+
+---
+
+## 10. Open questions
+
+1. Where exactly does kernel 7.2 expose the ASUS MUX (`/sys/class/fw_attributes/*`)? Answer on hardware (M4B-0) — this is the only thing standing between you and Track B.
+2. Does the ELAN fingerprint enrol on this unit?
+3. Do the speakers need an ALC285 quirk?
+4. Does `KWIN_DISABLE_VULKAN=1` materially change idle dGPU use on Plasma 6.7.5?
+5. Wi-Fi chip identity (documentation only).
+
+---
+
+## 11. Sources (primary)
+
+- Fedora Atomic layout/install: `docs.fedoraproject.org/en-US/atomic-desktops/{installation,updates-upgrades-rollbacks}`, Fedora Change *2 GiB /boot partition* (`fedoraproject.org/wiki/Changes/2GbootPartition`), *FedoraSilverblueBootupd*, "What's new for Fedora Atomic Desktops in Fedora 42/43" (Fedora Magazine), tracker issue #110
+- bootc: `bootc.dev/bootc/{filesystem,loaders,install-to-disk,rollback,filesystem-encryption}`, `bootc.dev/bootc/man/bootc-install-to-disk.8.html`
+- Sealed/UKI: Fedora Magazine *Sealed Fedora Atomic Desktop bootable container images* (2026-04-28), `github.com/travier/fedora-atomic-desktops-sealed` (`repart.d/01-esp.conf`, `02-sysroot.conf`)
+- BlueBuild/BCI: `blue-build.org/how-to/generate-iso/`, `blue-build/cli` `generate_iso.rs`, `JasonN3/build-container-installer` (`lorax_templates/install_set_installer.tmpl`, wiki), issue #661 (ISO size)
+- Anaconda/RHEL install docs: account-creation-by-variant, Reclaim Space semantics, FAT32 4 GiB limit
+- Fedora 44 KDE/Plasma: `packages.fedoraproject.org` (plasma-desktop 6.7.5, plasma-keyboard, maliit-keyboard, tuned-ppd), KDE bug 522675 (OSK) and 521914 (kwin Vulkan), KWin wiki env vars
+- ASUS/kernel: `Documentation/ABI/testing/sysfs-platform-asus-wmi` (gpu_mux_mode deprecated → asus-armoury), asusctl MANUAL (`asusd.ron`), `gitlab.com/asus-linux/supergfxctl` issue 178, `github.com/OpenGamingCollective/cardwire`, ASUS support FAQs (F2/F7/F10/Esc boot menu, Fast Boot, Secure Boot, VMD, Cloud Recovery, EZ Flash), ASUS GZ301ZC BIOS v322 page
+- Waydroid: `docs.waydro.id`, upstream `data/waydroid.menu`, Fedora `waydroid` spec, WayDroid-ATV release `20260717`, `Shiro836/waydroid-nvidia` (README, install-manual, v0.1.2)
+- Flathub API: `org.onlyoffice.desktopeditors` 9.4.0, `com.github.flxzt.rnote`, `com.github.xournalpp.xournalpp`, `org.gnome.Loupe`

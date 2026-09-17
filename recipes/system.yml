@@ -1,0 +1,11 @@
+---
+# Root filesystem overlay. Everything under files/system/ is copied verbatim into the image root
+# (mirrored paths), so files/system/usr/libexec/z13/x.sh lands at /usr/libexec/z13/x.sh.
+#
+# Note: the files module must NOT write into directories that ostree later symlinks into /var
+# (/home, /opt, /srv, /root, /usr/local, /mnt, /tmp).
+modules:
+  - type: files
+    files:
+      - source: system
+        destination: /

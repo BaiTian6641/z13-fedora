@@ -1,0 +1,13 @@
+---
+# Runs near the end of the build on purpose: changing os-release ID earlier can break
+# COPR/repo identification for later modules. ID_LIKE=id fedora keeps Fedora tooling working.
+modules:
+  - type: os-release
+    properties:
+      NAME: "Z13 Fedora"
+      ID: z13-fedora
+      ID_LIKE: "fedora"
+      PRETTY_NAME: "Z13 Fedora 44 (KDE Atomic)"
+      VARIANT: "Z13 Fedora"
+      VARIANT_ID: z13-fedora
+      DEFAULT_HOSTNAME: "z13"

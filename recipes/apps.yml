@@ -1,0 +1,15 @@
+---
+# Applications. System-scope Flatpaks are deployed by a first-boot service, so the machine needs
+# network access once after installation (the OS itself, NVIDIA, asusctl and Waydroid are already
+# baked into the image).
+modules:
+  - type: default-flatpaks
+    configurations:
+      - notify: true
+        scope: system
+        install:
+          - org.onlyoffice.desktopeditors   # 9.4.0
+          - com.github.flxzt.rnote          # pen/ink notes
+          - com.github.xournalpp.xournalpp  # pen/ink notes + PDF annotation
+          - org.gnome.Loupe                 # image viewer (KDE ships Gwenview too)
+      - scope: user                         # Flathub remote available to the user as well

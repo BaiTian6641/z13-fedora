@@ -1,0 +1,15 @@
+---
+# Waydroid ships in Fedora proper (1.6.3-2 for F43/44/45) with a SELinux subpackage; the Android
+# images are downloaded at first run, not packaged. No kernel work is needed: Fedora's kernel has
+#     CONFIG_ANDROID_BINDER_IPC=y, CONFIG_ANDROID_BINDERFS=y,
+#     CONFIG_ANDROID_BINDER_DEVICES="binder,hwbinder,vndbinder"
+# and the RPM ships dev-binderfs.mount plus a patched waydroid-container.service.
+#
+# Track A renders on the Intel iGPU (Waydroid's gpu.py skips NVIDIA render nodes by design).
+# See recipes/waydroid-dgpu.yml (to be added at milestone M4B) for the experimental dGPU stack.
+modules:
+  - type: dnf
+    install:
+      packages:
+        - waydroid
+        - waydroid-selinux

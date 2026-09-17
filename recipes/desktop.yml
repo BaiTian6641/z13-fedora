@@ -1,0 +1,32 @@
+---
+# KDE Plasma desktop layer for a touch/pen tablet.
+#
+# Power stack: Fedora 44 uses tuned/tuned-ppd as the power-profiles-daemon provider
+# (Fedora 41 change) — installing power-profiles-daemon alongside it conflicts. asusd also writes
+# platform_profile/EPP, so usr/libexec/z13/oobe.sh disables that coupling in /etc/asusd/asusd.ron
+# to keep one writer in charge.
+modules:
+  - type: dnf
+    install:
+      skip-unavailable: true
+      packages:
+        # on-screen keyboard: plasma-keyboard is the Plasma 6.6+ OSK; maliit is the fallback if
+        # the 6.7 regressions (KDE bug 522675) bite on this image
+        - plasma-keyboard
+        - maliit-keyboard
+        # metric-compatible fonts so documents from Windows users keep their layout in ONLYOFFICE
+        - google-carlito-fonts            # Calibri metrics
+        - google-crosextra-caladea-fonts  # Cambria metrics
+        - google-arimo-fonts              # Arial metrics
+        - liberation-fonts                # Arial/Times/Courier metrics
+        - tuned
+        - tuned-ppd
+  - type: systemd
+    system:
+      # At build time these units exist because the packages above (and asusctl) are installed first.
+      enabled:
+        - tuned-ppd.service
+        - asusd.service
+      disabled:
+        # Waydroid is started on demand (ujust z13-waydroid-setup), not at every boot.
+        - waydroid-container.service
