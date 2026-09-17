@@ -118,17 +118,6 @@ jobs:
           fi
           podman --version
 
-      - name: Install the BlueBuild CLI
-        run: |
-          set -euo pipefail
-          # Pinned to the same tag the publishing action defaults to (its CLI_VERSION_TAG
-          # is `v0.9`), so a floating `latest` cannot silently diverge from what publishes.
-          CLI_IMAGE="ghcr.io/blue-build/cli:v0.9-installer"
-          sudo docker create --name blue-build-installer "${CLI_IMAGE}"
-          sudo docker cp blue-build-installer:/out/bluebuild /usr/bin/bluebuild
-          sudo docker rm blue-build-installer
-          bluebuild --version
-
       - name: Log in to GHCR (only needed while the image package is private)
         run: |
           set -uo pipefail
@@ -138,9 +127,8 @@ jobs:
           if command -v podman >/dev/null; then
             echo "${TOKEN}" | podman login ghcr.io -u "${ACTOR}" --password-stdin || true
           fi
-          # The ISO step below runs `sudo bluebuild generate-iso`, so it pulls the image as root -
-          # with root's own auth files, which the logins above do not touch. Without these, a private
-          # package (the default for images pushed with GITHUB_TOKEN) fails to pull.
+          # The ISO step below runs the builder under sudo, so it works as root - with root's own
+          # auth files, which the logins above do not touch.
           echo "${TOKEN}" | sudo docker login ghcr.io -u "${ACTOR}" --password-stdin || true
           if command -v podman >/dev/null; then
             echo "${TOKEN}" | sudo podman login ghcr.io -u "${ACTOR}" --password-stdin || true
@@ -163,23 +151,51 @@ jobs:
           OWNER="${GITHUB_REPOSITORY_OWNER,,}"
           cosign verify --key cosign.pub "ghcr.io/${OWNER}/${IMAGE}:${TAG}"
 
-      - name: Build ISO
+      # `bluebuild generate-iso` cannot work here: the CLI pins build-container-installer v1.4.0
+      # (utils/src/constants.rs, unchanged on main), and BCI only gained Fedora 44 support in v1.5.0
+      # ("Upgrade to fedora 44", PR #196, 2026-05-03) - which is why both ISO attempts died after
+      # pulling. This mirrors the CLI's own invocation (src/commands/generate_iso.rs) against v1.5.0;
+      # v1.5.0 also carries the >128-layer fix. Revert to `bluebuild generate-iso` if the CLI moves.
+      - name: Build ISO (BCI v1.5.0, pinned directly)
         env:
           IMAGE: ${{ inputs.image || 'z13-fedora' }}
           TAG: ${{ inputs.tag || 'latest' }}
         run: |
           set -euo pipefail
           OWNER="${GITHUB_REPOSITORY_OWNER,,}"
-          # include the image commit so repeat builds on the same day never collide
           SHA="${{ github.event.workflow_run.head_sha }}"
           ISO_NAME="${IMAGE}-${TAG}-$(date -u +%Y%m%d)-${SHA:0:7}.iso"
           [[ "$ISO_NAME" == *"-.iso" ]] && ISO_NAME="${IMAGE}-${TAG}-$(date -u +%Y%m%d)-manual.iso"
-          # --variant kinoite is the CLI default, but state it: this is what makes Anaconda ask for
-          # the user account during installation (as KDE requires) rather than at first boot.
-          # Tee so a failure leaves something readable: the runner's own log needs an authenticated
-          # API call, and this step is the only place the builder's output exists.
+          VERSION=$(awk '/^image-version:/{print $2; exit}' recipes/recipe.yml)
+          [ -n "${VERSION}" ] || { echo "::error::no image-version in recipes/recipe.yml"; exit 1; }
+          echo "building ${ISO_NAME} for Fedora ${VERSION} from ghcr.io/${OWNER}/${IMAGE}:${TAG}"
+
+          mkdir -p iso-out
+          # VARIANT=kinoite is what makes Anaconda ask for the user account during installation
+          # (as KDE requires) rather than at first boot. Tee so a failure leaves something readable:
+          # the runner's log needs an authenticated API call, this container's output does not exist
+          # anywhere else.
           set -o pipefail
-          sudo bluebuild generate-iso --iso-name "${ISO_NAME}" --variant kinoite image "ghcr.io/${OWNER}/${IMAGE}:${TAG}" 2>&1 | tee /tmp/iso.log
+          sudo podman run --rm --privileged \
+            -v "${PWD}/iso-out:/build-container-installer/build" \
+            -v dnf-cache:/cache/dnf/ \
+            -e VARIANT=kinoite \
+            -e ISO_NAME="build/${ISO_NAME}" \
+            -e DNF_CACHE=/cache/dnf \
+            -e WEB_UI=false \
+            -e "IMAGE_NAME=${IMAGE}" \
+            -e "IMAGE_REPO=ghcr.io/${OWNER}" \
+            -e "IMAGE_TAG=${TAG}" \
+            -e "VERSION=${VERSION}" \
+            -e "SECURE_BOOT_KEY_URL=https://github.com/ublue-os/bazzite/raw/main/secure_boot.der" \
+            -e "ENROLLMENT_PASSWORD=universalblue" \
+            ghcr.io/jasonn3/build-container-installer:v1.5.0 2>&1 | tee /tmp/iso.log
+
+          # BCI writes under its own build/ path inside the mount; normalise to the flat name the
+          # rest of the job (and the artifact upload) uses.
+          iso=$(find iso-out -maxdepth 3 -name '*.iso' -type f | head -1)
+          [ -n "${iso}" ] || { echo "::error::the builder reported success but produced no ISO"; exit 1; }
+          cp -f "${iso}" "./${ISO_NAME}"
           ls -lh "${ISO_NAME}"
           sha256sum "${ISO_NAME}" | tee "${ISO_NAME}-CHECKSUM"
 
