@@ -185,7 +185,7 @@ jobs:
             -v "${PWD}:/github/workspace" \
             -v /cache/dnf:/cache/dnf \
             ghcr.io/jasonn3/build-container-installer:v1.5.0 \
-            "${ISO_NAME}-Checksum" \
+            "/github/workspace/${ISO_NAME}-CHECKSUM" \
             ADDITIONAL_TEMPLATES="" \
             ARCH="x86_64" \
             DNF_CACHE="/cache/dnf" \
@@ -204,9 +204,11 @@ jobs:
             VARIANT="kinoite" \
             VERSION="${VERSION}" \
             WEB_UI="false" 2>&1 | tee /tmp/iso.log || rc=$?
+          # The Makefile's $(ISO_NAME)-CHECKSUM rule writes the checksum alongside the ISO, so both
+          # land in the workspace root where the artifact upload's globs expect them.
           if [ "${rc}" -eq 0 ] && [ -f "${ISO_NAME}" ]; then
             ls -lh "${ISO_NAME}"
-            sha256sum "${ISO_NAME}" | tee "${ISO_NAME}-CHECKSUM"
+            cat "${ISO_NAME}-CHECKSUM"
             exit 0
           fi
           [ "${rc}" -eq 0 ] && rc=1   # builder reported success but produced no ISO
