@@ -15,7 +15,7 @@ detachable 1-zone-RGB folio keyboard, ROG XG Mobile port. Latest ASUS BIOS for t
 
 | Axis | Decision | Rationale |
 |---|---|---|
-| Base image | `ghcr.io/ublue-os/kinoite-main:44` (KDE **Plasma 6.7.x**, kernel 7.2.x) | KDE first per your call; Kinoite is what the dGPU-Waydroid stack is tested against. |
+| Base image | `ghcr.io/ublue-os/kinoite-main:44` (KDE **Plasma 6.7.x** per the Fedora package page — confirm with `plasmashell --version`; the OSK/tablet notes in §7.2 assume 6.7 behaviour, kernel 7.2.x) | KDE first per your call; Kinoite is what the dGPU-Waydroid stack is tested against. |
 | Boot model | **Single boot, whole 512 GB disk, no Windows.** Layout isolates the kernel (§5) | Your call. Reversible later via firmware-level **ASUS Cloud Recovery** (§6.1). |
 | Kernel isolation | **Separate `/boot` (2 GiB, ext4)** holding kernel + initramfs + GRUB/BLS entries, plus ESP; root carries only the OS payload. Phase-2 option: sealed **systemd-boot + UKI** layout (§5.3) | Fedora Atomic is GRUB2 + BLS + bootupd with `/boot` split from root, and **LUKS forces the split anyway** because GRUB cannot read an encrypted `/boot`. |
 | Encryption | **LUKS2 on root** ("Encrypt my data" in Anaconda; `/boot` and ESP stay plaintext), TPM2 auto-unlock enrolled post-install | Laptop that travels. TPM2 binding documented via `systemd-cryptenroll --tpm2-pcrs=7:sha256`. |
@@ -529,6 +529,7 @@ must have its own ESP and `/boot`.
 | ujust surface | `z13-status`, `z13-verify`, `z13-oobe`, `z13-waydroid-setup`, `z13-mux`, `z13-gpu`, `z13-recovery-install`, `z13-recovery-status` |
 | CI | `build.yml` (daily + push + PR, recipe matrix) and `iso.yml` (offline installer ISO, checksum, release attach) |
 | Docs | this plan, now including the partition design (§5), the install runbook (§6) and the recovery tiers (§5.5) |
+| Hardware-risk probes | fingerprint: `04f3:0c6e` **is** in libfprint's supported-device list (ElanTech block, nothing Elan in the unsupported section) — so enrolment is plausible on the shipped `libfprint`, pending an on-metal test |
 | Pre-CI checks | `actionlint` + `shellcheck` clean; every RPM in the recipes verified to exist for Fedora 44 (this caught `liberation-fonts` not existing); `99-z13.just` parsed and dry-run with the real `just` 1.58 binary; both Waydroid OTA manifests fetched live and the resolved image names/sizes recorded in §4.3 |
 
 Two real bugs were caught by the smoke tests and fixed: a banner helper named `head()` shadowed the external
