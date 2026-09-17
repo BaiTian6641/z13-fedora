@@ -56,11 +56,16 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          # Expressions live in env, never in the run body: actionlint's embedded shellcheck sees
+          # the substituted script, and constructs around the placeholder get misjudged (SC2317
+          # called the whole decision flow unreachable; the real trigger was the placeholder).
+          IMAGE: ${{ inputs.image || 'z13-fedora' }}
+          TAG: ${{ inputs.tag || 'latest' }}
         run: |
           set -euo pipefail
           owner="${GITHUB_REPOSITORY_OWNER,,}"
-          image="${{ inputs.image || 'z13-fedora' }}"
-          tag="${{ inputs.tag || 'latest' }}"
+          image="${IMAGE:?}"
+          tag="${TAG:?}"
 
           # The triggering run's job list is only a proxy for "is there an image to embed". Test the
           # premise directly: can this tag be pulled anonymously? That is also exactly what the
