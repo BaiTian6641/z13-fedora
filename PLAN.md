@@ -444,7 +444,10 @@ flashes via **EZ Flash** from a FAT32 USB; `fwupdmgr` coverage for GZ301ZC is un
 ### 7.3 Needs the network on first boot
 
 The `default-flatpaks` mechanism deploys system Flatpaks (ONLYOFFICE, Rnote, Xournal++) on **first boot**,
-so the machine needs internet once. Everything else — the OS, NVIDIA, asusctl, Waydroid packages, fonts —
+so the machine needs internet once. Verified in the module source: v1 ships a `system-flatpak-setup` service
++ timer, v2 ships post-boot Nushell units under `post-boot/` — either way nothing is fetched by Flatpak
+during the image build, which is why the build has no Flathub dependency. Expect the apps to appear a few
+minutes after the first boot completes, not instantly. Everything else — the OS, NVIDIA, asusctl, Waydroid packages, fonts —
 is already in the image.
 
 ---
@@ -532,6 +535,9 @@ must have its own ESP and `/boot`.
 | CI | `build.yml` (daily + push + PR, recipe matrix) and `iso.yml` (offline installer ISO, checksum, release attach) |
 | Docs | this plan, now including the partition design (§5), the install runbook (§6) and the recovery tiers (§5.5) |
 | Hardware-risk probes | fingerprint: `04f3:0c6e` **is** in libfprint's supported-device list (ElanTech block, nothing Elan in the unsupported section) — so enrolment is plausible on the shipped `libfprint`, pending an on-metal test |
+| Upstream CI refs | every dependency resolves today: `blue-build/github-action@v1.11`, `ghcr.io/blue-build/cli:latest-installer`, `ghcr.io/ublue-os/akmods:main-44`, `ghcr.io/ublue-os/akmods-nvidia-open:main-44`, `ghcr.io/ublue-os/kinoite-main:{44,latest}` |
+| Layer-count limit | the ublue base carries **259 layers** and the build-container-installer the CLI pins (`v1.4.0`, Oct 2025) predates BCI PR #205 ("allow for images with more than 128 layers", merged 2026-07-13, whose body reads *"Ublue has over 128 layers, which prevents the image from being pulled with docker"*). `build_chunked_oci: true` + `max_layers: 128` therefore keep the image pullable for ISO generation |
+| Flatpak delivery | `default-flatpaks` v2 ships post-boot Nushell units, so the image build never talks to Flathub |
 | systemd unit names | verified against the packaging before they can fail a build: `tuned-ppd.service` (Fedora `tuned` spec), `asusd.service` (`BIN_D := asusd` in asusctl's Makefile), `waydroid-container.service` (Fedora `waydroid` spec). `asusd-user.service` is **not** enabled at build time: upstream's Makefile installs the `asusd-user` binary but has no rule for the unit file, so it is enabled at runtime by `z13-oobe` only if present |
 | Pre-CI checks | `actionlint` + `shellcheck` clean; every RPM in the recipes verified to exist for Fedora 44 (this caught `liberation-fonts` not existing); `99-z13.just` parsed and dry-run with the real `just` 1.58 binary; both Waydroid OTA manifests fetched live and the resolved image names/sizes recorded in §4.3 |
 
