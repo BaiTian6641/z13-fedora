@@ -73,11 +73,8 @@ jobs:
       # outside any action, so this is not optional.
       - uses: actions/checkout@v4
 
-      # Non-optional in the same way: the build holds the base image, the built image, the staging
-      # push of the unchunked image and chunkah's work simultaneously - roughly 3x the image size.
-      # The captured failure log from 44f10c1 shows the process dying silently mid-push with no error
-      # message, which is what disk exhaustion looks like; dropping this step when the action was
-      # replaced was a regression (the validation job kept it, which is why it never failed).
+      # Still worth having: the build holds the base image plus the built image, and the plain push
+      # streams ~4.4 GiB to the registry.
       - name: Maximize build space
         uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2
         with:
@@ -134,9 +131,6 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
           GH_TOKEN: ${{ github.token }}
           BB_BUILD_PUSH: "true"
-          BB_BUILD_CHUNKED_OCI: "true"
-          BB_BUILD_CHUNKED_OCI_MAX_LAYERS: "120"
-          BB_BUILD_REMOVE_BASE_IMAGE: "true"
           BB_REGISTRY: ghcr.io
           BB_REGISTRY_NAMESPACE: ${{ steps.ns.outputs.owner }}
           BB_USERNAME: ${{ github.repository_owner }}
@@ -303,9 +297,6 @@ jobs:
         env:
           # Same flags the publishing job passes through the action.
           BB_BUILD_PUSH: "false"
-          BB_BUILD_CHUNKED_OCI: "true"
-          BB_BUILD_CHUNKED_OCI_MAX_LAYERS: "120"
-          BB_BUILD_REMOVE_BASE_IMAGE: "true"
           BB_REGISTRY: ghcr.io
           BB_REGISTRY_NAMESPACE: ${{ steps.ns.outputs.owner }}
           GH_TOKEN: ${{ github.token }}
