@@ -301,7 +301,7 @@ Anaconda mount that filesystem at `/run/install/repo`, find its runtime image th
 `ostreecontainer --url=/run/install/repo/<image_name>` - the **embedded OCI payload resolves as well**, so a
 full **offline reinstall** works from the internal disk, with no USB stick and no network.
 
-Manage it with `ujust z13-recovery-install --latest` (fetches the newest release ISO), `--status`, `--remove`.
+Manage it with `ujust z13-recovery-install <file.iso>` (the normal path), `--status`, `--remove`. Note that `--latest`, which downloads the newest *release* ISO, cannot serve this pipeline: the installer is ~6 GiB and GitHub caps release assets at 2 GiB, so the ISO ships as a **workflow artifact** — grab it from the run page, or point the tool at the ISO already on your USB stick (`/run/media/$USER/<label>/*.iso`).
 
 > **Do not** add entries via `/etc/grub.d/*` + `grub2-mkconfig`. On Fedora 41+ Atomic the GRUB config is
 > static and owned by bootupd, `/etc/default/grub` no longer exists, ostree stops generating GRUB configs
@@ -493,7 +493,7 @@ must have its own ESP and `/boot`.
 | **M4B** | dGPU Android (experimental) | `dumpsys SurfaceFlinger \| grep GLES` shows `ANGLE (NVIDIA … Venus …)`; playable; host stable 30 min; Track A deployment still bootable |
 | **M5** | ONLYOFFICE | opens `.docx`/`.xlsx` with correct metrics; associations set |
 | **M6** | Installer kit | two ISOs (A/B) with checksums; clean UEFI-VM install reproduces M1–M5; rollback verified |
-| **M6b** | Recovery path | `ujust z13-recovery-install --latest` populates the partition and adds both menu entries; booting "install / repair" in a UEFI VM reaches Anaconda with the payload found offline; `ujust z13-verify` reports the recovery checks green |
+| **M6b** | Recovery path | `ujust z13-recovery-install <path to the installer ISO>` populates the partition and adds both menu entries; booting "install / repair" in a UEFI VM reaches Anaconda with the payload found offline; `ujust z13-verify` reports the recovery checks green |
 | **M7** | Reinstall drill | Reinstall over the existing system with `/var` preserved (manual partitioning, no reformat) — data intact |
 | **M8** | Upkeep | two weeks of unattended rebuilds; F44 → F45 rehearsal in a VM (F45 lands 2026-10-20) |
 
