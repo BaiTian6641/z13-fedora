@@ -9,3 +9,11 @@ modules:
     files:
       - source: system
         destination: /
+
+  # The `files` module copies with a plain `cp -rf`, so the mode the scripts end up with depends on
+  # the build's umask (checked: umask 022 preserves the 0755 they carry in git). Assert the invariant
+  # rather than inherit it: `ujust` execs these scripts directly, and on an immutable image a wrong
+  # mode cannot be repaired after installation - it would need another image build.
+  - type: script
+    snippets:
+      - "chmod 0755 /usr/libexec/z13/*.sh"
