@@ -176,9 +176,35 @@ jobs:
           [[ "$ISO_NAME" == *"-.iso" ]] && ISO_NAME="${IMAGE}-${TAG}-$(date -u +%Y%m%d)-manual.iso"
           # --variant kinoite is the CLI default, but state it: this is what makes Anaconda ask for
           # the user account during installation (as KDE requires) rather than at first boot.
-          sudo bluebuild generate-iso --iso-name "${ISO_NAME}" --variant kinoite image "ghcr.io/${OWNER}/${IMAGE}:${TAG}"
+          # Tee so a failure leaves something readable: the runner's own log needs an authenticated
+          # API call, and this step is the only place the builder's output exists.
+          set -o pipefail
+          sudo bluebuild generate-iso --iso-name "${ISO_NAME}" --variant kinoite image "ghcr.io/${OWNER}/${IMAGE}:${TAG}" 2>&1 | tee /tmp/iso.log
           ls -lh "${ISO_NAME}"
           sha256sum "${ISO_NAME}" | tee "${ISO_NAME}-CHECKSUM"
+
+      - name: Record the ISO failure in the repository
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p .ci
+          {
+            echo "# Last ISO failure"
+            echo
+            echo "Run: ${RUN_URL}"
+            echo
+            echo '```'
+            tail -c 40000 /tmp/iso.log 2>/dev/null || echo "(no builder output captured)"
+            echo '```'
+          } > .ci/last-failure.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .ci/last-failure.md
+          git commit -q -m "ci: record the last ISO failure [skip ci]" || true
+          git push -q origin HEAD:main || echo "could not push the ISO failure log"
 
       - name: Upload ISO as a workflow artifact
         uses: actions/upload-artifact@v4
