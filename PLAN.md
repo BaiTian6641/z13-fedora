@@ -596,6 +596,7 @@ runbook (§6) assumes.
 |---|---|---|---|
 | `lint` | `16193e8` | success | actionlint + shellcheck + recipe YAML parse all green on the very first push |
 | `bluebuild` | `16193e8` | **no run created** | the first push to the brand-new repo triggered only `lint`; the same workflow fired normally on the next push — a GitHub quirk on initial pushes, not a configuration error |
+| `bluebuild` | `e703cdb` | **success** (7 min build step) | `detect` found no secret, so `validate` ran: the full recipe built end-to-end with `push: false` (411 s in the build step) and `publish` was correctly skipped — the first real build of every module chain, and it passed |
 | `bluebuild` | `80fd9e9` | **failure** (~23 s) | signing is on by default and `CosignDriver::check_signing_files()` requires a committed `./cosign.pub` plus a matching private key; the repo was created empty, so neither existed |
 | — | `0a74d62` | no run (`[skip ci]`) | committed `cosign.pub` (keypair generated locally with cosign 3.1.3) and a `.gitignore` that blocks `cosign.key`/`cosign.private`; `[skip ci]` avoided burning a full build before the secret exists |
 

@@ -114,5 +114,9 @@ jobs:
           registry_namespace: ${{ steps.ns.outputs.owner }}
           pr_event_number: 0
           maximize_build_space: true
-          # Chunked OCI stores its layer plan in the registry; a plain build validates content.
-          build_chunked_oci: false
+          # Mirror the publishing build exactly, including the rechunk the ISO step depends on:
+          # chunkah runs locally (it writes an OCI layout into a temp dir, coreos/chunkah) and the
+          # driver only pushes `if opts.push` (process/drivers/podman_driver.rs), so this validates
+          # the same 259 -> <=128 layer path without publishing anything.
+          build_chunked_oci: true
+          max_layers: 128
