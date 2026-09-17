@@ -140,6 +140,20 @@ Ampere; MOK enrolment only if Secure Boot is re-enabled. For Track B the driver 
 Track A (default) is unchanged: Fedora `waydroid` + Android 16 QPR2 GAPPS from WayDroid-ATV, iGPU
 rendering, Play-Protect certification, ARM translation via `waydroid_script`.
 
+**Verified live (2026-09-17)** — the manifests `ujust z13-waydroid-setup` resolves, taken from upstream's own
+URL construction (`tools/actions/initializer.py`):
+
+| What | URL shape | Newest image found |
+|---|---|---|
+| system | `<channel>/<rom>/waydroid_<arch>/<type>.json` -> `.../a16-qpr2/system/lineage/waydroid_x86_64/GAPPS.json` | `lineage-23.2-20260717-GAPPS-waydroid_x86_64-system.zip` (1336 MiB) |
+| vendor | `<channel>/waydroid_<arch>/<vendor>.json` -> `.../a16-qpr2/vendor/waydroid_x86_64/MAINLINE.json` | `lineage-23.2-20260717-MAINLINE-waydroid_x86_64-vendor.zip` (201 MiB) |
+
+Two details that look like bugs in a browser but are not: the `-c`/`-v` values are **channel prefixes** (the
+bare URLs 404 by design), and the **vendor** URL carries **no rom segment** while the system URL does. The
+setup script preflights both manifests and prints the exact image names and sizes before pulling ~1.5 GB; if a
+channel ever disappears it stops before downloading and offers `--stock` (official Android 13) or a manual
+image drop into `/etc/waydroid-extra/images/`.
+
 Track B (dGPU) now has **one hard prerequisite that can no longer be satisfied from Windows**: the
 compositor must run on NVIDIA, which on this chassis requires **MUX → dGPU-only mode**. Options, in order:
 
@@ -515,6 +529,7 @@ must have its own ESP and `/boot`.
 | ujust surface | `z13-status`, `z13-verify`, `z13-oobe`, `z13-waydroid-setup`, `z13-mux`, `z13-gpu`, `z13-recovery-install`, `z13-recovery-status` |
 | CI | `build.yml` (daily + push + PR, recipe matrix) and `iso.yml` (offline installer ISO, checksum, release attach) |
 | Docs | this plan, now including the partition design (§5), the install runbook (§6) and the recovery tiers (§5.5) |
+| Pre-CI checks | `actionlint` + `shellcheck` clean; every RPM in the recipes verified to exist for Fedora 44 (this caught `liberation-fonts` not existing); `99-z13.just` parsed and dry-run with the real `just` 1.58 binary; both Waydroid OTA manifests fetched live and the resolved image names/sizes recorded in §4.3 |
 
 Two real bugs were caught by the smoke tests and fixed: a banner helper named `head()` shadowed the external
 `head` command (corrupting every `| head -1` capture), and `nvidia-smi` prints query errors on **stdout**, so

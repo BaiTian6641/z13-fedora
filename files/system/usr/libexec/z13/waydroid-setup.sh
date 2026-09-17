@@ -37,6 +37,50 @@ if ! command -v waydroid >/dev/null 2>&1; then
   exit 1
 fi
 
+# The -c/-v arguments are channel *prefixes*, and upstream builds the two manifest URLs differently
+# (tools/actions/initializer.py):
+#   system: <channel>/<rom>/waydroid_<arch>/<system_type>.json
+#   vendor: <channel>/waydroid_<arch>/<vendor>.json          <- no rom segment
+# So a bare channel URL returns 404 in a browser; that is expected. Verify both manifests before
+# pulling ~1.5 GB, and show exactly which images are about to be fetched.
+preflight_channel() {
+  local kind="$1" url="$2" json name size
+  if ! command -v curl >/dev/null 2>&1; then
+    printf -- '-- %s: curl missing, skipping preflight (%s)\n' "$kind" "$url"
+    return 0
+  fi
+  if ! json=$(curl -fsSL --max-time 30 "$url" 2>/dev/null); then
+    printf -- '!! %s manifest unreachable: %s\n' "$kind" "$url"
+    return 1
+  fi
+  if command -v jq >/dev/null 2>&1; then
+    name=$(jq -r '.response[0].filename // empty' <<<"$json" 2>/dev/null)
+    size=$(jq -r '.response[0].size // 0' <<<"$json" 2>/dev/null)
+  else
+    # Fedora does not ship jq by default; fall back to a plain text extraction.
+    name=$(sed -n 's/.*"filename"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' <<<"$json" | head -1)
+    size=$(sed -n 's/.*"size"[[:space:]]*:[[:space:]]*\([0-9]\+\).*/\1/p' <<<"$json" | head -1)
+  fi
+  if [[ -n "${name:-}" ]]; then
+    printf -- '-- %s: %s (%s MiB)\n' "$kind" "$name" "$(( ${size:-0} / 1048576 ))"
+  else
+    printf -- '-- %s manifest OK: %s\n' "$kind" "$url"
+  fi
+  return 0
+}
+
+SYS_MANIFEST="${SYSTEM_OTA}/${ROM_TYPE}/waydroid_x86_64/${SYSTEM_TYPE}.json"
+VEN_MANIFEST="${VENDOR_OTA}/waydroid_x86_64/MAINLINE.json"
+if ! preflight_channel "system image" "$SYS_MANIFEST" \
+   || ! preflight_channel "vendor image" "$VEN_MANIFEST"; then
+  printf '\nThe configured channel did not answer. Options:\n'
+  printf '  * retry later (the OTA host may be down), or\n'
+  printf '  * use the official Android 13 channel instead: %s --stock\n' "$0"
+  printf '  * or download system.zip + vendor.zip by hand from the project release page, put\n'
+  printf '    system.img and vendor.img into /etc/waydroid-extra/images/, then run: sudo waydroid init -f\n'
+  exit 1
+fi
+
 # --- container service -----------------------------------------------------------------
 if systemctl is-enabled --quiet waydroid-container.service 2>/dev/null; then
   printf -- '-- container service already enabled\n'
