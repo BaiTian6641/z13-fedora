@@ -80,7 +80,8 @@ z13-fedora/                          # git repo, initial commit 731d97c (18 file
 │   │   ├── waydroid-setup.sh        # Android 16 GAPPS bootstrap (ujust z13-waydroid-setup)
 │   │   ├── oobe.sh                  # post-install setup         (ujust z13-oobe)
 │   │   ├── mux-spike.sh             # MUX / asus-armoury probe   (ujust z13-mux)
-│   │   └── recovery-install.sh      # on-disk recovery env       (ujust z13-recovery-install)
+│   │   ├── recovery-install.sh      # on-disk recovery env       (ujust z13-recovery-install)
+│   │   └── report.sh                # paste-ready evidence block (ujust z13-report)
 │   └── usr/share/ublue-os/just/99-z13.just
 ├── .github/workflows/
 │   ├── build.yml                    # image build: daily cron + push + PR, recipe matrix
@@ -436,8 +437,9 @@ flashes via **EZ Flash** from a FAT32 USB; `fwupdmgr` coverage for GZ301ZC is un
   set `KWIN_IM_SHOW_ALWAYS=1` deliberately if you'd rather have it always on in tablet mode.
 - **Waydroid**: submenu with per-app launchers, `persist.waydroid.multi_windows true`, notification
   forwarding (image dependent), shared-folder file exchange documented (no DnD).
-- **Recovery tooling**: `ujust z13-verify` (the §7.1 checklist as a script), `ujust z13-restore-waydroid`,
-  documented boot-menu rollback.
+- **Recovery tooling**: `ujust z13-verify` (the §7.1 checklist as a script), `ujust z13-report`
+  (everything acceptance needs in one paste-ready block), `ujust z13-recovery-install`, documented
+  boot-menu rollback.
 
 ### 7.3 Needs the network on first boot
 
@@ -525,8 +527,8 @@ must have its own ESP and `/boot`.
 | Area | State |
 |---|---|
 | Recipes | 8 files (`recipe.yml` + 7 module files); all validate against the live `schema.blue-build.org` schemas, 0 errors |
-| Device scripts | 6 (`verify`, `gpu-status`, `waydroid-setup`, `oobe`, `mux-spike`, `recovery-install`) — `bash -n` clean, smoke-tested on a non-target host where they degrade to WARN/FAIL instead of crashing |
-| ujust surface | `z13-status`, `z13-verify`, `z13-oobe`, `z13-waydroid-setup`, `z13-mux`, `z13-gpu`, `z13-recovery-install`, `z13-recovery-status` |
+| Device scripts | 7 (`verify`, `gpu-status`, `waydroid-setup`, `oobe`, `mux-spike`, `recovery-install`, `report`) — `bash -n` + `shellcheck -S style` clean, smoke-tested on a non-target host where they degrade to WARN/FAIL instead of crashing |
+| ujust surface | `z13-status`, `z13-verify`, `z13-oobe`, `z13-waydroid-setup`, `z13-mux`, `z13-gpu`, `z13-recovery-install`, `z13-recovery-status`, `z13-report` |
 | CI | `build.yml` (daily + push + PR, recipe matrix) and `iso.yml` (offline installer ISO, checksum, release attach) |
 | Docs | this plan, now including the partition design (§5), the install runbook (§6) and the recovery tiers (§5.5) |
 | Hardware-risk probes | fingerprint: `04f3:0c6e` **is** in libfprint's supported-device list (ElanTech block, nothing Elan in the unsupported section) — so enrolment is plausible on the shipped `libfprint`, pending an on-metal test |

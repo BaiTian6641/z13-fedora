@@ -51,3 +51,9 @@ z13-recovery-status:
     #!/usr/bin/env bash
     set -uo pipefail
     exec /usr/libexec/z13/recovery-install.sh --status
+
+# Collect every acceptance check into one paste-ready block (pass --fast to skip slow probes)
+z13-report *args:
+    #!/usr/bin/env bash
+    set -uo pipefail
+    exec /usr/libexec/z13/report.sh "$@"
