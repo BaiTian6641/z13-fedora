@@ -6,6 +6,7 @@
 #   z13-waydroid-setup              init if needed, then report certification status
 #   z13-waydroid-setup --force      wipe the Android data and re-init (destructive)
 #   z13-waydroid-setup --stock      use Waydroid's official OTA channel (Android 13 GAPPS) instead
+#                                 - the channel where ARM translation (libndk) is known-good
 #
 # Everything here is idempotent: re-running without --force only re-applies props.
 
@@ -135,11 +136,16 @@ else
 fi
 
 printf '\n== Optional: ARM app translation\n'
-printf '   Apps with ARM-only native libraries need a translation layer:\n'
+printf '   Android apps with ARM-only native libraries need a translation layer.\n'
+printf '   Do NOT install libhoudini: its builds carry an expiry that fired on 2026-01-01, after\n'
+printf '   which translated apps hang on their splash screen at ~100%% CPU with nothing in the\n'
+printf '   logs (waydroid-helper#78, casualsnek/waydroid_script#257). libndk is the live option:\n'
 printf '     git clone https://github.com/casualsnek/waydroid_script && cd waydroid_script\n'
 printf '     python3 -m venv venv && venv/bin/pip install -r requirements.txt\n'
-printf '     sudo venv/bin/python3 main.py install libndk      # or: libhoudini\n'
-printf '   Re-run it after every Android image upgrade (the layer is wiped by upgrades).\n'
+printf '     sudo venv/bin/python3 main.py install libndk\n'
+printf '   There are no reports yet of libndk working on Android 16. If ARM-only apps misbehave,\n'
+printf '   re-image with --stock (Android 13 GAPPS), where the layer is known-good, and install it\n'
+printf '   there. Upgrades wipe the layer, so re-run the install afterwards.\n'
 
 printf '\n== Notes\n'
 printf '   - Rendering runs on the Intel iGPU. Waydroid refuses NVIDIA render nodes by design.\n'
