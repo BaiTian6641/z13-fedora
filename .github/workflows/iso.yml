@@ -199,7 +199,6 @@ jobs:
             IMAGE_SRC="" \
             IMAGE_TAG="${TAG}" \
             ISO_NAME="/github/workspace/${ISO_NAME}" \
-            REPOS="/etc/yum.repos.d/*.repo" \
             SECURE_BOOT_KEY_URL="https://github.com/ublue-os/bazzite/raw/main/secure_boot.der" \
             VARIANT="kinoite" \
             VERSION="${VERSION}" \
