@@ -539,6 +539,7 @@ must have its own ESP and `/boot`.
 | Upstream CI refs | every dependency resolves today: `blue-build/github-action@v1.11`, `ghcr.io/blue-build/cli:latest-installer`, `ghcr.io/ublue-os/akmods:main-44`, `ghcr.io/ublue-os/akmods-nvidia-open:main-44`, `ghcr.io/ublue-os/kinoite-main:{44,latest}` |
 | Layer-count limit | the ublue base carries **259 layers** and the build-container-installer the CLI pins (`v1.4.0`, Oct 2025) predates BCI PR #205 ("allow for images with more than 128 layers", merged 2026-07-13, whose body reads *"Ublue has over 128 layers, which prevents the image from being pulled with docker"*). `build_chunked_oci: true` + `max_layers: 128` therefore keep the image pullable for ISO generation |
 | Published tags | the recipe deliberately carries **no** `alt-tags`: with none, `Driver::generate_tags` (`process/drivers/local_driver.rs`) emits `latest`, `<timestamp>`, `44`, `<timestamp>-44` and `<sha>-44`, so both tags criterion 2 asks for (`:44` and `:latest`) appear by default — whereas declaring `alt-tags` would *replace* that whole set with `<alt>`-derived names |
+| Signing keypair | proven with the exact primitives the CLI uses: `COSIGN_PASSWORD="" cosign sign-blob --key …/cosign.key` succeeds, `verify-blob --key cosign.pub` answers *Verified OK*, a tampered payload is rejected, and the committed public key reproduces the private key's derivation byte for byte |
 | Flatpak IDs | all four `default-flatpaks` app IDs resolve on Flathub today (`org.onlyoffice.desktopeditors`, `com.github.flxzt.rnote`, `com.github.xournalpp.xournalpp`, `org.gnome.Loupe`), so the post-boot Nushell units cannot fail on a typo — a mistake that would only have shown up on the tablet |
 | Flatpak delivery | `default-flatpaks` v2 ships post-boot Nushell units, so the image build never talks to Flathub |
 | systemd unit names | verified against the packaging before they can fail a build: `tuned-ppd.service` (Fedora `tuned` spec), `asusd.service` (`BIN_D := asusd` in asusctl's Makefile), `waydroid-container.service` (Fedora `waydroid` spec). `asusd-user.service` is **not** enabled at build time: upstream's Makefile installs the `asusd-user` binary but has no rule for the unit file, so it is enabled at runtime by `z13-oobe` only if present |
@@ -622,6 +623,10 @@ into the image (`template/templates/stages.j2`), so the validated recipe is byte
 publish. Because such a run is green while publishing nothing, `iso.yml` inspects the triggering run for a
 successful `Build and publish the image` job and skips (fails closed) when it finds none — verified against
 eight job-list payloads, including a green `validate` beside a skipped `publish`.
+
+**Publish preflight.** `publish` now verifies `SIGNING_SECRET` against the committed `cosign.pub` in its own step before the build starts: the action's log needs an authenticated API call, so a mismatched key would otherwise be undiagnosable from outside — the step name reports the cause in seconds instead of after a 20-minute build.
+
+**Package visibility.** GHCR packages pushed with `GITHUB_TOKEN` start **private**. That does not affect the deliverable (the ISO job logs in before verifying), but an anonymous `tags/list` request cannot then confirm the published tags, so either flip *Settings → Packages → z13-fedora → Change visibility → Public* or paste the verification output.
 
 **Outstanding (user action):** add the repository secret `SIGNING_SECRET` with the contents of
 `/tmp/z13-signing/cosign.key` (move that file somewhere permanent first — `/tmp` is wiped on reboot), then

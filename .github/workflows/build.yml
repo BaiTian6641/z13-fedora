@@ -71,6 +71,28 @@ jobs:
         shell: bash
         run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
 
+      # The action's log is only reachable through an authenticated API call, so a publish failure
+      # inside it is hard to diagnose from the outside. A mismatched secret is the likeliest such
+      # failure, so it gets its own step: the step name identifies the cause from the run's API
+      # record alone, and it fails in seconds instead of after a full build.
+      - name: Check that SIGNING_SECRET matches the committed cosign.pub
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+        run: |
+          set -euo pipefail
+          if ! command -v cosign >/dev/null; then
+            curl -sSL -o /tmp/cosign https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
+            sudo install -m 0755 /tmp/cosign /usr/local/bin/cosign
+          fi
+          printf '%s' "${COSIGN_PRIVATE_KEY}" > /tmp/signing.key
+          derived=$(COSIGN_PASSWORD="" cosign public-key --key /tmp/signing.key)
+          rm -f /tmp/signing.key
+          if ! diff <(printf '%s' "${derived}" | tr -d '[:space:]') <(tr -d '[:space:]' < cosign.pub) >/dev/null; then
+            echo "::error::SIGNING_SECRET does not match the committed cosign.pub - they must be a pair"
+            exit 1
+          fi
+          echo "SIGNING_SECRET matches cosign.pub"
+
       - name: Build Custom Image
         uses: blue-build/github-action@v1.11
         with:
