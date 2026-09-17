@@ -142,7 +142,9 @@ jobs:
       - name: Install the BlueBuild CLI
         run: |
           set -euo pipefail
-          sudo docker create --name blue-build-installer ghcr.io/blue-build/cli:latest-installer
+          # Pinned to the same tag the publishing action defaults to (its CLI_VERSION_TAG
+          # is `v0.9`), so a floating `latest` cannot silently diverge from what publishes.
+          sudo docker create --name blue-build-installer ghcr.io/blue-build/cli:v0.9-installer
           sudo docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
           sudo docker rm blue-build-installer
           bluebuild --version
