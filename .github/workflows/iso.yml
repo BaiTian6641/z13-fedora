@@ -173,25 +173,39 @@ jobs:
           # the runner's log needs an authenticated API call, this container's output does not exist
           # anywhere else.
           # bash runs with -e by default; this step handles its own failure so the builder's log
-          # survives (the dedicated capture step died silently, same as the publish one did).
+          # survives. The invocation mirrors build-container-installer's own action.yml exactly:
+          # the make target comes first, the workspace is mounted at /github/workspace, ISO_NAME is
+          # an absolute path inside it, /cache is pre-created 0777, and docker (not podman) runs it.
           set -uo pipefail
+          sudo mkdir -p /cache/dnf /cache/dnf_new
+          sudo chmod 777 /cache /cache/dnf /cache/dnf_new
+          mkdir -p build
           rc=0
-          sudo podman run --rm --privileged \
-            -v "${PWD}/iso-out:/build-container-installer/build" \
-            -v dnf-cache:/cache/dnf/ \
-            -e VARIANT=kinoite \
-            -e ISO_NAME="build/${ISO_NAME}" \
-            -e DNF_CACHE=/cache/dnf \
-            -e WEB_UI=false \
-            -e "IMAGE_NAME=${IMAGE}" \
-            -e "IMAGE_REPO=ghcr.io/${OWNER}" \
-            -e "IMAGE_TAG=${TAG}" \
-            -e "VERSION=${VERSION}" \
-            -e "SECURE_BOOT_KEY_URL=https://github.com/ublue-os/bazzite/raw/main/secure_boot.der" \
-            -e "ENROLLMENT_PASSWORD=universalblue" \
-            ghcr.io/jasonn3/build-container-installer:v1.5.0 2>&1 | tee /tmp/iso.log || rc=$?
-          iso=$(find iso-out -maxdepth 3 -name '*.iso' -type f | head -1 || true)
-          if [ "${rc}" -eq 0 ] && [ -n "${iso}" ]; then
+          docker run --privileged \
+            -v "${PWD}:/github/workspace" \
+            -v /cache/dnf:/cache/dnf \
+            ghcr.io/jasonn3/build-container-installer:v1.5.0 \
+            "build/${ISO_NAME}-Checksum" \
+            ADDITIONAL_TEMPLATES="" \
+            ARCH="x86_64" \
+            DNF_CACHE="/cache/dnf" \
+            ENROLLMENT_PASSWORD="universalblue" \
+            EXTRA_BOOT_PARAMS="" \
+            FLATPAK_REMOTE_NAME="flathub" \
+            FLATPAK_REMOTE_URL="https://flathub.org/repo/flathub.flatpakrepo" \
+            IMAGE_NAME="${IMAGE}" \
+            IMAGE_REPO="ghcr.io/${OWNER}" \
+            IMAGE_SIGNED="true" \
+            IMAGE_SRC="" \
+            IMAGE_TAG="${TAG}" \
+            ISO_NAME="/github/workspace/build/${ISO_NAME}" \
+            REPOS="/etc/yum.repos.d/*.repo" \
+            SECURE_BOOT_KEY_URL="https://github.com/ublue-os/bazzite/raw/main/secure_boot.der" \
+            VARIANT="kinoite" \
+            VERSION="${VERSION}" \
+            WEB_UI="false" 2>&1 | tee /tmp/iso.log || rc=$?
+          iso="build/${ISO_NAME}"
+          if [ "${rc}" -eq 0 ] && [ -f "${iso}" ]; then
             cp -f "${iso}" "./${ISO_NAME}"
             ls -lh "${ISO_NAME}"
             sha256sum "${ISO_NAME}" | tee "${ISO_NAME}-CHECKSUM"
