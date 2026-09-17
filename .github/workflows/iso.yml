@@ -73,7 +73,21 @@ jobs:
           else
             echo "published=false" >> "$GITHUB_OUTPUT"
             echo "That run published nothing (signing secret missing, so only the unsigned validation ran)."
+            exit 0
           fi
+
+          # The build-container-installer container pulls the image anonymously (see PLAN.md), so a
+          # private package can never produce an ISO. Fail here, with the fix, rather than 20 minutes
+          # into the ISO build.
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          image="${{ inputs.image || 'z13-fedora' }}"
+          tok=$(curl -s "https://ghcr.io/token?scope=repository:${owner}/${image}:pull&service=ghcr.io" \
+                  | jq -r '.token // empty')
+          if [[ -z "${tok}" ]]; then
+            echo "::error::ghcr.io/${owner}/${image} is not anonymously pullable, so the installer container cannot fetch it. The publish itself succeeded - set *Settings -> Packages -> ${image} -> Change visibility* to Public, then re-run this workflow."
+            exit 1
+          fi
+          echo "ghcr.io/${owner}/${image} is anonymously pullable; proceeding"
 
   iso:
     name: Build installer ISO

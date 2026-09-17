@@ -160,6 +160,21 @@ jobs:
             exit 1
           fi
 
+      # Non-fatal by design: this is the only thing that tells us, right after a publish, whether the
+      # ISO step can fetch the image (its builder container pulls anonymously).
+      - name: Report whether the package is anonymously pullable
+        env:
+          OWNER: ${{ steps.ns.outputs.owner }}
+          IMAGE: ${{ steps.img.outputs.name }}
+        run: |
+          set -euo pipefail
+          tok=$(curl -s "https://ghcr.io/token?scope=repository:${OWNER}/${IMAGE}:pull&service=ghcr.io" | jq -r '.token // empty')
+          if [ -z "${tok}" ]; then
+            echo "::warning::ghcr.io/${OWNER}/${IMAGE} is not anonymously pullable. The publish succeeded, but the ISO step cannot fetch a private package - set *Settings -> Packages -> ${IMAGE} -> Change visibility* to Public."
+          else
+            echo "publicly pullable: the ISO step can fetch ghcr.io/${OWNER}/${IMAGE}"
+          fi
+
   validate:
     name: Validate recipe (build only, publishes nothing)
     needs: detect
