@@ -231,16 +231,19 @@ jobs:
           # Commit through the API rather than git: the workspace here is the action's checkout, where
           # `git checkout -B main` can fail on local modifications - which is how the previous two
           # failures lost their logs. gh is preinstalled on GitHub-hosted runners.
-          sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/.ci/last-failure.md" --jq .sha 2>/dev/null || true)
-          args=(--method PUT "repos/${GITHUB_REPOSITORY}/contents/.ci/last-failure.md"
-                -f "message=ci: record the last failure log [skip ci]"
-                -f "content=$(base64 -w0 /tmp/ci-body)")
-          if [ -n "${sha}" ]; then args+=(-f "sha=${sha}"); fi
-          if gh api "${args[@]}" >/dev/null; then
-            echo "failure log committed to .ci/last-failure.md"
-          else
-            echo "could not commit the failure log"
-          fi
+          # Fresh clone rather than the current workspace: this step runs after the build, where the
+          # working tree may be dirty and a plain `git checkout -B main` aborts (that is how the first
+          # attempts lost their logs). A clean clone has nothing to conflict with.
+          git clone -q --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/ci-repo
+          mkdir -p /tmp/ci-repo/.ci
+          cp /tmp/ci-body /tmp/ci-repo/.ci/last-failure.md
+          cd /tmp/ci-repo
+          # `git commit -am` would not stage the new file: .ci/last-failure.md is always untracked.
+          git add .ci/last-failure.md
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "ci: record the last failure log [skip ci]" || true
+          git push -q origin HEAD:main || echo "could not push the failure log"
 
       - name: Upload ISO as a workflow artifact
         uses: actions/upload-artifact@v4

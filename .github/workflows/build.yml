@@ -111,23 +111,34 @@ jobs:
           fi
           echo "SIGNING_SECRET matches cosign.pub"
 
-      - name: Build Custom Image
-        uses: blue-build/github-action@v1.11
-        with:
-          recipe: ${{ matrix.recipe }}
-          cosign_private_key: ${{ secrets.SIGNING_SECRET }}
-          registry_token: ${{ github.token }}
-          registry_namespace: ${{ steps.ns.outputs.owner }}
-          pr_event_number: ${{ github.event.number }}
-          maximize_build_space: true
+      # The action runs the CLI as one opaque step whose log needs an authenticated API call to read,
+      # which left two publish failures undiagnosable. This is the same invocation the validation job
+      # uses (proven green), with the flags the action passes, plus a tee so failures leave a log.
+      - name: Install the BlueBuild CLI
+        run: |
+          set -euo pipefail
+          sudo docker create --name blue-build-installer ghcr.io/blue-build/cli:v0.9-installer
+          sudo docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
+          sudo docker rm blue-build-installer
+          bluebuild --version
 
-          # The ublue base carries 259 layers, and the build-container-installer the CLI pins
-          # (v1.4.0, Oct 2025) predates BCI PR #205 ("Allow for images with more than 128 layers",
-          # merged 2026-07-13, whose body reads "Ublue has over 128 layers, which prevents the image
-          # from being pulled with docker"). Packing to 120 keeps the published total at 121 - well
-          # under that ceiling - after measuring 129 at max_layers: 128 and watching the ISO fail.
-          build_chunked_oci: true
-          max_layers: 120
+      - name: Build, sign and publish the image
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+          GH_TOKEN: ${{ github.token }}
+          BB_BUILD_PUSH: "true"
+          BB_BUILD_CHUNKED_OCI: "true"
+          BB_BUILD_CHUNKED_OCI_MAX_LAYERS: "120"
+          BB_BUILD_REMOVE_BASE_IMAGE: "true"
+          BB_REGISTRY: ghcr.io
+          BB_REGISTRY_NAMESPACE: ${{ steps.ns.outputs.owner }}
+          BB_USERNAME: ${{ github.repository_owner }}
+          BB_PASSWORD: ${{ github.token }}
+          RUST_LOG_STYLE: always
+          CLICOLOR_FORCE: "1"
+        run: |
+          set -o pipefail
+          bluebuild build -v "recipes/${{ matrix.recipe }}" 2>&1 | tee /tmp/build.log
 
       # The CLI verifies what it pushed internally, but that output is only readable through an
       # authenticated API call. These two steps make the *substance* of criteria 2 and 3 public in
@@ -204,7 +215,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          STEP_SUMMARY: ${{ toJSON(job) }}
         run: |
           set -euo pipefail
           mkdir -p /tmp/ci-body
@@ -214,23 +224,25 @@ jobs:
             echo "Run: ${RUN_URL}"
             echo
             echo '```'
-            echo "${STEP_SUMMARY}" | jq -r '.steps[] | "\(.conclusion)\t\(.name)"' 2>/dev/null \
-              || echo "(step summary unavailable)"
+            tail -c 40000 /tmp/build.log 2>/dev/null | tail -60 || echo "(no build log captured)"
             echo '```'
           } > /tmp/ci-body
           # Commit through the API rather than git: the workspace here is the action's checkout, where
           # `git checkout -B main` can fail on local modifications - which is how the previous two
           # failures lost their logs. gh is preinstalled on GitHub-hosted runners.
-          sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/.ci/last-failure.md" --jq .sha 2>/dev/null || true)
-          args=(--method PUT "repos/${GITHUB_REPOSITORY}/contents/.ci/last-failure.md"
-                -f "message=ci: record the last failure log [skip ci]"
-                -f "content=$(base64 -w0 /tmp/ci-body)")
-          if [ -n "${sha}" ]; then args+=(-f "sha=${sha}"); fi
-          if gh api "${args[@]}" >/dev/null; then
-            echo "failure log committed to .ci/last-failure.md"
-          else
-            echo "could not commit the failure log"
-          fi
+          # Fresh clone rather than the current workspace: this step runs after the build, where the
+          # working tree may be dirty and a plain `git checkout -B main` aborts (that is how the first
+          # attempts lost their logs). A clean clone has nothing to conflict with.
+          git clone -q --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/ci-repo
+          mkdir -p /tmp/ci-repo/.ci
+          cp /tmp/ci-body /tmp/ci-repo/.ci/last-failure.md
+          cd /tmp/ci-repo
+          # `git commit -am` would not stage the new file: .ci/last-failure.md is always untracked.
+          git add .ci/last-failure.md
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "ci: record the last failure log [skip ci]" || true
+          git push -q origin HEAD:main || echo "could not push the failure log"
 
   validate:
     name: Validate recipe (build only, publishes nothing)
@@ -335,13 +347,16 @@ jobs:
           # Commit through the API rather than git: the workspace here is the action's checkout, where
           # `git checkout -B main` can fail on local modifications - which is how the previous two
           # failures lost their logs. gh is preinstalled on GitHub-hosted runners.
-          sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/.ci/last-failure.md" --jq .sha 2>/dev/null || true)
-          args=(--method PUT "repos/${GITHUB_REPOSITORY}/contents/.ci/last-failure.md"
-                -f "message=ci: record the last failure log [skip ci]"
-                -f "content=$(base64 -w0 /tmp/ci-body)")
-          if [ -n "${sha}" ]; then args+=(-f "sha=${sha}"); fi
-          if gh api "${args[@]}" >/dev/null; then
-            echo "failure log committed to .ci/last-failure.md"
-          else
-            echo "could not commit the failure log"
-          fi
+          # Fresh clone rather than the current workspace: this step runs after the build, where the
+          # working tree may be dirty and a plain `git checkout -B main` aborts (that is how the first
+          # attempts lost their logs). A clean clone has nothing to conflict with.
+          git clone -q --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/ci-repo
+          mkdir -p /tmp/ci-repo/.ci
+          cp /tmp/ci-body /tmp/ci-repo/.ci/last-failure.md
+          cd /tmp/ci-repo
+          # `git commit -am` would not stage the new file: .ci/last-failure.md is always untracked.
+          git add .ci/last-failure.md
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "ci: record the last failure log [skip ci]" || true
+          git push -q origin HEAD:main || echo "could not push the failure log"
