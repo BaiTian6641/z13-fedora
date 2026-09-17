@@ -14,8 +14,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  bluebuild:
-    name: Build Custom Image
+  # Signing is mandatory for a published image (the CLI refuses to push without the key pair), and
+  # the private key only exists as the SIGNING_SECRET repository secret. Until that secret is set,
+  # this gate sends the run to `validate` instead: the same recipe, built end-to-end but neither
+  # signed nor pushed, which still exercises every module (rpm, akmods, waydroid, flatpaks,
+  # systemd, files) and reports real build errors.
+  #
+  # The unsigned path is supported by design - in the CLI the signing requirements sit behind
+  # `if self.push && !self.no_sign` (src/commands/build.rs), and the recipe's `signing` module
+  # needs only the committed cosign.pub, which the generated `stage-keys` stage copies into the
+  # image (template/templates/stages.j2) - so the recipe itself needs no modification.
+  detect:
+    name: Check whether the signing secret exists
+    runs-on: ubuntu-latest
+    outputs:
+      has_key: ${{ steps.detect.outputs.has_key }}
+    steps:
+      - name: Detect SIGNING_SECRET
+        id: detect
+        shell: bash
+        env:
+          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+        run: |
+          if [[ -n "${SIGNING_SECRET}" ]]; then
+            echo "has_key=true" >> "$GITHUB_OUTPUT"
+            echo "SIGNING_SECRET is configured: this run publishes and signs the image."
+          else
+            echo "has_key=false" >> "$GITHUB_OUTPUT"
+            echo "SIGNING_SECRET is not configured: this run validates the recipe with an unsigned build instead of publishing."
+          fi
+
+  publish:
+    name: Build and publish the image
+    needs: detect
+    if: needs.detect.outputs.has_key == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 120 # a hung NVIDIA/kmods build should not burn six runner hours
     permissions:
@@ -56,3 +88,31 @@ jobs:
           # gives much smaller update deltas on the tablet as a bonus.
           build_chunked_oci: true
           max_layers: 128
+
+  validate:
+    name: Validate recipe (build only, publishes nothing)
+    needs: detect
+    if: needs.detect.outputs.has_key != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Compute lowercase registry namespace
+        id: ns
+        shell: bash
+        run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+
+      - name: Build the image without pushing it
+        uses: blue-build/github-action@v1.11
+        with:
+          recipe: recipe.yml
+          cosign_private_key: ""
+          push: false
+          registry_token: ${{ github.token }}
+          registry_namespace: ${{ steps.ns.outputs.owner }}
+          pr_event_number: 0
+          maximize_build_space: true
+          # Chunked OCI stores its layer plan in the registry; a plain build validates content.
+          build_chunked_oci: false

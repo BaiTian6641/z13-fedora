@@ -39,14 +39,51 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # A `bluebuild` run can conclude successfully while publishing nothing: while SIGNING_SECRET is
+  # unset, build.yml routes the run to its unsigned `validate` job, and there is no image in the
+  # registry to embed in an ISO. So check the triggering run's jobs for a successful publish job
+  # before spending 20 minutes generating an installer. Fails closed: an unreadable answer, a
+  # renamed job, or a skipped publish all mean "no ISO" rather than a doomed ISO build.
+  preflight:
+    name: Check that an image was published
+    runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.check.outputs.published }}
+    steps:
+      - name: Inspect the triggering run
+        id: check
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          if [[ "${EVENT}" != "workflow_run" ]]; then
+            # Manual dispatch or release publication: the operator asked for this ISO explicitly.
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          succeeded=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/jobs" --paginate \
+                        --jq '.jobs[] | select(.conclusion == "success") | .name' 2>/dev/null || true)
+          printf 'successful jobs in run %s:\n%s\n' "${RUN_ID}" "${succeeded:-<none>}"
+          if grep -qF "Build and publish the image" <<< "${succeeded}"; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "That run published nothing (signing secret missing, so only the unsigned validation ran)."
+          fi
+
   iso:
     name: Build installer ISO
-    # Skip when the triggering image build failed, and skip pull-request builds (no ISO for those);
-    # manual and release dispatches always run.
+    needs: preflight
+    # Skip when the triggering image build failed, when it published nothing (see preflight), and
+    # skip pull-request builds (no ISO for those); manual and release dispatches always run.
     if: >-
-      ${{ github.event_name != 'workflow_run'
-          || (github.event.workflow_run.conclusion == 'success'
-              && github.event.workflow_run.event != 'pull_request') }}
+      ${{ needs.preflight.outputs.published == 'true'
+          && (github.event_name != 'workflow_run'
+              || (github.event.workflow_run.conclusion == 'success'
+                  && github.event.workflow_run.event != 'pull_request')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 90 # a stuck ISO build must not burn six runner hours
     steps:
