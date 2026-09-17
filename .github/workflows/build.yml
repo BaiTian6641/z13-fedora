@@ -8,6 +8,11 @@ on:
       - "**.md"
   pull_request:
   workflow_dispatch:
+    inputs:
+      validate_without_signing:
+        description: "Also run the unsigned validation build (~20 minutes of runner time)"
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -178,11 +183,11 @@ jobs:
   validate:
     name: Validate recipe (build only, publishes nothing)
     needs: detect
-    # Manual dispatch only: runner minutes cost money, and this job's original purpose - exercising
-    # the recipe before the signing secret existed - is now covered locally (recipe validation + the
-    # actionlint/shellcheck suite) and, once the secret is set, by the publish build itself. Every
-    # push with an unset secret therefore costs seconds (detect + skipped jobs) instead of a build.
-    if: needs.detect.outputs.has_key != 'true' && github.event_name == 'workflow_dispatch'
+    # Costs ~20 minutes of runner time, so it is opt-in: the recipe is validated locally
+    # (bluebuild validate + actionlint/shellcheck), and once the secret is set the publish build
+    # exercises it for real. A manual run with no secret and this input untouched therefore costs
+    # seconds, which is also the cheapest way to check whether SIGNING_SECRET is visible yet.
+    if: needs.detect.outputs.has_key != 'true' && inputs.validate_without_signing == true
     runs-on: ubuntu-latest
     timeout-minutes: 120
     permissions:
