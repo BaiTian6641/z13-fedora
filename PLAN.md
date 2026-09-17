@@ -637,18 +637,25 @@ eight job-list payloads, including a green `validate` beside a skipped `publish`
 **Package visibility — required for the ISO, not just for checking it.** GHCR packages pushed with `GITHUB_TOKEN` start **private**, and `generate-iso image` cannot authenticate the pull that matters: it mounts only the output directory and a DNF cache into the build-container-installer container (`src/commands/generate_iso.rs`, `run_volumes!`), so the fetch inside that container is anonymous and a private package yields no ISO. Flip *Settings → Packages → z13-fedora → Change visibility → Public* after the first publish — or set the account's *Packages → Package creation → default visibility* to Public beforehand — which also makes the anonymous `tags/list` check work. The ISO job's own `docker`/`podman` logins (including root's, added for the `sudo bluebuild generate-iso` call) cover the CLI's side only.
 
 **Outstanding (user action):** add the repository secret `SIGNING_SECRET` with the contents of
-`/tmp/z13-signing/cosign.key` (move that file somewhere permanent first — `/tmp` is wiped on reboot), then
-trigger a build.
+`~/z13-fedora/cosign.key` — the key now lives **in the working tree**, where `.gitignore` keeps it out of commits
+and a reboot cannot delete it. (It used to live in `/tmp`; a workstation crash on 2026-09-17 wiped it, which is
+exactly the failure mode this location fixes.) Then trigger a build:
 
-If that private key is gone — it lives in `/tmp`, which any reboot clears — generate a replacement pair rather
-than hunting for it. The password must be **empty** (the CLI hardcodes `COSIGN_PASSWORD: ""`), and only the public
-half is committed, so the repo's `cosign.pub` has to be updated in the same breath:
+```bash
+cat ~/z13-fedora/cosign.key      # copy the whole PEM block into the secret
+```
+
+The pair was regenerated after that crash and re-verified: `COSIGN_PASSWORD="" cosign public-key --key cosign.key`
+reproduces the committed `cosign.pub`, and a `sign-blob`/`verify-blob` round trip reports *Verified OK*. The
+password must stay **empty** (the CLI hardcodes `COSIGN_PASSWORD: ""`), and only the public half is committed.
+
+If the key is ever lost again, regenerate rather than hunt for it — same commands, in the repo:
 
 ```bash
 cd ~/z13-fedora
-COSIGN_PASSWORD="" cosign generate-key-pair     # verified: writes cosign.key + cosign.pub, no prompts
+COSIGN_PASSWORD="" cosign generate-key-pair     # writes cosign.key (ignored) + cosign.pub (committed)
 git add cosign.pub && git commit -m "chore(signing): rotate the signing key" && git push
-cat cosign.key                                   # this is the new SIGNING_SECRET value
+cat cosign.key                                   # the new SIGNING_SECRET value
 ```
 
 Either keypair works as long as the secret and the committed `cosign.pub` are a pair — a mismatch fails at the
