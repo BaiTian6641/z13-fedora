@@ -177,7 +177,9 @@ ensure_menu_timeout() {
 install_iso() {
   local iso="$1"
   [[ -f "$iso" ]] || die "no such file: $iso"
-  [[ -n "$(part_dev)" ]] || die "no partition labelled $LABEL — create it at install time (PLAN.md §5.2)"
+  [[ -n "$(part_dev)" ]] || die "no partition labelled $LABEL.
+Create it at install time (PLAN.md §5.2/§6.3), or prepare an existing partition now with:
+    sudo mkfs.ext4 -L $LABEL /dev/nvme0n1pN && sudo mount LABEL=$LABEL $MNT"
 
   say "Checking the ISO"
   blkid -p "$iso" >/dev/null 2>&1 || die "$iso does not look like a filesystem image"

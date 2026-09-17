@@ -201,9 +201,11 @@ Notes:
   destroys your data, and you lose the blast-radius isolation that a separate partition gives.
 - **No swap partition.** Fedora's zram-generator gives 8 GiB zram on 16 GB RAM; hibernation would need a
   swap ≥ RAM plus resume configuration and is out of scope (suspend is already a risk item).
-- Anaconda's *automatic* partitioning creates a working layout of the same shape (ESP + 2 GiB `/boot` +
-  btrfs root); choose **manual** only if you want the explicit `/var` split above, and expect no validation
-  from the installer.
+- Anaconda's *automatic* partitioning produces a working three-partition layout (ESP + 2 GiB `/boot` +
+  btrfs root). The five-partition layout above — specifically the separate `/var` and the `RECOVERY`
+  partition — **requires manual partitioning**, and the installer will not validate it. That is the price of
+  both the reinstall-survives archiving and the on-disk recovery environment; `ujust z13-verify` (§5.4)
+  checks afterwards that the layout actually came out right.
 
 ### 5.3 Phase 2 — kernel as a single signed artifact (sealed/UKI layout)
 
@@ -331,6 +333,30 @@ set** and no network is needed to install.
 |---|---|
 | Language / keyboard / time | your locale (KDE variant of the ISO asks for the **user account during installation**, not at first boot) |
 | Installation Destination | the single NVMe → *Automatic* for a first install, or *Manual* for the §5.2 layout |
+
+**Manual partitioning recipe** (Installation Destination → Custom / Manual). Five partitions on the NVMe:
+
+| Partition | Mount | Size | Format | Label | Encrypt |
+|---|---|---|---|---|---|
+| p1 | `/boot/efi` | 1 GiB | EFI System Partition (vfat) | - | no |
+| p2 | `/boot` | 2 GiB | ext4 | - | **no** (GRUB cannot read LUKS) |
+| p3 | `/` | 100 GiB | btrfs | - | yes (LUKS2) |
+| p4 | `/var` | everything left, minus 10 GiB | xfs | - | yes (LUKS2) |
+| p5 | `/var/mnt/recovery` | 10 GiB | ext4 | `RECOVERY` | **no** |
+
+Two constraints drive that table:
+
+* `/var/mnt/recovery` is the only on-disk mount point Anaconda accepts for a non-root partition on Atomic
+  (the allowed set is `/`, `/boot`, `/boot/efi`, `/var` and sub-paths of `/var`). At runtime it shows up as
+  `/mnt/recovery` — `/mnt` is a symlink to `/var/mnt`.
+* The recovery partition must stay **outside LUKS**: Fedora's LUKS2 uses argon2id, which GRUB cannot unlock,
+  so an encrypted recovery tree simply would not be reachable from the boot menu. If the installer's
+  global encryption switch insists on covering every partition, either turn encryption off for that one
+  partition or leave p5 unformatted in Anaconda and prepare it afterwards:
+
+```bash
+sudo mkfs.ext4 -L RECOVERY /dev/nvme0n1p5     # once, from the installed system
+```
 | Reclaim space | **Delete all** (this is where the old Windows/recovery partitions die) or `wipefs`/`sgdisk -Z` from a live USB first |
 | Encryption | **Encrypt my data** → LUKS2 passphrase. `/boot` stays plaintext by design |
 | Root password | set one (or leave root locked and use `sudo` from your user) |
@@ -480,31 +506,24 @@ must have its own ESP and `/boot`.
 
 ## 12. Implementation status
 
-**Done (M0)** — repo scaffolded and committed (`731d97c`, 18 files); all 8 recipes validate against the
-live `schema.blue-build.org` module schemas (0 errors); all five device scripts pass `bash -n` and were
-smoke-tested end-to-end on a non-target host, where they degrade to WARN/FAIL instead of crashing.
-The smoke test earned its keep by catching two real bugs:
+**Done** — repo scaffolded, committed, and continuously verified:
 
-1. a banner helper named `head()` **shadowed the external `head` command**, so every
-   `... | head -1` capture in `verify.sh` / `gpu-status.sh` printed a stray marker instead of the value;
-2. `nvidia-smi` prints query errors on **stdout** (and exits non-zero), so captures are now validated
-   through `gpu_query()` rather than trusted; `power.state` is a field this driver does not accept.
+| Area | State |
+|---|---|
+| Recipes | 8 files (`recipe.yml` + 7 module files); all validate against the live `schema.blue-build.org` schemas, 0 errors |
+| Device scripts | 6 (`verify`, `gpu-status`, `waydroid-setup`, `oobe`, `mux-spike`, `recovery-install`) — `bash -n` clean, smoke-tested on a non-target host where they degrade to WARN/FAIL instead of crashing |
+| ujust surface | `z13-status`, `z13-verify`, `z13-oobe`, `z13-waydroid-setup`, `z13-mux`, `z13-gpu`, `z13-recovery-install`, `z13-recovery-status` |
+| CI | `build.yml` (daily + push + PR, recipe matrix) and `iso.yml` (offline installer ISO, checksum, release attach) |
+| Docs | this plan, now including the partition design (§5), the install runbook (§6) and the recovery tiers (§5.5) |
 
-Both are fixed and re-verified: `gpu-status.sh` now reports the real GPU name, driver version,
-utilisation, VRAM and power draw on a hybrid machine.
+Two real bugs were caught by the smoke tests and fixed: a banner helper named `head()` shadowed the external
+`head` command (corrupting every `| head -1` capture), and `nvidia-smi` prints query errors on **stdout**, so
+all GPU values now go through a validating `gpu_query()`.
 
-**Deliberately deferred**
+**Blocked on you / not yet done**
 
-- `recipes/recipe-dgpu.yml` + `waydroid-dgpu.yml` (Track B) are created at **M4B**, after the MUX spike
-  (`ujust z13-mux`) shows the compositor can be moved onto the NVIDIA GPU. Building the variant before
-  that would ship an image that cannot work.
-- `/etc/asusd/asusd.ron` is patched at runtime by `z13-oobe` rather than shipped as a static file,
-  because asusd owns that file and a partial copy could clobber it.
-- The first CI run needs `secrets.SIGNING_SECRET` (cosign private key) plus a committed `cosign.pub`;
-  without them the `signing` module and the ISO workflow's verification step are inert.
-
-**Manual ISO build** (until the first CI image exists):
-
-```bash
-sudo bluebuild generate-iso --iso-name z13-fedora.iso image ghcr.io/<owner>/z13-fedora:latest
-```
+1. **GitHub username** — everything CI-related derives from it (`ghcr.io/<username>/z13-fedora`). Nothing else blocks the first build.
+2. **Signing** — create the repo through `workshop.blue-build.org` and it generates the cosign keypair and the `SIGNING_SECRET` repository secret; until then the `signing` module and the ISO workflow's verification step are inert.
+3. **Track B** (`recipe-dgpu.yml`, `waydroid-dgpu.yml`) — created at **M4B**, gated on the MUX spike (`ujust z13-mux`) run on the real machine.
+4. **Recovery install path** — `z13-recovery-install` cannot be exercised on this workstation (needs root, a `RECOVERY` partition and an ISO); it is exercised at **M6b** in a UEFI VM, which is also where the GRUB stanzas get proven end to end.
+5. `/etc/asusd/asusd.ron` is patched at runtime by `z13-oobe` rather than shipped as a static file, because asusd owns that file and a partial copy could clobber it.
