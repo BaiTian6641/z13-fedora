@@ -156,6 +156,7 @@ jobs:
         env:
           IMAGE: ${{ inputs.image || 'z13-fedora' }}
           TAG: ${{ inputs.tag || 'latest' }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           OWNER="${GITHUB_REPOSITORY_OWNER,,}"
@@ -171,7 +172,10 @@ jobs:
           # (as KDE requires) rather than at first boot. Tee so a failure leaves something readable:
           # the runner's log needs an authenticated API call, this container's output does not exist
           # anywhere else.
-          set -o pipefail
+          # bash runs with -e by default; this step handles its own failure so the builder's log
+          # survives (the dedicated capture step died silently, same as the publish one did).
+          set -uo pipefail
+          rc=0
           sudo podman run --rm --privileged \
             -v "${PWD}/iso-out:/build-container-installer/build" \
             -v dnf-cache:/cache/dnf/ \
@@ -185,15 +189,44 @@ jobs:
             -e "VERSION=${VERSION}" \
             -e "SECURE_BOOT_KEY_URL=https://github.com/ublue-os/bazzite/raw/main/secure_boot.der" \
             -e "ENROLLMENT_PASSWORD=universalblue" \
-            ghcr.io/jasonn3/build-container-installer:v1.5.0 2>&1 | tee /tmp/iso.log
-
-          # BCI writes under its own build/ path inside the mount; normalise to the flat name the
-          # rest of the job (and the artifact upload) uses.
-          iso=$(find iso-out -maxdepth 3 -name '*.iso' -type f | head -1)
-          [ -n "${iso}" ] || { echo "::error::the builder reported success but produced no ISO"; exit 1; }
-          cp -f "${iso}" "./${ISO_NAME}"
-          ls -lh "${ISO_NAME}"
-          sha256sum "${ISO_NAME}" | tee "${ISO_NAME}-CHECKSUM"
+            ghcr.io/jasonn3/build-container-installer:v1.5.0 2>&1 | tee /tmp/iso.log || rc=$?
+          iso=$(find iso-out -maxdepth 3 -name '*.iso' -type f | head -1 || true)
+          if [ "${rc}" -eq 0 ] && [ -n "${iso}" ]; then
+            cp -f "${iso}" "./${ISO_NAME}"
+            ls -lh "${ISO_NAME}"
+            sha256sum "${ISO_NAME}" | tee "${ISO_NAME}-CHECKSUM"
+            exit 0
+          fi
+          [ "${rc}" -eq 0 ] && rc=1   # builder reported success but produced no ISO
+          echo "ISO build failed with rc=${rc}; committing the log to .ci/last-failure.md"
+          {
+            echo "# Last ISO failure"
+            echo
+            echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo "Commit: ${{ github.sha }}"
+            echo
+            echo '```'
+            tail -c 60000 /tmp/iso.log 2>/dev/null | tail -120 || echo "(no builder output captured)"
+            echo '```'
+          } > /tmp/ci-body || true
+          rm -rf /tmp/ci-repo
+          if git clone -q --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/ci-repo 2>/tmp/clone.err; then
+            mkdir -p /tmp/ci-repo/.ci
+            cp /tmp/ci-body /tmp/ci-repo/.ci/last-failure.md || true
+            if (cd /tmp/ci-repo \
+                && git add .ci/last-failure.md \
+                && git -c user.name="github-actions[bot]" \
+                      -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+                      commit -q -m "ci: record the last ISO failure [skip ci]" \
+                && git push -q origin HEAD:main); then
+              echo "failure log committed to .ci/last-failure.md"
+            else
+              echo "clone ok but commit/push failed"
+            fi
+          else
+            echo "clone failed: $(head -c 300 /tmp/clone.err 2>/dev/null)"
+          fi
+          exit "${rc}"
 
           # Surface the artefact in the run summary: the artifact itself needs a (free) GitHub login,
           # and the detail anyone actually wants is the name, size and hash.
@@ -211,39 +244,14 @@ jobs:
             echo "Built from \`ghcr.io/${OWNER}/${IMAGE}:${TAG}\` (Fedora ${VERSION})."
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Record the ISO failure in the repository
-        if: failure()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/ci-body
-          {
-            echo "# Last ISO failure"
-            echo
-            echo "Run: ${RUN_URL}"
-            echo
-            echo '```'
-            tail -c 40000 /tmp/iso.log 2>/dev/null || echo "(no builder output captured)"
-            echo '```'
-          } > /tmp/ci-body
-          # Commit through the API rather than git: the workspace here is the action's checkout, where
-          # `git checkout -B main` can fail on local modifications - which is how the previous two
-          # failures lost their logs. gh is preinstalled on GitHub-hosted runners.
-          # Fresh clone rather than the current workspace: this step runs after the build, where the
-          # working tree may be dirty and a plain `git checkout -B main` aborts (that is how the first
-          # attempts lost their logs). A clean clone has nothing to conflict with.
-          git clone -q --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/ci-repo
-          mkdir -p /tmp/ci-repo/.ci
-          cp /tmp/ci-body /tmp/ci-repo/.ci/last-failure.md
-          cd /tmp/ci-repo
-          # `git commit -am` would not stage the new file: .ci/last-failure.md is always untracked.
-          git add .ci/last-failure.md
-          git -c user.name="github-actions[bot]" \
-              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-              commit -q -m "ci: record the last failure log [skip ci]" || true
-          git push -q origin HEAD:main || echo "could not push the failure log"
+      - name: Upload the builder log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: iso-builder-log
+          path: /tmp/iso.log
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Upload ISO as a workflow artifact
         uses: actions/upload-artifact@v4
