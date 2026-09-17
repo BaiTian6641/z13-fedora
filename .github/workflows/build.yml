@@ -99,6 +99,10 @@ jobs:
       contents: write # only for committing the failure log to .ci/
       packages: read
     steps:
+      # The official action performs this itself (action.yml runs actions/checkout unless
+      # skip_checkout is set) - without it the CLI finds no recipe and the runner has no git repo.
+      - uses: actions/checkout@v4
+
       # GHCR rejects mixed-case namespaces; GitHub usernames are case-preserving.
       - name: Compute lowercase registry namespace
         id: ns
