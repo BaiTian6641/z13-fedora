@@ -185,7 +185,7 @@ jobs:
             -v "${PWD}:/github/workspace" \
             -v /cache/dnf:/cache/dnf \
             ghcr.io/jasonn3/build-container-installer:v1.5.0 \
-            "build/${ISO_NAME}-Checksum" \
+            "${ISO_NAME}-Checksum" \
             ADDITIONAL_TEMPLATES="" \
             ARCH="x86_64" \
             DNF_CACHE="/cache/dnf" \
@@ -198,15 +198,13 @@ jobs:
             IMAGE_SIGNED="true" \
             IMAGE_SRC="" \
             IMAGE_TAG="${TAG}" \
-            ISO_NAME="/github/workspace/build/${ISO_NAME}" \
+            ISO_NAME="/github/workspace/${ISO_NAME}" \
             REPOS="/etc/yum.repos.d/*.repo" \
             SECURE_BOOT_KEY_URL="https://github.com/ublue-os/bazzite/raw/main/secure_boot.der" \
             VARIANT="kinoite" \
             VERSION="${VERSION}" \
             WEB_UI="false" 2>&1 | tee /tmp/iso.log || rc=$?
-          iso="build/${ISO_NAME}"
-          if [ "${rc}" -eq 0 ] && [ -f "${iso}" ]; then
-            cp -f "${iso}" "./${ISO_NAME}"
+          if [ "${rc}" -eq 0 ] && [ -f "${ISO_NAME}" ]; then
             ls -lh "${ISO_NAME}"
             sha256sum "${ISO_NAME}" | tee "${ISO_NAME}-CHECKSUM"
             exit 0
