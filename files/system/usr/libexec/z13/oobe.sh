@@ -29,6 +29,45 @@ else
   info "tuned-ppd.service: NOT active — check 'systemctl status tuned-ppd'"
 fi
 
+# --- keyboard backlight sanity (#2) -----------------------------------------------
+if [[ -d /sys/class/leds/asus::kbd_backlight ]]; then
+  max=$(cat /sys/class/leds/asus::kbd_backlight/max_brightness 2>/dev/null || echo 0)
+  info "keyboard backlight LED present (levels 0-${max}); Fn+F7/F8 or 'brightnessctl --device='asus::kbd_backlight' set N'"
+else
+  info "no asus::kbd_backlight LED - folio backlight control unavailable on this kernel"
+fi
+
+# --- power-profile diagnosis (#7) ----------------------------------------------------
+# asusctl's profile switching rides on power-profiles-daemon's D-Bus API; tuned-ppd provides it on
+# Fedora 44. If neither answers, 'asusctl profile -P Performance' fails with exactly the symptom
+# reported in the first hardware session.
+say "Power profiles"
+if command -v asusctl >/dev/null 2>&1; then
+  if out=$(asusctl profile list 2>&1); then
+    info "asusctl sees: ${out}"
+    if asusctl profile -P Balanced >/dev/null 2>&1; then
+      info "profile switch verified (set to Balanced; change with: asusctl profile -P Performance)"
+    else
+      warn "asusctl profile switch FAILED - check 'systemctl status tuned-ppd' and 'journalctl -u asusd -b'"
+    fi
+  else
+    warn "asusctl cannot list profiles: ${out}"
+  fi
+else
+  warn "asusctl not installed"
+fi
+
+# --- on-screen keyboard vs hardware keyboard (#1) -----------------------------------
+say "On-screen keyboard"
+if ls /sys/class/input/input*/name >/dev/null 2>&1 && grep -qkiE 'keyboard' /sys/class/input/input*/name 2>/dev/null; then
+  # A hardware keyboard is attached (the folio registers as one). Plasma shows the virtual keyboard
+  # on any touch focus otherwise, which covers half a 13.4" panel in desktop mode.
+  kwriteconfig6 --file kwinrc --group Wayland --key InputMethod none 2>/dev/null || true
+  info "hardware keyboard detected: virtual keyboard set to none (toggle with: ujust z13-osk)"
+else
+  info "no hardware keyboard detected: leaving the virtual keyboard at Plasma's default"
+fi
+
 # asusd-user is a per-session *user* unit (Aura/keyboard settings). Upstream's Makefile installs the
 # binary but has no rule for the unit file, so it is not reliably packaged — enable it here, at
 # runtime, only if it actually exists, rather than failing the image build over it.
@@ -136,3 +175,21 @@ say "Next"
 info "Full hardware check:  ujust z13-verify          (add -- --suspend for a suspend test)"
 info "GPU report:           ujust z13-gpu"
 info "MUX details:          ujust z13-mux"
+
+say "Fingerprint (#3 of the acceptance list)"
+if command -v fprintd-enroll >/dev/null 2>&1; then
+  if fprintd-list "$USER" 2>/dev/null | grep -qi finger; then
+    info "a fingerprint is already enrolled"
+  else
+    printf '   Enroll a finger now? [y/N] '
+    read -r answer
+    if [[ "${answer:-}" == [Yy]* ]]; then
+      fprintd-enroll -f right-index "$USER" || warn "enrolment failed - run: fprintd-enroll"
+    else
+      info "skipped; run 'fprintd-enroll' any time (sudo auth: 'sudo authselect enable-feature with-fingerprint')"
+    fi
+  fi
+else
+  warn "fprintd not installed"
+fi
+

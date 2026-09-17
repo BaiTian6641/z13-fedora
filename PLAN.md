@@ -710,3 +710,26 @@ matching step before anything is built, never producing a broken image.
    artifact expires;
 4. you write it to a ≥16 GB stick (Fedora Media Writer or `dd`), install with the five-partition manual layout
    from §6.3, and paste `ujust z13-report` back — which covers criteria 4–7 in one block.
+
+## 13. Open items from the first hardware session (2026-09-17)
+
+The system installed and booted smoothly on the Z13. Fourteen observations followed; their
+disposition, with sources where research was involved:
+
+| # | Observation | Disposition in this change set |
+|---|---|---|
+| 1 | OSK pops up with the folio attached | `z13-oobe` sets the virtual keyboard to `none` when a hardware keyboard is detected; new `ujust z13-osk on/off/status` toggles it (KDE Discuss #43252 is the upstream thread) |
+| 2 | No keyboard backlight control | `brightnessctl` layered; the oobe reports the `asus::kbd_backlight` LED and its levels (Manjaro forum confirms the sysfs name); Fn+F7/F8 should also work |
+| 3 | Fingerprint at first setup | `z13-oobe` now offers interactive `fprintd-enroll` |
+| 4 | Partitions observed: efi + /boot + single btrfs | **Design question for you**: §5.2/§6.3 specify five partitions (separate LUKS2 `/var`, `RECOVERY`). If you used Anaconda's automatic layout, `ujust z13-verify` will (correctly) FAIL those three checks. Keep the five-partition design, or approve simplification? |
+| 5 | Waydroid OTA links | `z13-waydroid-setup` sets System/Vendor OTA channels to the Android 16 QPR2 ATV feeds and prints them; plain `waydroid init` does not - use the ujust recipe |
+| 6 | ELAN9008 stylus shows a faulty battery icon | Known HID battery misreport class (kernel BZ #201121 et al.); cosmetic - `z13-verify` keeps it as a WARN, the pen itself is unaffected |
+| 7 | Performance-mode switch failed | asusctl's profile switching rides the power-profiles-daemon D-Bus API (ArchWiki asusctl); the oobe now verifies `asusctl profile list` + performs a test switch, naming the services to check on failure |
+| 8 | Kernel message tool | `ksystemlog` layered (GUI log viewer) alongside `journalctl` |
+| 9 | Android apps not in the KDE menu | Waydroid writes `~/.local/share/applications/waydroid-*.desktop` only after a session runs (waydroid#1101); the setup script now rebuilds the KDE menu cache (`kbuildsycoca6`) and reports the entry count |
+| 10 | WSA-style integration | multi-window mode is already on (per-app windows); deeper single-display integration is upstream Waydroid work, not configurable here - recorded as a known limit |
+| 11 | BTOP | layered |
+| 12 | ONLYOFFICE/VS Code/WireGuard/Oh My Pi | ONLYOFFICE ships as a post-boot flatpak (network needed on first boot - the oobe note says so); VS Code added as a flatpak; `wireguard-tools` layered; **Oh My Pi is the assistant platform itself and is not distributable as a package** - it cannot be shipped |
+| 13 | Optional extras | layered but service-disabled: Tailscale (`systemctl enable --now tailscaled`), ZeroTier (`zerotier-one`); flatpaks added: Chromium, Krita; stylus notes apps (Rnote, Xournal++) were already shipped |
+| 14 | Waydroid stylus/camera/Bluetooth | camera: `persist.waydroid.camera true` now set by the setup script; stylus: broken **upstream** (waydroid#423, documented since §7); Bluetooth: not supported by Waydroid at all |
+

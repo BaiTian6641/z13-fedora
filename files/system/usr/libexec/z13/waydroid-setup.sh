@@ -114,6 +114,8 @@ fi
 # Props are written to /var/lib/waydroid/waydroid.prop and survive restarts.
 printf -- '-- applying props\n'
 waydroid prop set persist.waydroid.multi_windows true   || printf '   (prop set failed; the session may need to be running)\n'
+# Camera passthrough is off by default; Android apps then see no camera at all.
+waydroid prop set persist.waydroid.camera true          || printf '   (camera prop failed)\n'
 # 1920x1200 panel: keep Android at native resolution; adjust if the UI feels too small/large
 waydroid prop set persist.waydroid.width 1920            || true
 waydroid prop set persist.waydroid.height 1200           || true
@@ -146,6 +148,17 @@ printf '     sudo venv/bin/python3 main.py install libndk\n'
 printf '   There are no reports yet of libndk working on Android 16. If ARM-only apps misbehave,\n'
 printf '   re-image with --stock (Android 13 GAPPS), where the layer is known-good, and install it\n'
 printf '   there. Upgrades wipe the layer, so re-run the install afterwards.\n'
+
+printf '\n== Android apps in the KDE menu (#9)\n'
+printf '   Waydroid writes ~/.local/share/applications/waydroid-*.desktop for each Android app,\n'
+printf "   but only once a session has run. Refreshing KDE's cache now:\n"
+if command -v kbuildsycoca6 >/dev/null 2>&1; then
+  kbuildsycoca6 --noincremental >/dev/null 2>&1 || true
+  n=$(find "$HOME/.local/share/applications" -maxdepth 1 -name 'waydroid-*.desktop' 2>/dev/null | wc -l)
+  printf "   %s waydroid desktop entries present; KDE menu cache rebuilt (log out/in if still absent)\n" "$n"
+else
+  printf '   kbuildsycoca6 not found; log out/in to rebuild the menu\n'
+fi
 
 printf '\n== Notes\n'
 printf '   - Rendering runs on the Intel iGPU. Waydroid refuses NVIDIA render nodes by design.\n'

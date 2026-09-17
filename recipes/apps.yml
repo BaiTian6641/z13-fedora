@@ -9,6 +9,9 @@ modules:
         scope: system
         install:
           - org.onlyoffice.desktopeditors   # 9.4.0
+          - com.visualstudio.code           # VS Code (user-requested)
+          - org.chromium.Chromium           # second browser for Android-ecosystem webviews
+          - org.kde.krita                   # stylus drawing
           - com.github.flxzt.rnote          # pen/ink notes
           - com.github.xournalpp.xournalpp  # pen/ink notes + PDF annotation
           - org.gnome.Loupe                 # image viewer (KDE ships Gwenview too)

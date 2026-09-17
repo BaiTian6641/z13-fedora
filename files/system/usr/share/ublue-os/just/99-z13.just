@@ -34,6 +34,10 @@ z13-mux:
     exec /usr/libexec/z13/mux-spike.sh status
 
 # Show which GPU the compositor, the NVIDIA stack and Waydroid are using
+z13-osk mode:
+    # on-screen keyboard toggle: "off" while the folio keyboard is attached, "on" for tablet use
+    exec /usr/libexec/z13/osk.sh {{mode}}
+
 z13-gpu:
     #!/usr/bin/env bash
     set -uo pipefail
