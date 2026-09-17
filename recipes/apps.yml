@@ -10,6 +10,9 @@ modules:
         install:
           - org.onlyoffice.desktopeditors   # 9.4.0
           - com.visualstudio.code           # VS Code (user-requested)
+          - com.valvesoftware.Steam          # gaming: Steam client (flatpak keeps the runtime out of the image)
+          - com.vysp3r.ProtonPlus            # gaming: Proton-GE / compatibility-tool manager
+          - org.videolan.VLC                 # media player for the odd codec KDE's stack lacks
           - org.chromium.Chromium           # second browser for Android-ecosystem webviews
           - org.kde.krita                   # stylus drawing
           - com.github.flxzt.rnote          # pen/ink notes

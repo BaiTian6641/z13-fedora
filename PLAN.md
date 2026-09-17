@@ -733,3 +733,20 @@ disposition, with sources where research was involved:
 | 13 | Optional extras | layered but service-disabled: Tailscale (`systemctl enable --now tailscaled`), ZeroTier (`zerotier-one`); flatpaks added: Chromium, Krita; stylus notes apps (Rnote, Xournal++) were already shipped |
 | 14 | Waydroid stylus/camera/Bluetooth | camera: `persist.waydroid.camera true` now set by the setup script; stylus: broken **upstream** (waydroid#423, documented since §7); Bluetooth: not supported by Waydroid at all |
 
+## 14. Second-session direction: toward a ChromeOS-grade tablet
+
+The guiding star the user set on 2026-09-17: **as close to ChromeOS as solid Linux allows** - apps
+appear as normal windows, everything works out of the box, the shell stays boring. Decisions taken:
+
+| Topic | Decision | Evidence |
+|---|---|---|
+| Five-partition layout | **Kept** (user decision) | `/boot` separate, LUKS2 `/` and `/var`, unencrypted labelled `RECOVERY`; `z13-verify` hard-fails without them |
+| GRUB UI | menu colours applied at first boot via `/etc/default/grub` + `grub2-mkconfig` (asset-free, supported on atomic; /boot is a runtime partition the image cannot theme); the installer ISO's own bootloader is BCI-generated and not themable from the recipe | Fedora Discussion "Theme the grub bootloader on Fedora Atomic Desktops" |
+| Keyboard "RGB" | the Z13 2022 folio has a **single-zone white backlight** (`asus::kbd_backlight`), not per-key Aura RGB; `brightnessctl` + Fn keys are the complete control surface. rog-control-center additionally is absent from the asus-linux COPR and carries an open GZ301ZC crash report | sysfs name per Manjaro forum; COPR package list (asusctl, supergfxctl only) |
+| Gaming | Steam + **ProtonPlus** (`com.vysp3r.ProtonPlus`) as default flatpaks; the flatpak Steam runtime keeps the image lean | Flathub |
+| Daily-use software | added VLC; already default: ONLYOFFICE, VS Code, Chromium, Krita, Rnote, Xournal++, Loupe, btop, ksystemlog | - |
+| ARM translation | `z13-waydroid-setup` now installs **libndk automatically** (clone -> venv -> install), with the manual recipe printed as fallback; libhoudini remains forbidden (2026-01-01 expiry) | waydroid_script#257, waydroid-helper#78 |
+| Waydroid + NVIDIA | proprietary-driver acceleration **works but is slow** for 3D (NVIDIA forum #332769, waydroid#1883); iGPU stays the default and dGPU remains Track B behind the MUX gate | - |
+| WSA-style windows | multi-window mode is the mechanism and is already on: each Android app opens as its own window. The Android-drawn window buttons/status remain (upstream waydroid#2204); the Settings app appears in the KDE menu once a session has run (handled) | ArchWiki Waydroid; waydroid#2204 |
+| OTA links | the setup script sets and now **prints** both OTA channels (system + vendor) so the provenance of the running Android is visible | - |
+

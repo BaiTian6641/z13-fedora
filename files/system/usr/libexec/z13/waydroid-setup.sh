@@ -137,7 +137,31 @@ else
   printf '   and register the printed ID at https://www.google.com/android/uncertified\n'
 fi
 
-printf '\n== Optional: ARM app translation\n'
+printf '\n== ARM translation (out of the box)\n'
+printf '   Installing libndk now, so ARM-only apps work without a manual step:\n'
+if command -v git >/dev/null 2>&1 && command -v python3 >/dev/null 2>&1; then
+  rm -rf /tmp/waydroid_script
+  if git clone -q --depth 1 https://github.com/casualsnek/waydroid_script /tmp/waydroid_script 2>/dev/null; then
+    if (cd /tmp/waydroid_script \
+        && python3 -m venv venv \
+        && venv/bin/pip install -q -r requirements.txt \
+        && sudo venv/bin/python3 main.py install libndk) >/dev/null 2>&1; then
+      printf '   libndk installed.\n'
+    else
+      printf '   libndk install FAILED - run manually: cd /tmp/waydroid_script && venv/bin/pip install -r requirements.txt && sudo venv/bin/python3 main.py install libndk\n'
+    fi
+    rm -rf /tmp/waydroid_script
+  else
+    printf '   could not clone waydroid_script (offline?); install libndk later from the printed recipe\n'
+  fi
+else
+  printf '   git/python3 missing; install libndk later from the printed recipe\n'
+fi
+
+printf '\n== OTA channels in effect\n'
+printf '   system: %s\n   vendor: %s\n' "$SYSTEM_OTA" "$VENDOR_OTA"
+
+printf '\n== Optional: ARM app translation (manual fallback)\n'
 printf '   Android apps with ARM-only native libraries need a translation layer.\n'
 printf '   Do NOT install libhoudini: its builds carry an expiry that fired on 2026-01-01, after\n'
 printf '   which translated apps hang on their splash screen at ~100%% CPU with nothing in the\n'
