@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120 # a hung NVIDIA/kmods build should not burn six runner hours
     permissions:
-      contents: write # only for committing the failure pointer to .ci/
+      contents: write # only for committing the failure log to .ci/
       packages: write
       id-token: write
     strategy:
@@ -64,17 +64,15 @@ jobs:
       matrix:
         recipe:
           - recipe.yml
-          # Track B (experimental dGPU-Waydroid variant) is added at milestone M4B — it needs the
+          # Track B (experimental dGPU-Waydroid variant) is added at milestone M4B - it needs the
           # dGPU-Waydroid stage build, and it is only worth building once `ujust z13-mux` has shown
           # that the compositor can actually be moved onto the NVIDIA GPU on this machine.
           # - recipe-dgpu.yml
     steps:
-      # The action checks the repository out itself, but that happens *inside* the action - and the
-      # steps below need cosign.pub and the recipe before it runs.
+      # The recipe, cosign.pub and the scripts all come from the checkout; everything below runs
+      # outside any action, so this is not optional.
       - uses: actions/checkout@v4
 
-      # GHCR rejects mixed-case namespaces ("repository name must be lowercase"), and GitHub
-      # usernames are case-preserving — so derive a lowercase namespace explicitly.
       - name: Compute lowercase registry namespace
         id: ns
         shell: bash
@@ -89,10 +87,8 @@ jobs:
           [ -n "${name}" ] || { echo "::error::no name: in recipes/${{ matrix.recipe }}"; exit 1; }
           echo "name=${name}" >> "$GITHUB_OUTPUT"
 
-      # The action's log is only reachable through an authenticated API call, so a publish failure
-      # inside it is hard to diagnose from the outside. A mismatched secret is the likeliest such
-      # failure, so it gets its own step: the step name identifies the cause from the run's API
-      # record alone, and it fails in seconds instead of after a full build.
+      # Fails in seconds, with the cause in the step name, if the secret and cosign.pub are not a
+      # pair - instead of failing twenty minutes into a build.
       - name: Check that SIGNING_SECRET matches the committed cosign.pub
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
@@ -111,9 +107,6 @@ jobs:
           fi
           echo "SIGNING_SECRET matches cosign.pub"
 
-      # The action runs the CLI as one opaque step whose log needs an authenticated API call to read,
-      # which left two publish failures undiagnosable. This is the same invocation the validation job
-      # uses (proven green), with the flags the action passes, plus a tee so failures leave a log.
       - name: Install the BlueBuild CLI
         run: |
           set -euo pipefail
@@ -122,6 +115,10 @@ jobs:
           sudo docker rm blue-build-installer
           bluebuild --version
 
+      # GitHub runs bash with -e, so this step handles its own failure: the log is committed to
+      # .ci/last-failure.md from *this* step (a dedicated capture step died silently three times,
+      # because one unguarded command was enough to kill it), and an artifact always carries the
+      # full log.
       - name: Build, sign and publish the image
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
@@ -137,14 +134,55 @@ jobs:
           RUST_LOG_STYLE: always
           CLICOLOR_FORCE: "1"
         run: |
-          set -o pipefail
-          bluebuild build -v "recipes/${{ matrix.recipe }}" 2>&1 | tee /tmp/build.log
+          set -uo pipefail
+          rc=0
+          bluebuild build -v "recipes/${{ matrix.recipe }}" 2>&1 | tee /tmp/build.log || rc=$?
+          if [ "${rc}" -eq 0 ]; then
+            echo "build and publish succeeded"
+            exit 0
+          fi
+          echo "build failed with rc=${rc}; committing the log to .ci/last-failure.md"
+          {
+            echo "# Last publish failure"
+            echo
+            echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo "Commit: ${{ github.sha }}"
+            echo
+            echo '```'
+            tail -c 60000 /tmp/build.log 2>/dev/null | tail -120 || echo "(no build log captured)"
+            echo '```'
+          } > /tmp/ci-body || true
+          rm -rf /tmp/ci-repo
+          if git clone -q --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/ci-repo 2>/tmp/clone.err; then
+            mkdir -p /tmp/ci-repo/.ci
+            cp /tmp/ci-body /tmp/ci-repo/.ci/last-failure.md || true
+            if (cd /tmp/ci-repo \
+                && git add .ci/last-failure.md \
+                && git -c user.name="github-actions[bot]" \
+                      -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+                      commit -q -m "ci: record the last failure log [skip ci]" \
+                && git push -q origin HEAD:main); then
+              echo "failure log committed to .ci/last-failure.md"
+            else
+              echo "clone ok but commit/push failed"
+            fi
+          else
+            echo "clone failed: $(head -c 300 /tmp/clone.err 2>/dev/null)"
+          fi
+          exit "${rc}"
 
-      # The CLI verifies what it pushed internally, but that output is only readable through an
-      # authenticated API call. These two steps make the *substance* of criteria 2 and 3 public in
-      # the run's job list: a signature that validates against the committed cosign.pub, and a layer
-      # count within the 128 the installer ISO needs to pull (checkout needs the repo for cosign.pub;
-      # the action already logged docker in, which cosign reuses).
+      - name: Upload the build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: publish-build-log
+          path: /tmp/build.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      # The substance of criteria 2 and 3, visible in the public job list even while the package is
+      # private: the signature validates against the committed key on both tags, and the layer count
+      # is within what the installer step can pull.
       - name: Re-verify the published image against cosign.pub
         env:
           OWNER: ${{ steps.ns.outputs.owner }}
@@ -166,12 +204,8 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y skopeo
           fi
-          # skopeo does not reliably reuse the Docker credentials, and a fresh GHCR package is
-          # private, so log in with its own auth file rather than relying on a fallback.
           skopeo login ghcr.io -u "${{ github.actor }}" --password-stdin <<< "${GH_TOKEN}"
           ref="docker://ghcr.io/${OWNER}/${IMAGE}:latest"
-          # The tag resolves to an index, which has no .layers of its own - resolve the platform
-          # manifest first, otherwise the count silently reads as 0.
           idx=$(skopeo inspect --raw "${ref}")
           digest=$(jq -r '(.manifests // [])[] | select(.platform.architecture=="amd64" and .platform.os=="linux") | .digest' <<< "${idx}" | head -1)
           if [[ -n "${digest}" && "${digest}" != "null" ]]; then
@@ -180,10 +214,6 @@ jobs:
             layers=$(jq '.layers | length' <<< "${idx}")
           fi
           echo "published layers: ${layers}"
-          # chunkah packs components to fit --max-layers (upstream: default 64, hard limit 500 in
-          # containers-storage), so the packing target is 128 and one extra layer is normal. The
-          # number that actually breaks pulls is containers-storage's 500; 128 is only Docker's
-          # recommendation, so it warns rather than fails.
           if [ "${layers}" -gt 500 ]; then
             echo "::error::${layers} layers crosses containers-storage's hard limit of 500"
             exit 1
@@ -192,8 +222,6 @@ jobs:
             echo "::warning::${layers} layers is above Docker's recommended ceiling of 128 (harmless for the ISO step, which uses podman/skopeo)"
           fi
 
-      # Non-fatal by design: this is the only thing that tells us, right after a publish, whether the
-      # ISO step can fetch the image (its builder container pulls anonymously).
       - name: Report whether the package is anonymously pullable
         env:
           OWNER: ${{ steps.ns.outputs.owner }}
@@ -206,43 +234,6 @@ jobs:
           else
             echo "publicly pullable: the ISO step can fetch ghcr.io/${OWNER}/${IMAGE}"
           fi
-
-      # The action's own log needs an authenticated API call, so a publish failure would otherwise
-      # leave no trace anyone without a token can read. Mirrors the validate job: on failure, commit a
-      # pointer (plus the run link) into .ci/, which a plain `git pull` reads.
-      - name: Record a failure pointer in the repository
-        if: failure()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/ci-body
-          {
-            echo "# Last publish failure"
-            echo
-            echo "Run: ${RUN_URL}"
-            echo
-            echo '```'
-            tail -c 40000 /tmp/build.log 2>/dev/null | tail -60 || echo "(no build log captured)"
-            echo '```'
-          } > /tmp/ci-body
-          # Commit through the API rather than git: the workspace here is the action's checkout, where
-          # `git checkout -B main` can fail on local modifications - which is how the previous two
-          # failures lost their logs. gh is preinstalled on GitHub-hosted runners.
-          # Fresh clone rather than the current workspace: this step runs after the build, where the
-          # working tree may be dirty and a plain `git checkout -B main` aborts (that is how the first
-          # attempts lost their logs). A clean clone has nothing to conflict with.
-          git clone -q --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/ci-repo
-          mkdir -p /tmp/ci-repo/.ci
-          cp /tmp/ci-body /tmp/ci-repo/.ci/last-failure.md
-          cd /tmp/ci-repo
-          # `git commit -am` would not stage the new file: .ci/last-failure.md is always untracked.
-          git add .ci/last-failure.md
-          git -c user.name="github-actions[bot]" \
-              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-              commit -q -m "ci: record the last failure log [skip ci]" || true
-          git push -q origin HEAD:main || echo "could not push the failure log"
 
   validate:
     name: Validate recipe (build only, publishes nothing)
