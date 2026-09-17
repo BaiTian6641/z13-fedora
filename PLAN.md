@@ -664,8 +664,9 @@ matching step before anything is built, never producing a broken image.
    criteria 2 and 3 is visible in the run's **public** job list even while the package is private; I check those
    conclusions plus the workflow result (`GITHUB_TOKEN` pushes publish private, so an anonymous `tags/list` may
    not resolve even on success);
-3. `iso.yml` fires on its own via `workflow_run`; its preflight sees the publishing job, and the installer +
-   checksum land as a workflow artifact retained **7 days**. It is re-runnable at any time from
+3. `iso.yml` fires on its own via `workflow_run`; its preflight sees the publishing job, and — **once the package is
+   public** (previous paragraph: the builder container pulls anonymously) — the installer + checksum land as a
+   workflow artifact retained **7 days**. It is re-runnable at any time from
    *Actions → iso → Run workflow* (`image` and `tag` inputs), which is also the path to a fresh ISO once the
    artifact expires;
 4. you write it to a ≥16 GB stick (Fedora Media Writer or `dd`), install with the five-partition manual layout
