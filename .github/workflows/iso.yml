@@ -66,24 +66,26 @@ jobs:
           # premise directly: can this tag be pulled anonymously? That is also exactly what the
           # builder container does (generate-iso mounts no credentials), so it folds in the visibility
           # check - a private package yields no ISO.
+          # Single decision flow, no early exits: actionlint's embedded shellcheck treats code after
+          # a top-level-looking exit as unreachable (SC2317), which fails the lint job.
+          published=false
           tok=$(curl -s "https://ghcr.io/token?scope=repository:${owner}/${image}:pull&service=ghcr.io" \
                   | jq -r '.token // empty')
           if [[ -z "${tok}" ]]; then
-            echo "published=false" >> "$GITHUB_OUTPUT"
             echo "ghcr.io/${owner}/${image}:${tag} is not anonymously pullable - either nothing has been published yet, or the package is private. If the publish succeeded, set *Settings -> Packages -> ${image} -> Change visibility* to Public and re-run this workflow."
-            exit 0
+          else
+            code=$(curl -s -o /dev/null -w '%{http_code}' \
+                     -H "Authorization: Bearer ${tok}" \
+                     -H 'Accept: application/vnd.oci.image.index.v1+json, application/vnd.oci.image.manifest.v1+json' \
+                     "https://ghcr.io/v2/${owner}/${image}/manifests/${tag}")
+            if [[ "${code}" == "200" ]]; then
+              published=true
+              echo "ghcr.io/${owner}/${image}:${tag} resolves and is anonymously pullable; proceeding"
+            else
+              echo "ghcr.io/${owner}/${image}:${tag} is pullable but the tag does not resolve (HTTP ${code})"
+            fi
           fi
-          code=$(curl -s -o /dev/null -w '%{http_code}' \
-                   -H "Authorization: Bearer ${tok}" \
-                   -H 'Accept: application/vnd.oci.image.index.v1+json, application/vnd.oci.image.manifest.v1+json' \
-                   "https://ghcr.io/v2/${owner}/${image}/manifests/${tag}")
-          if [[ "${code}" != "200" ]]; then
-            echo "published=false" >> "$GITHUB_OUTPUT"
-            echo "ghcr.io/${owner}/${image}:${tag} is pullable but the tag does not resolve (HTTP ${code})"
-            exit 0
-          fi
-          echo "published=true" >> "$GITHUB_OUTPUT"
-          echo "ghcr.io/${owner}/${image}:${tag} resolves and is anonymously pullable; proceeding"
+          echo "published=${published}" >> "$GITHUB_OUTPUT"
 
   iso:
     name: Build installer ISO
