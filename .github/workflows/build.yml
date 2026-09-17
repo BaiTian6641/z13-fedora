@@ -178,7 +178,11 @@ jobs:
   validate:
     name: Validate recipe (build only, publishes nothing)
     needs: detect
-    if: needs.detect.outputs.has_key != 'true'
+    # Manual dispatch only: runner minutes cost money, and this job's original purpose - exercising
+    # the recipe before the signing secret existed - is now covered locally (recipe validation + the
+    # actionlint/shellcheck suite) and, once the secret is set, by the publish build itself. Every
+    # push with an unset secret therefore costs seconds (detect + skipped jobs) instead of a build.
+    if: needs.detect.outputs.has_key != 'true' && github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     permissions:
