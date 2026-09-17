@@ -329,6 +329,31 @@ permanent boot-menu complexity. The zero-cost equivalent is the CI-built ISO on 
 | 5 | Build & verify the ISO, write it to a **16 GB** USB with Fedora Media Writer (or `dd`) | The BlueBuild ISO is ≈ 5.9 GiB — **above the 4 GiB FAT32 file limit**, so raw device write is the only correct method |
 | 6 | Keep a Fedora live USB (stock Kinoite or Workstation) in your bag | Rescue, `wipefs`/`sgdisk` if the installer sees leftovers, and `efibootmgr` surgery |
 
+### 6.1a Fast artifact download (the web UI is the slow path)
+
+The artifact download button streams a single connection; for an 8.16 GiB ISO that is routinely
+1–5 MB/s. The API endpoint 302-redirects to a short-lived signed URL that honours range requests,
+which is what a parallel downloader needs:
+
+```bash
+sudo dnf install -y aria2 gh          # once
+gh auth login                        # once, if not already
+
+ARTIFACT=10490146649                 # z13-fedora-iso from run 35204266532
+TOKEN=$(gh auth token)
+LOC=$(curl -sI -H "Authorization: Bearer ${TOKEN}" \
+      -H "Accept: application/vnd.github+json" \
+      "https://api.github.com/repos/BaiTian6641/z13-fedora/actions/artifacts/${ARTIFACT}/zip" \
+      | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')
+aria2c -x16 -s16 -k4M --file-allocation=none -o z13-fedora-iso.zip "${LOC}"
+unzip z13-fedora-iso.zip             # -> *.iso + *.iso-CHECKSUM
+sha256sum -c *.iso-CHECKSUM
+```
+
+The signed URL expires within minutes, so generate it immediately before `aria2c`. If it expires
+mid-flight, re-run the two lines that build `LOC` and add `aria2c -c` to resume. Should the artifact
+have passed its 7-day retention, *Actions → iso → Run workflow* rebuilds it in ~16 minutes.
+
 ### 6.2 Firmware settings (F2 at power; F7 = Advanced; F10 = save; Esc or F8 = boot menu)
 
 | Setting | Value | Note |
