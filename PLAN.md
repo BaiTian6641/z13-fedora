@@ -57,128 +57,61 @@ Kernel options verified in the **Fedora 44 kernel config** (`CONFIG_VMD=m`, `CON
 
 ---
 
-## 2. Repository layout
+## 2. Repository layout (as built — M0)
 
 ```
-z13-fedora/
+z13-fedora/                          # git repo, initial commit 731d97c (18 files)
 ├── recipes/
-│   ├── recipe.yml            # Track A: kinoite-main + stock waydroid
-│   ├── recipe-dgpu.yml       # Track B: patched waydroid + waydroid-nvidia
-│   ├── system.yml            # files/, systemd, os-release
-│   ├── asus.yml              # COPR asus-linux → asusctl (+ asusd config)
-│   ├── nvidia.yml            # akmods: base main, nvidia-driver nvidia-open
-│   ├── waydroid.yml          # stock waydroid + SELinux policy
-│   ├── waydroid-dgpu.yml     # stage-built patched waydroid + waydroid-nvidia stack
-│   ├── desktop.yml           # Plasma defaults, fonts, file associations, env guards
-│   └── apps.yml              # daily-driver RPMs + system Flatpaks
-├── files/system/
-│   ├── etc/xdg/plasma-workspace/env/z13-guards.sh   # KWIN_DISABLE_VULKAN etc. (verified first)
-│   ├── etc/asusd/asusd.ron                          # no double-writing of platform_profile
-│   ├── usr/libexec/z13/{waydroid-setup,verify,oobe}.sh
+│   ├── recipe.yml                   # entry point: base, module order, signing
+│   ├── system.yml                   # files → image root overlay
+│   ├── asus.yml                     # COPR lukenukem/asus-linux → asusctl
+│   ├── nvidia.yml                   # akmods: base main, nvidia-driver nvidia-open
+│   ├── waydroid.yml                 # waydroid + waydroid-selinux (Track A)
+│   ├── desktop.yml                  # Plasma OSK, fonts, tuned-ppd, systemd units
+│   ├── apps.yml                     # system Flatpaks (ONLYOFFICE, ink apps)
+│   ├── branding.yml                 # os-release — runs after all package modules
+│   ├── recipe-dgpu.yml              # Track B: created at M4B, after the MUX spike
+│   └── waydroid-dgpu.yml            # Track B: patched Waydroid + waydroid-nvidia
+├── files/system/                    # mirrored into the image root
+│   ├── etc/xdg/plasma-workspace/env/z13-guards.sh
+│   ├── usr/libexec/z13/
+│   │   ├── verify.sh                # acceptance checklist      (ujust z13-verify)
+│   │   ├── gpu-status.sh            # which GPU does what        (ujust z13-gpu)
+│   │   ├── waydroid-setup.sh        # Android 16 GAPPS bootstrap (ujust z13-waydroid-setup)
+│   │   ├── oobe.sh                  # post-install setup         (ujust z13-oobe)
+│   │   └── mux-spike.sh             # MUX / asus-armoury probe   (ujust z13-mux)
 │   └── usr/share/ublue-os/just/99-z13.just
-├── .github/workflows/{build.yml,iso.yml}
+├── .github/workflows/
+│   ├── build.yml                    # image build: daily cron + push + PR, recipe matrix
+│   └── iso.yml                      # offline installer ISO built from the published image
 └── PLAN.md
 ```
 
----
-
-## 3. Recipes
-
-`recipes/recipe.yml`
-
-```yaml
----
-# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
-name: z13-fedora
-description: Fedora Atomic (KDE Plasma) for the ASUS ROG Flow Z13 2022 GZ301ZC — asusctl, NVIDIA RTX 3050 (open kmod), Waydroid Android 16 + GMS, ONLYOFFICE.
-base-image: ghcr.io/ublue-os/kinoite-main
-image-version: 44
-
-modules:
-  - from-file: system.yml
-  - from-file: asus.yml
-  - from-file: nvidia.yml
-  - from-file: waydroid.yml
-  - from-file: desktop.yml
-  - from-file: apps.yml
-  - type: signing
-```
-
-`recipes/asus.yml`
-
-```yaml
----
-modules:
-  - type: dnf
-    repos:
-      copr:
-        - lukenukem/asus-linux      # F44 chroot live; asusctl 6.3.8-2
-    install:
-      skip-unavailable: true
-      packages:
-        - asusctl
-        # NOT: supergfxctl (deprecated + broken MUX path on ≥6.19 kernels)
-        # NOT: rog-control-center (crash report filed against GZ301ZC)
-        # NOT: power-profiles-daemon (conflicts with Fedora 44's tuned-ppd)
-```
-
-`recipes/nvidia.yml`
-
-```yaml
----
-modules:
-  - type: akmods
-    base: main
-    nvidia-driver: nvidia-open
-```
-
-`recipes/desktop.yml` — the out-of-box layer (§7):
-
-```yaml
----
-modules:
-  - type: dnf
-    install:
-      skip-unavailable: true
-      packages:
-        - plasma-keyboard                  # Plasma 6.6+ OSK (watch KDE bug 522675)
-        - maliit-keyboard                  # fallback OSK if plasma-keyboard misbehaves
-        - google-carlito-fonts             # Calibri-metric (ONLYOFFICE fidelity)
-        - google-crosextra-caladea-fonts   # Cambria-metric
-        - google-arimo-fonts               # Arial-metric
-        - liberation-fonts                 # Arial/Times/Courier-metric
-        - tuned tuned-ppd                  # Fedora 44 default power stack
-  - type: systemd
-    system:
-      # verify exact unit names at first build: `systemctl list-unit-files | grep -E 'tuned|asusd'`
-      enabled:
-        - tuned-ppd.service                # tuned is the daemon; tuned-ppd is the PPD-compatible API layer
-        - asusd.service
-      disabled:
-        - waydroid-container.service       # on demand only
-```
-
-`recipes/apps.yml`
-
-```yaml
----
-modules:
-  - type: default-flatpaks
-    configurations:
-      - notify: true
-        scope: system
-        install:
-          - org.onlyoffice.desktopeditors   # 9.4.0, deployed on first boot (needs network)
-          - com.github.flxzt.rnote
-          - com.github.xournalpp.xournalpp
-          - org.gnome.Loupe
-      - scope: user
-```
-
-`recipes/waydroid.yml` / `waydroid-dgpu.yml`: as in the previous revision (stock `waydroid` + `waydroid-selinux`
-for Track A; stage-built patched waydroid + attested `waydroid-nvidia` v0.1.2 tarballs for Track B).
+Every `ujust` recipe is a thin wrapper that `exec`s a script in `/usr/libexec/z13/`, so the logic can be
+read, run and tested directly instead of hiding inside a Justfile body.
 
 ---
+
+## 3. Recipes (the files in `recipes/` are the source of truth)
+
+`recipes/recipe.yml` composes the module files in this order:
+
+| # | File | What it does |
+|---|---|---|
+| 1 | `system.yml` | `files` module: overlays `files/system/**` into the image root |
+| 2 | `asus.yml` | COPR `lukenukem/asus-linux` -> `asusctl` |
+| 3 | `nvidia.yml` | `akmods`: `base: main`, `install: []`, `nvidia-driver: nvidia-open` |
+| 4 | `waydroid.yml` | `waydroid` + `waydroid-selinux` from Fedora |
+| 5 | `desktop.yml` | `plasma-keyboard`/`maliit-keyboard`, metric-compatible fonts, `tuned-ppd`; enables `tuned-ppd.service` + `asusd.service`, keeps `waydroid-container.service` off |
+| 6 | `apps.yml` | `default-flatpaks`: ONLYOFFICE 9.4.0 + Rnote + Xournal++ + Loupe (system scope) |
+| 7 | `branding.yml` | `os-release` identity - deliberately last, because changing `ID` early breaks COPR/repo identification |
+| 8 | - | `signing` (cosign policy) |
+
+Two ordering constraints to remember when editing:
+
+- `akmods` requires an `install:` key even when it is empty (`install: []`); `nvidia-driver:` alone
+  fails schema validation.
+- `os-release` changes `ID`; every `dnf`/COPR module runs before it, so branding stays at the end.
 
 ## 4. Layer rationale (deltas from the previous revision)
 
@@ -474,3 +407,36 @@ is already in the image.
 - ASUS/kernel: `Documentation/ABI/testing/sysfs-platform-asus-wmi` (gpu_mux_mode deprecated → asus-armoury), asusctl MANUAL (`asusd.ron`), `gitlab.com/asus-linux/supergfxctl` issue 178, `github.com/OpenGamingCollective/cardwire`, ASUS support FAQs (F2/F7/F10/Esc boot menu, Fast Boot, Secure Boot, VMD, Cloud Recovery, EZ Flash), ASUS GZ301ZC BIOS v322 page
 - Waydroid: `docs.waydro.id`, upstream `data/waydroid.menu`, Fedora `waydroid` spec, WayDroid-ATV release `20260717`, `Shiro836/waydroid-nvidia` (README, install-manual, v0.1.2)
 - Flathub API: `org.onlyoffice.desktopeditors` 9.4.0, `com.github.flxzt.rnote`, `com.github.xournalpp.xournalpp`, `org.gnome.Loupe`
+
+---
+
+## 12. Implementation status
+
+**Done (M0)** — repo scaffolded and committed (`731d97c`, 18 files); all 8 recipes validate against the
+live `schema.blue-build.org` module schemas (0 errors); all five device scripts pass `bash -n` and were
+smoke-tested end-to-end on a non-target host, where they degrade to WARN/FAIL instead of crashing.
+The smoke test earned its keep by catching two real bugs:
+
+1. a banner helper named `head()` **shadowed the external `head` command**, so every
+   `... | head -1` capture in `verify.sh` / `gpu-status.sh` printed a stray marker instead of the value;
+2. `nvidia-smi` prints query errors on **stdout** (and exits non-zero), so captures are now validated
+   through `gpu_query()` rather than trusted; `power.state` is a field this driver does not accept.
+
+Both are fixed and re-verified: `gpu-status.sh` now reports the real GPU name, driver version,
+utilisation, VRAM and power draw on a hybrid machine.
+
+**Deliberately deferred**
+
+- `recipes/recipe-dgpu.yml` + `waydroid-dgpu.yml` (Track B) are created at **M4B**, after the MUX spike
+  (`ujust z13-mux`) shows the compositor can be moved onto the NVIDIA GPU. Building the variant before
+  that would ship an image that cannot work.
+- `/etc/asusd/asusd.ron` is patched at runtime by `z13-oobe` rather than shipped as a static file,
+  because asusd owns that file and a partial copy could clobber it.
+- The first CI run needs `secrets.SIGNING_SECRET` (cosign private key) plus a committed `cosign.pub`;
+  without them the `signing` module and the ISO workflow's verification step are inert.
+
+**Manual ISO build** (until the first CI image exists):
+
+```bash
+sudo bluebuild generate-iso --iso-name z13-fedora.iso image ghcr.io/<owner>/z13-fedora:latest
+```
