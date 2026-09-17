@@ -117,9 +117,19 @@ jobs:
 
       - name: Log in to GHCR (only needed while the image package is private)
         run: |
-          echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin || true
+          set -uo pipefail
+          TOKEN="${{ github.token }}"
+          ACTOR="${{ github.actor }}"
+          echo "${TOKEN}" | docker login ghcr.io -u "${ACTOR}" --password-stdin || true
           if command -v podman >/dev/null; then
-            echo "${{ github.token }}" | podman login ghcr.io -u "${{ github.actor }}" --password-stdin || true
+            echo "${TOKEN}" | podman login ghcr.io -u "${ACTOR}" --password-stdin || true
+          fi
+          # The ISO step below runs `sudo bluebuild generate-iso`, so it pulls the image as root -
+          # with root's own auth files, which the logins above do not touch. Without these, a private
+          # package (the default for images pushed with GITHUB_TOKEN) fails to pull.
+          echo "${TOKEN}" | sudo docker login ghcr.io -u "${ACTOR}" --password-stdin || true
+          if command -v podman >/dev/null; then
+            echo "${TOKEN}" | sudo podman login ghcr.io -u "${ACTOR}" --password-stdin || true
           fi
 
       - name: Verify the image signature
