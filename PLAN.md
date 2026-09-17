@@ -602,3 +602,13 @@ secret and must match the committed public key.
 `/tmp/z13-signing/cosign.key` (move that file somewhere permanent first — `/tmp` is wiped on reboot), then
 trigger a build. If you prefer your own keypair, replace `cosign.pub` in the repo instead; a mismatch fails
 fast with the error above rather than producing a broken image.
+
+**What happens the moment the secret exists** (no further decisions needed):
+
+1. a real (non-`[skip ci]`) push triggers `bluebuild`, which now rechunks to ≤128 layers;
+2. on success, `iso.yml` fires automatically via `workflow_run` and publishes the installer + checksum as a
+   workflow artifact;
+3. I verify criteria 1–3 from the GitHub and GHCR APIs (`cosign verify --key cosign.pub` exits 0), and hand
+   you the artifact link;
+4. you write it to a ≥16 GB stick (Fedora Media Writer or `dd`), install with the five-partition manual
+   layout from §6.3, and paste `ujust z13-report` back — which covers criteria 4–7 in one block.
