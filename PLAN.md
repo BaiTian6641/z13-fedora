@@ -532,7 +532,7 @@ must have its own ESP and `/boot`.
 | Recipes | 8 files (`recipe.yml` + 7 module files); all validate against the live `schema.blue-build.org` schemas, 0 errors |
 | Device scripts | 7 (`verify`, `gpu-status`, `waydroid-setup`, `oobe`, `mux-spike`, `recovery-install`, `report`) — `bash -n` + `shellcheck -S style` clean, smoke-tested on a non-target host where they degrade to WARN/FAIL instead of crashing |
 | ujust surface | `z13-status`, `z13-verify`, `z13-oobe`, `z13-waydroid-setup`, `z13-mux`, `z13-gpu`, `z13-recovery-install`, `z13-recovery-status`, `z13-report` |
-| CI | `build.yml` (daily + push + PR, recipe matrix) and `iso.yml` (offline installer ISO, checksum, release attach) |
+| CI | `build.yml` (daily + push + PR, recipe matrix) gates on a `detect` job: with `SIGNING_SECRET` it runs `publish` (signed, rechunked to ≤128 layers), without it `validate` builds the same recipe with `push: false`, so real content errors surface before the key exists. `iso.yml` builds the offline installer (checksum, release attach) behind a `preflight` job that requires a successful `Build and publish the image` job in the triggering run |
 | Docs | this plan, now including the partition design (§5), the install runbook (§6) and the recovery tiers (§5.5) |
 | Hardware-risk probes | fingerprint: `04f3:0c6e` **is** in libfprint's supported-device list (ElanTech block, nothing Elan in the unsupported section) — so enrolment is plausible on the shipped `libfprint`, pending an on-metal test |
 | Official validation | `bluebuild validate recipes/recipe.yml` (CLI 0.9.37, extracted from `ghcr.io/blue-build/cli:latest-installer`) reports *"Recipe recipes/recipe.yml is valid"* — and that traverses all seven `from-file` fragments, so the fragments are validated too. The same check now runs in the `lint` workflow on every push |
@@ -548,14 +548,14 @@ all GPU values now go through a validating `gpu_query()`.
 
 **Blocked on you / not yet done**
 
-1. **Create the empty GitHub repository `BaiTian6641/z13-fedora`** — `git remote origin` is already set to
-   `git@github.com:BaiTian6641/z13-fedora.git` and SSH auth as `BaiTian6641` works from this workstation, so
-   the moment the repository exists: `git push -u origin main`.
-   Create it **through `workshop.blue-build.org`** rather than the web form: that also generates the cosign
-   keypair and stores it as the `SIGNING_SECRET` repository secret. Without that secret the `signing` module
-   and the ISO workflow's verification step stay inert (builds still work, images are unsigned).
+1. **Add the `SIGNING_SECRET` repository secret** — the only outstanding user action. The repository exists
+   and is pushed (`github.com/BaiTian6641/z13-fedora`; SSH auth verified as `BaiTian6641`), and the keypair is
+   ready: `cosign.pub` is committed, the matching private key sits at `/tmp/z13-signing/cosign.key` (move it
+   somewhere permanent — `/tmp` is wiped on reboot).
    Note the namespace is lowercased on purpose — GHCR rejects mixed-case paths, so images publish to
    `ghcr.io/baitian6641/z13-fedora` (`build.yml` derives the lowercase owner itself).
+   Until the secret exists, every push runs the unsigned `validate` job instead of `publish` (see §12.2), so the
+   pipeline stays green and the recipe is exercised — but no image is published.
 2. **First CI run** — with the repo and the secret in place, `build.yml` publishes
    `ghcr.io/baitian6641/z13-fedora:44` and `:latest` (daily, plus on push), and `iso.yml` turns that image
    into the offline installer ISO with a checksum. That is milestone **M0** green.
@@ -565,8 +565,8 @@ all GPU values now go through a validating `gpu_query()`.
 
 ### 12.1 Building without CI (relevant while the repo stays local)
 
-`origin` is configured (`git@github.com:BaiTian6641/z13-fedora.git`) but nothing is pushed, so the image and
-the ISO must be produced elsewhere. Any Fedora 44 machine or VM works; this workstation cannot do it — it is
+`origin` is `git@github.com:BaiTian6641/z13-fedora.git` and the repo is pushed, so CI produces the image and
+the ISO — but a local build works too. Any Fedora 44 machine or VM works; this workstation cannot do it — it is
 Ubuntu-on-WSL2, and `bluebuild build` needs podman while `generate-iso` additionally wants loop devices and
 root.
 
@@ -598,6 +598,15 @@ The diagnosis is taken from the CLI source, not guessed: `process/drivers/cosign
 derives the public key from `COSIGN_PRIVATE_KEY`, and bails with *"Public key 'cosign.pub' does not match
 private key"* when they disagree — so the private key must arrive through the `SIGNING_SECRET` repository
 secret and must match the committed public key.
+
+**Unsigned validation path.** A `bluebuild` run is useful without any key: the `detect` job routes pushes to
+`validate`, which calls the same action with `push: false`. That is a supported configuration rather than a
+hack — `src/commands/build.rs` gates every signing step behind `if self.push && !self.no_sign`, and the
+in-recipe `signing` module needs only the committed `cosign.pub`, which the generated `stage-keys` stage copies
+into the image (`template/templates/stages.j2`), so the validated recipe is byte-identical to the one that will
+publish. Because such a run is green while publishing nothing, `iso.yml` inspects the triggering run for a
+successful `Build and publish the image` job and skips (fails closed) when it finds none — verified against
+eight job-list payloads, including a green `validate` beside a skipped `publish`.
 
 **Outstanding (user action):** add the repository secret `SIGNING_SECRET` with the contents of
 `/tmp/z13-signing/cosign.key` (move that file somewhere permanent first — `/tmp` is wiped on reboot), then
