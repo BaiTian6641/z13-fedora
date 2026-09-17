@@ -536,3 +536,24 @@ all GPU values now go through a validating `gpu_query()`.
 3. **Track B** (`recipe-dgpu.yml`, `waydroid-dgpu.yml`) — created at **M4B**, gated on the MUX spike (`ujust z13-mux`) run on the real machine.
 4. **Recovery install path** — `z13-recovery-install` cannot be exercised on this workstation (needs root, a `RECOVERY` partition and an ISO); it is exercised at **M6b** in a UEFI VM, which is also where the GRUB stanzas get proven end to end.
 5. `/etc/asusd/asusd.ron` is patched at runtime by `z13-oobe` rather than shipped as a static file, because asusd owns that file and a partial copy could clobber it.
+
+### 12.1 Building without CI (relevant while the repo stays local)
+
+`origin` is configured (`git@github.com:BaiTian6641/z13-fedora.git`) but nothing is pushed, so the image and
+the ISO must be produced elsewhere. Any Fedora 44 machine or VM works; this workstation cannot do it — it is
+Ubuntu-on-WSL2, and `bluebuild build` needs podman while `generate-iso` additionally wants loop devices and
+root.
+
+```bash
+# on a Fedora 44 host or VM
+sudo dnf install -y podman git
+git clone git@github.com:BaiTian6641/z13-fedora.git   # once the repo exists
+cd z13-fedora
+sudo bluebuild build recipes/recipe.yml               # image (pushed only if you configure a registry)
+sudo bluebuild generate-iso --iso-name z13-fedora.iso image ghcr.io/<owner>/z13-fedora:latest
+```
+
+A local-only variant avoids the registry entirely: `bluebuild build recipes/recipe.yml` with
+`--push false`, then `bootc switch ostree-unverified-registry:...` on a target machine, or install from a
+Fedora live environment with `bootc install to-filesystem`. The ISO route above is the one the install
+runbook (§6) assumes.
