@@ -28,6 +28,21 @@ if systemctl is-active --quiet tuned-ppd.service 2>/dev/null; then
 else
   info "tuned-ppd.service: NOT active — check 'systemctl status tuned-ppd'"
 fi
+
+# asusd-user is a per-session *user* unit (Aura/keyboard settings). Upstream's Makefile installs the
+# binary but has no rule for the unit file, so it is not reliably packaged — enable it here, at
+# runtime, only if it actually exists, rather than failing the image build over it.
+if [[ -f /usr/lib/systemd/user/asusd-user.service ]]; then
+  if systemctl --global is-enabled asusd-user.service >/dev/null 2>&1; then
+    info "asusd-user.service: already enabled for all users"
+  elif sudo systemctl --global enable asusd-user.service 2>/dev/null; then
+    info "asusd-user.service: enabled for all users (log out/in to start it)"
+  else
+    info "asusd-user.service: present but could not be enabled"
+  fi
+else
+  info "asusd-user.service: not shipped by this asusctl build (skipped)"
+fi
 info "active tuned profile: $(tuned-adm active 2>/dev/null | sed 's/^Current active profile: //' || echo unknown)"
 
 say "platform_profile ownership (asusd vs tuned-ppd)"

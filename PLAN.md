@@ -532,6 +532,7 @@ must have its own ESP and `/boot`.
 | CI | `build.yml` (daily + push + PR, recipe matrix) and `iso.yml` (offline installer ISO, checksum, release attach) |
 | Docs | this plan, now including the partition design (§5), the install runbook (§6) and the recovery tiers (§5.5) |
 | Hardware-risk probes | fingerprint: `04f3:0c6e` **is** in libfprint's supported-device list (ElanTech block, nothing Elan in the unsupported section) — so enrolment is plausible on the shipped `libfprint`, pending an on-metal test |
+| systemd unit names | verified against the packaging before they can fail a build: `tuned-ppd.service` (Fedora `tuned` spec), `asusd.service` (`BIN_D := asusd` in asusctl's Makefile), `waydroid-container.service` (Fedora `waydroid` spec). `asusd-user.service` is **not** enabled at build time: upstream's Makefile installs the `asusd-user` binary but has no rule for the unit file, so it is enabled at runtime by `z13-oobe` only if present |
 | Pre-CI checks | `actionlint` + `shellcheck` clean; every RPM in the recipes verified to exist for Fedora 44 (this caught `liberation-fonts` not existing); `99-z13.just` parsed and dry-run with the real `just` 1.58 binary; both Waydroid OTA manifests fetched live and the resolved image names/sizes recorded in §4.3 |
 
 Two real bugs were caught by the smoke tests and fixed: a banner helper named `head()` shadowed the external

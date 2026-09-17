@@ -27,9 +27,14 @@ modules:
   - type: systemd
     system:
       # At build time these units exist because the packages above (and asusctl) are installed first.
+      # Unit names verified against the packaging: tuned-ppd.service (Fedora tuned spec),
+      # asusd.service (asusctl Makefile: BIN_D := asusd), waydroid-container.service (Fedora waydroid spec).
       enabled:
         - tuned-ppd.service
         - asusd.service
       disabled:
         # Waydroid is started on demand (ujust z13-waydroid-setup), not at every boot.
         - waydroid-container.service
+      # NOTE: asusd-user.service is a *user* unit whose unit file upstream does not reliably install
+      # (the Makefile installs the binary but has no rule for the .service), so it is enabled at
+      # runtime by z13-oobe only if present — never at build time, where a missing unit fails the build.
