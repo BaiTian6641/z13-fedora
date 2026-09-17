@@ -635,10 +635,15 @@ fast with the error above rather than producing a broken image.
 
 **What happens the moment the secret exists** (no further decisions needed):
 
-1. a real (non-`[skip ci]`) push triggers `bluebuild`, which now rechunks to ≤128 layers;
-2. on success, `iso.yml` fires automatically via `workflow_run` and publishes the installer + checksum as a
-   workflow artifact;
-3. I verify criteria 1–3 from the GitHub and GHCR APIs (`cosign verify --key cosign.pub` exits 0), and hand
-   you the artifact link;
-4. you write it to a ≥16 GB stick (Fedora Media Writer or `dd`), install with the five-partition manual
-   layout from §6.3, and paste `ujust z13-report` back — which covers criteria 4–7 in one block.
+1. a real (non-`[skip ci]`) push triggers `bluebuild`; `detect` flips it to `publish`, whose first step re-checks
+   the secret against `cosign.pub` (seconds, not a whole build), and the action then signs, rechunks to ≤128
+   layers and pushes;
+2. I verify criteria 1–3 from the APIs: the workflow conclusion, `:44` and `:latest` resolving, **≤128 layers in
+   the pushed manifest** (the whole premise for the ISO step), and `cosign verify --key cosign.pub` exiting 0 —
+   or hand you the two commands if the package starts private, since `GITHUB_TOKEN` pushes publish private;
+3. `iso.yml` fires on its own via `workflow_run`; its preflight sees the publishing job, and the installer +
+   checksum land as a workflow artifact retained **7 days**. It is re-runnable at any time from
+   *Actions → iso → Run workflow* (`image` and `tag` inputs), which is also the path to a fresh ISO once the
+   artifact expires;
+4. you write it to a ≥16 GB stick (Fedora Media Writer or `dd`), install with the five-partition manual layout
+   from §6.3, and paste `ujust z13-report` back — which covers criteria 4–7 in one block.
