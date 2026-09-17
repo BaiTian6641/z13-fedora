@@ -17,6 +17,7 @@ jobs:
   bluebuild:
     name: Build Custom Image
     runs-on: ubuntu-latest
+    timeout-minutes: 120 # a hung NVIDIA/kmods build should not burn six runner hours
     permissions:
       contents: read
       packages: write
