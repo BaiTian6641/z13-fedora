@@ -8,6 +8,11 @@ name: iso
 # Requires the image to be built and pushed by .github/workflows/build.yml first.
 
 on:
+  # Build an installer automatically after every successful image build, so a fresh ISO exists
+  # without anyone clicking anything (the guard on the job skips failed image builds).
+  workflow_run:
+    workflows: ["bluebuild"]
+    types: [completed]
   workflow_dispatch:
     inputs:
       image:
@@ -31,6 +36,12 @@ permissions:
 jobs:
   iso:
     name: Build installer ISO
+    # Skip when the triggering image build failed, and skip pull-request builds (no ISO for those);
+    # manual and release dispatches always run.
+    if: >-
+      ${{ github.event_name != 'workflow_run'
+          || (github.event.workflow_run.conclusion == 'success'
+              && github.event.workflow_run.event != 'pull_request') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -89,7 +100,10 @@ jobs:
         run: |
           set -euo pipefail
           OWNER="${GITHUB_REPOSITORY_OWNER,,}"
-          ISO_NAME="${IMAGE}-${TAG}-$(date -u +%Y%m%d).iso"
+          # include the image commit so repeat builds on the same day never collide
+          SHA="${{ github.event.workflow_run.head_sha }}"
+          ISO_NAME="${IMAGE}-${TAG}-$(date -u +%Y%m%d)-${SHA:0:7}.iso"
+          [[ "$ISO_NAME" == *"-.iso" ]] && ISO_NAME="${IMAGE}-${TAG}-$(date -u +%Y%m%d)-manual.iso"
           # --variant kinoite is the CLI default, but state it: this is what makes Anaconda ask for
           # the user account during installation (as KDE requires) rather than at first boot.
           sudo bluebuild generate-iso --iso-name "${ISO_NAME}" --variant kinoite image "ghcr.io/${OWNER}/${IMAGE}:${TAG}"
@@ -104,12 +118,21 @@ jobs:
             *.iso
             *.iso-CHECKSUM
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 7 # artifacts are free for public repos, but keep the storage sane
 
-      - name: Attach ISO to the release
+      - name: Attach the checksum to the release
         if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v2
         with:
+          # GitHub caps release assets at 2 GiB and this ISO is ~6 GiB, so the ISO itself cannot be
+          # a release asset: the workflow artifact is the distribution channel, and the release gets
+          # the checksum plus a pointer to the run.
           files: |
-            *.iso
             *.iso-CHECKSUM
+          body: |
+            Installer ISO built from `${{ github.event.workflow_run.head_sha }}`.
+
+            Download it from this workflow run's **Artifacts** section (the file is ~6 GiB, above
+            GitHub's 2 GiB per-release-asset limit, so it is not attached here). Verify with the
+            accompanying `.iso-CHECKSUM`, then write it to a >=16 GB USB stick with Fedora Media
+            Writer or `dd` — not a plain file copy (FAT32 cannot hold it).
