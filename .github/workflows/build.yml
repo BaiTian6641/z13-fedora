@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     permissions:
-      contents: read
+      contents: write # only for committing the failure log to .ci/
       packages: read
     steps:
       # GHCR rejects mixed-case namespaces; GitHub usernames are case-preserving.
@@ -120,6 +120,18 @@ jobs:
           sudo docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
           sudo docker rm blue-build-installer
           bluebuild --version
+
+      # The official action brings its own runtime setup; a hand-rolled invocation has to do it.
+      # ubuntu-latest does not ship podman (the ISO job installs it for the same reason), and the
+      # CLI refuses to start without docker>=23, podman>=4 or buildah>=1.29.
+      - name: Install podman
+        run: |
+          set -euo pipefail
+          if ! command -v podman >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y podman
+          fi
+          podman --version
 
       - name: Build the image without pushing it
         env:
@@ -146,3 +158,29 @@ jobs:
           path: /tmp/build.log
           if-no-files-found: warn
           retention-days: 7
+
+      # Workflow logs and artifacts both need an authenticated API call to read, which makes a red
+      # validation undiagnosable for anyone without a token. On failure the tail of the log is
+      # therefore committed to .ci/last-failure.md, which is readable with a plain `git pull`.
+      # Remove this step once the pipeline is green end to end.
+      - name: Record the failure log in the repository
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p .ci
+          {
+            echo "# Last validation build failure"
+            echo
+            echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            echo '```'
+            tail -c 40000 /tmp/build.log 2>/dev/null || echo "(no build log was produced)"
+            echo '```'
+          } > .ci/last-failure.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .ci/last-failure.md
+          git commit -q -m "ci: record the last validation failure log [skip ci]" || true
+          git push -q origin HEAD:main || echo "could not push the failure log"
