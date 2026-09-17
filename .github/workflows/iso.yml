@@ -164,12 +164,17 @@ jobs:
           IMAGE: ${{ inputs.image || 'z13-fedora' }}
           TAG: ${{ inputs.tag || 'latest' }}
           GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -euo pipefail
           OWNER="${GITHUB_REPOSITORY_OWNER,,}"
-          SHA="${{ github.event.workflow_run.head_sha }}"
+          SHA="${HEAD_SHA:-manual}"
           ISO_NAME="${IMAGE}-${TAG}-$(date -u +%Y%m%d)-${SHA:0:7}.iso"
-          [[ "$ISO_NAME" == *"-.iso" ]] && ISO_NAME="${IMAGE}-${TAG}-$(date -u +%Y%m%d)-manual.iso"
+          # if/then, not ampersand-guard: with set -e a false test-and-assign line exits the
+          # script, and actionlint's shellcheck then reads everything below as unreachable.
+          if [[ "${ISO_NAME}" == *"-.iso" ]]; then
+            ISO_NAME="${IMAGE}-${TAG}-$(date -u +%Y%m%d)-manual.iso"
+          fi
           VERSION=$(awk '/^image-version:/{print $2; exit}' recipes/recipe.yml)
           [ -n "${VERSION}" ] || { echo "::error::no image-version in recipes/recipe.yml"; exit 1; }
           echo "building ${ISO_NAME} for Fedora ${VERSION} from ghcr.io/${OWNER}/${IMAGE}:${TAG}"
@@ -215,6 +220,21 @@ jobs:
           if [ "${rc}" -eq 0 ] && [ -f "${ISO_NAME}" ]; then
             ls -lh "${ISO_NAME}"
             cat "${ISO_NAME}-CHECKSUM"
+            # Surface the artefact in the run summary: the artifact itself needs a (free) GitHub
+            # login, and the detail anyone actually wants is the name, size and hash.
+            {
+              echo "## Installer ISO"
+              echo
+              echo "| file | size |"
+              echo "|---|---|"
+              echo "| \`${ISO_NAME}\` | $(du -h "${ISO_NAME}" | cut -f1) |"
+              echo
+              echo '```'
+              cat "${ISO_NAME}-CHECKSUM"
+              echo '```'
+              echo
+              echo "Built from \`ghcr.io/${OWNER}/${IMAGE}:${TAG}\` (Fedora ${VERSION})."
+            } >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           [ "${rc}" -eq 0 ] && rc=1   # builder reported success but produced no ISO
@@ -222,8 +242,8 @@ jobs:
           {
             echo "# Last ISO failure"
             echo
-            echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            echo "Commit: ${{ github.sha }}"
+            echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "Commit: ${GITHUB_SHA}"
             echo
             echo '```'
             tail -c 200000 /tmp/iso.log 2>/dev/null | tail -400 || echo "(no builder output captured)"
@@ -247,22 +267,6 @@ jobs:
             echo "clone failed: $(head -c 300 /tmp/clone.err 2>/dev/null)"
           fi
           exit "${rc}"
-
-          # Surface the artefact in the run summary: the artifact itself needs a (free) GitHub login,
-          # and the detail anyone actually wants is the name, size and hash.
-          {
-            echo "## Installer ISO"
-            echo
-            echo "| file | size |"
-            echo "|---|---|"
-            echo "| \`${ISO_NAME}\` | $(du -h "${ISO_NAME}" | cut -f1) |"
-            echo
-            echo '```'
-            cat "${ISO_NAME}-CHECKSUM"
-            echo '```'
-            echo
-            echo "Built from \`ghcr.io/${OWNER}/${IMAGE}:${TAG}\` (Fedora ${VERSION})."
-          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload the builder log
         if: always()
