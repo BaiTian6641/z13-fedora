@@ -554,6 +554,11 @@ all GPU values now go through a validating `gpu_query()`.
    somewhere permanent — `/tmp` is wiped on reboot).
    Note the namespace is lowercased on purpose — GHCR rejects mixed-case paths, so images publish to
    `ghcr.io/baitian6641/z13-fedora` (`build.yml` derives the lowercase owner itself).
+   Verified before hand-over: `COSIGN_PASSWORD="" cosign public-key --key /tmp/z13-signing/cosign.key`
+   reproduces the committed `cosign.pub` byte for byte, so the secret will be accepted rather than failing
+   with *"Public key 'cosign.pub' does not match private key"*. The key must also have an **empty**
+   password: the CLI hardcodes `COSIGN_PASSWORD: ""` on every cosign invocation
+   (`process/drivers/cosign_driver.rs`) — a password-protected keypair would never sign.
    Until the secret exists, every push runs the unsigned `validate` job instead of `publish` (see §12.2), so the
    pipeline stays green and the recipe is exercised — but no image is published.
 2. **First CI run** — with the repo and the secret in place, `build.yml` publishes
