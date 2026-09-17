@@ -597,6 +597,8 @@ runbook (§6) assumes.
 |---|---|---|---|
 | `lint` | `16193e8` | success | actionlint + shellcheck + recipe YAML parse all green on the very first push |
 | `bluebuild` | `16193e8` | **no run created** | the first push to the brand-new repo triggered only `lint`; the same workflow fired normally on the next push — a GitHub quirk on initial pushes, not a configuration error |
+| `iso` | `6563bf0` | success, ISO **skipped** | same gate, reached from a *superseded* (cancelled) build run: it still skipped rather than building an ISO for an image that was never pushed |
+| `bluebuild` | `8ab81e5` | cancelled | superseded by the next push — `concurrency.cancel-in-progress` cancels the older run for the same ref, which is the intended behaviour and costs nothing |
 | `iso` | `38b2ecf` | success, ISO **skipped** | first real exercise of the preflight gate: it read the triggering run's job list, found no `Build and publish the image`, reported `published=false` and skipped the ISO build — instead of burning 20 minutes against an image that does not exist |
 | `bluebuild` | `38b2ecf` | **success** (21 min build step) | production chunking validated unsigned: `build_chunked_oci: true` + `max_layers: 128` rechunked the 259-layer base in a 1272 s build step, `publish` skipped |
 | `bluebuild` | `e703cdb` | **success** (7 min build step) | `detect` found no secret, so `validate` ran: the full recipe built end-to-end with `push: false` (411 s in the build step) and `publish` was correctly skipped — the first real build of every module chain, and it passed |
