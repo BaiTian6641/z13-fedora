@@ -156,7 +156,7 @@ deployment) are unchanged from the previous revision.
 
 Flathub `org.onlyoffice.desktopeditors` **9.4.0** as a system Flatpak. With Windows gone there are no
 Microsoft fonts on the machine, so the image ships the metric-compatible set (`google-carlito-fonts`,
-`google-crosextra-caladea-fonts`, `google-arimo-fonts`, `liberation-fonts`) and associates
+`google-crosextra-caladea-fonts`, `google-arimo-fonts`, `liberation-sans-fonts`, `liberation-serif-fonts`) and associates
 `.docx/.xlsx/.pptx` with ONLYOFFICE — this is the single biggest out-of-box fidelity win for documents.
 
 ### 4.5 Waydroid desktop integration (new)

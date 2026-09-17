@@ -18,7 +18,10 @@ modules:
         - google-carlito-fonts            # Calibri metrics
         - google-crosextra-caladea-fonts  # Cambria metrics
         - google-arimo-fonts              # Arial metrics
-        - liberation-fonts                # Arial/Times/Courier metrics
+        - liberation-sans-fonts            # Arial metrics
+        - liberation-serif-fonts           # Times metrics
+        # NB: there is no "liberation-fonts" binary package in Fedora 44 (verified) — only the
+        # per-style subpackages above.
         - tuned
         - tuned-ppd
   - type: systemd

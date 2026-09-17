@@ -1,0 +1,46 @@
+name: lint
+
+# Cheap, fast checks that catch the failure modes most likely to reach CI otherwise:
+# a broken workflow file, a broken device script, or a recipe YAML that does not parse.
+# The full recipe/module schema validation happens in build.yml against the live schemas.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint workflows, scripts, recipes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install actionlint
+        run: |
+          set -euo pipefail
+          tag=$(curl -sIL -o /dev/null -w '%{url_effective}' https://github.com/rhysd/actionlint/releases/latest | awk -F/ '{print $NF}')
+          curl -sSL -o /tmp/actionlint.tar.gz \
+            "https://github.com/rhysd/actionlint/releases/download/${tag}/actionlint_${tag#v}_linux_amd64.tar.gz"
+          tar -xzf /tmp/actionlint.tar.gz -C /tmp actionlint
+          /tmp/actionlint -version
+
+      - name: Lint workflows
+        run: /tmp/actionlint -no-color
+
+      - name: Lint device scripts
+        run: shellcheck -S warning files/system/usr/libexec/z13/*.sh
+
+      - name: Parse every recipe as YAML
+        run: |
+          python3 - <<'PY'
+          import glob, sys, yaml
+          files = sorted(glob.glob("recipes/*.yml"))
+          for f in files:
+              with open(f) as fh:
+                  yaml.safe_load(fh)
+          print(f"parsed {len(files)} recipe files")
+          PY

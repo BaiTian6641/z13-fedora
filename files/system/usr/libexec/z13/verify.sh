@@ -216,7 +216,11 @@ else
 fi
 if have glxinfo; then
   r=$(__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia glxinfo -B 2>/dev/null | awk -F': ' '/OpenGL renderer/{print $2; exit}')
-  [[ -n "$r" ]] && ok "PRIME offload renderer: $r" || warn "could not query the PRIME offload renderer (Xwayland may be absent)"
+  if [[ -n "$r" ]]; then
+    ok "PRIME offload renderer: $r"
+  else
+    warn "could not query the PRIME offload renderer (Xwayland may be absent)"
+  fi
 fi
 if have vainfo; then
   info "vainfo: $(vainfo 2>/dev/null | awk -F': ' '/Driver version/{print $2; exit}')"
@@ -251,7 +255,11 @@ if [[ $QUICK -eq 0 ]]; then
   fi
   if have lspci; then
     w=$(lspci -nn 2>/dev/null | grep -iE 'network|wireless' | head -1)
-    [[ -n "$w" ]] && info "wireless: $w" || warn "no wireless PCI device detected"
+    if [[ -n "$w" ]]; then
+      info "wireless: $w"
+    else
+      warn "no wireless PCI device detected"
+    fi
   fi
 fi
 
@@ -279,8 +287,11 @@ if have waydroid; then
   else
     info "waydroid installed; session not running (start with: ujust z13-waydroid-setup)"
   fi
-  [[ -d /var/lib/waydroid/images ]] && info "Android images present in /var/lib/waydroid/images" \
-                                    || info "Android images not downloaded yet (ujust z13-waydroid-setup)"
+  if [[ -d /var/lib/waydroid/images ]]; then
+    info "Android images present in /var/lib/waydroid/images"
+  else
+    info "Android images not downloaded yet (ujust z13-waydroid-setup)"
+  fi
 else
   bad "waydroid package missing"
 fi
