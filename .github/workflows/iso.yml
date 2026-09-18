@@ -268,6 +268,29 @@ jobs:
           fi
           exit "${rc}"
 
+      - name: Prove the pre-seeded partition layout is inside the ISO
+        # The five-partition layout only reaches the installed system via interactive-defaults.ks
+        # inside the install environment. Extract that file out of the finished ISO and require
+        # our marker - if lorax silently dropped the template, the ISO must not ship.
+        run: |
+          set -euo pipefail
+          ISO="$(find . -maxdepth 1 -name '*.iso' -print -quit)"
+          echo "verifying layout inside: $ISO"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xorriso squashfs-tools
+          rm -rf /tmp/iso-verify && mkdir -p /tmp/iso-verify
+          xorriso -osirrox on -indev "$ISO" -extract /LiveOS/squashfs.img /tmp/iso-verify/squashfs.img >/dev/null
+          unsquashfs -q -f -d /tmp/iso-verify/root /tmp/iso-verify/squashfs.img \
+            usr/share/anaconda/interactive-defaults.ks >/dev/null
+          KS=/tmp/iso-verify/root/usr/share/anaconda/interactive-defaults.ks
+          grep -n "z13-layout" "$KS"
+          {
+            echo "### Pre-seeded installer layout"
+            echo '```'
+            grep -E "z13-layout|clearpart|zerombr|^part |ostreecontainer" "$KS"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload the builder log
         if: always()
         uses: actions/upload-artifact@v4

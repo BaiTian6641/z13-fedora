@@ -1,0 +1,25 @@
+[Unit]
+# First-boot Waydroid initialisation, no network needed: the Android images are baked into the
+# image at /usr/share/waydroid-extra/images (upstream's preinstalled-images path), so `waydroid
+# init` detects them, writes waydroid.cfg with OTA=None and sets up binder nodes from binderfs.
+Description=Initialize Waydroid from preinstalled Android images
+ConditionPathExists=!/var/lib/waydroid/waydroid.cfg
+Wants=dev-binderfs.mount
+After=local-fs.target dev-binderfs.mount
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/waydroid init
+# SELinux: baked/created trees get the waydroid-selinux labels before the container starts.
+ExecStartPost=-/usr/sbin/restorecon -R /var/lib/waydroid
+# Props are plain file writes to waydroid.prop; tolerate failures if the layout changes.
+ExecStartPost=-/usr/bin/waydroid prop set persist.waydroid.multi_windows true
+ExecStartPost=-/usr/bin/waydroid prop set persist.waydroid.camera true
+ExecStartPost=-/usr/bin/waydroid prop set persist.waydroid.width 1920
+ExecStartPost=-/usr/bin/waydroid prop set persist.waydroid.height 1200
+# Enable (not start) the container so the first click on the Waydroid icon works.
+ExecStartPost=-/usr/bin/systemctl enable waydroid-container.service
+
+[Install]
+WantedBy=multi-user.target

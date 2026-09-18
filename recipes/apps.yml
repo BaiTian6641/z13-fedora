@@ -1,11 +1,33 @@
 ---
-# Applications. System-scope Flatpaks are deployed by a first-boot service, so the machine needs
-# network access once after installation (the OS itself, NVIDIA, asusctl and Waydroid are already
-# baked into the image).
+# Applications. The system Flatpaks are BAKED into the image at build time (flatpak --system
+# install lands in /var/lib/flatpak, which the installer carries onto the target disk), so the
+# full app set is present at first boot with no network access. The default-flatpaks module
+# stays as a silent fallback (notify: false): if a future installer ever drops baked /var
+# content, its per-boot service reinstalls the same list; with everything present it is a
+# no-op.
 modules:
+  - type: script
+    snippets:
+      - |
+        set -euo pipefail
+        # Root in the build container installs directly (no system-helper / dbus needed).
+        flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+        flatpak install -y --system --noninteractive flathub \
+          org.onlyoffice.desktopeditors \
+          com.visualstudio.code \
+          com.valvesoftware.Steam \
+          com.vysp3r.ProtonPlus \
+          org.videolan.VLC \
+          org.chromium.Chromium \
+          org.kde.krita \
+          com.github.flxzt.rnote \
+          com.github.xournalpp.xournalpp \
+          org.gnome.Loupe
+        flatpak list --system --app --columns=application,version
+
   - type: default-flatpaks
     configurations:
-      - notify: true
+      - notify: false
         scope: system
         install:
           - org.onlyoffice.desktopeditors   # 9.4.0

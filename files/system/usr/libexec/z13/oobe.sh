@@ -185,10 +185,14 @@ case "$root_src" in
 esac
 
 say "Android (Waydroid)"
-if [[ -f /var/lib/waydroid/images/system.img ]]; then
-  info "Android images are present. Start it with:  waydroid session start"
+if [[ -f /var/lib/waydroid/waydroid.cfg ]]; then
+  info "Waydroid is initialized (Android images were baked into the image - no download needed)"
+  info "start it with the Waydroid icon, or:  waydroid session start"
+elif [[ -f /usr/share/waydroid-extra/images/system.img ]]; then
+  info "Android images are baked in; first-boot init has not finished yet"
+  info "check: systemctl status z13-waydroid-init.service   (or run: sudo waydroid init)"
 else
-  info "Android images are not downloaded yet (~1.6 GB). Run:  ujust z13-waydroid-setup"
+  info "Android images missing from the image. Run:  ujust z13-waydroid-setup"
 fi
 
 say "Recovery"

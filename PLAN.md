@@ -25,7 +25,7 @@ detachable 1-zone-RGB folio keyboard, ROG XG Mobile port. Latest ASUS BIOS for t
 | NVIDIA | BlueBuild `akmods` module: `base: main`, `nvidia-driver: nvidia-open` | GA107 supported; open KM is **mandatory** for the dGPU-Waydroid stack (DMA-BUF). |
 | Android (Track A, default) | Fedora `waydroid` 1.6.3 + **Android 16 QPR2 GAPPS** (WayDroid-ATV `20260717`), rendering on the **Iris Xe** iGPU | Binder is in-kernel; iGPU is Waydroid's best-supported path. |
 | Android (Track B, experimental) | `waydroid-nvidia` v0.1.2 (Vulkan/Venus proxy) — **only viable with the MUX in dGPU mode**, which now has no Windows fallback (§4.3) | Requested; feasibility spike first, shipped as a separate image variant. |
-| Office | Flathub `org.onlyoffice.desktopeditors` **9.4.0**, deployed on first boot | Official Flatpak; no second RPM repo in the image. |
+| Office | Flathub `org.onlyoffice.desktopeditors` **9.4.0**, baked into the image at build time | Official Flatpak; no second RPM repo in the image. |
 | Installer | `bluebuild generate-iso` (BCI, **offline** OCI payload) → Fedora Media Writer/dd to a **16 GB** USB | ISO ≈ 5.9 GiB > the 4 GiB FAT32 limit, so raw device write only. |
 
 **Not promised:** pen input inside Android apps (waydroid#423); Play Integrity DEVICE/STRONG (banking/DRM
@@ -381,6 +381,15 @@ full layout without manual partitioning. `clearpart` is pinned to `nvme0n1` so t
 never wiped, and both LUKS volumes use `--encrypted` **without** `--passphrase`, which makes
 Anaconda **prompt for the passphrase** during installation (one passphrase covers both).
 
+Every ISO build now **proves the template made it in**: a workflow step extracts
+`usr/share/anaconda/interactive-defaults.ks` from the finished ISO and requires the `z13-layout`
+marker (the build fails otherwise) - no more silent drops.
+
+**Install UX with the preseed:** the Installation Destination spoke comes pre-configured (Custom,
+five partitions). Do **not** switch it to Automatic - just confirm the disk. Anaconda will ask for
+the LUKS passphrase (once, covers both volumes) because the layout declares `--encrypted` without a
+passphrase.
+
 If you already installed with Anaconda's automatic layout (3 partitions: ESP, /boot, single btrfs),
 reinstalling from the new ISO is the path — online migration to a LUKS `/var` is **not** possible on
 this image: the initramfs is composed at image-build time, so a second LUKS volume created after
@@ -480,12 +489,12 @@ flashes via **EZ Flash** from a FAT32 USB; `fwupdmgr` coverage for GZ301ZC is un
 
 ### 7.3 Needs the network on first boot
 
-The `default-flatpaks` mechanism deploys system Flatpaks (ONLYOFFICE, Rnote, Xournal++) on **first boot**,
-so the machine needs internet once. Verified in the module source: v1 ships a `system-flatpak-setup` service
-+ timer, v2 ships post-boot Nushell units under `post-boot/` — either way nothing is fetched by Flatpak
-during the image build, which is why the build has no Flathub dependency. Expect the apps to appear a few
-minutes after the first boot completes, not instantly. Everything else — the OS, NVIDIA, asusctl, Waydroid packages, fonts —
-is already in the image.
+**Everything is baked into the image; first boot needs no network at all.** The system Flatpaks
+(ONLYOFFICE, VS Code, Steam, ProtonPlus, VLC, Chromium, Krita, Rnote, Xournal++, Loupe) are installed
+at image-build time (`flatpak --system install` -> /var/lib/flatpak, carried onto the target by the
+installer), and the Waydroid Android images are baked into `/usr/share/waydroid-extra/images`
+(upstream's preinstalled-images path). The `default-flatpaks` first-boot service stays as a silent
+fallback (`notify: false`) in case a future installer ever stops carrying baked /var content.
 
 ---
 
@@ -733,8 +742,8 @@ disposition, with sources where research was involved:
 | 1 | OSK pops up with the folio attached | `z13-oobe` sets the virtual keyboard to `none` when a hardware keyboard is detected; new `ujust z13-osk on/off/status` toggles it (KDE Discuss #43252 is the upstream thread) |
 | 2 | No keyboard backlight control | `brightnessctl` layered; the oobe reports the `asus::kbd_backlight` LED and its levels (Manjaro forum confirms the sysfs name); Fn+F7/F8 should also work |
 | 3 | Fingerprint at first setup | `z13-oobe` now offers interactive `fprintd-enroll` |
-| 4 | Partitions observed: efi + /boot + single btrfs | **Design question for you**: §5.2/§6.3 specify five partitions (separate LUKS2 `/var`, `RECOVERY`). If you used Anaconda's automatic layout, `ujust z13-verify` will (correctly) FAIL those three checks. Keep the five-partition design, or approve simplification? |
-| 5 | Waydroid OTA links | `z13-waydroid-setup` sets System/Vendor OTA channels to the Android 16 QPR2 ATV feeds and prints them; plain `waydroid init` does not - use the ujust recipe |
+| 4 | Partitions observed: efi + /boot + single btrfs (twice) | Root cause: nothing guided the installer. The ISO now pre-seeds the five-partition layout into Anaconda's defaults (`files/lorax_templates/z13-layout.tmpl` via BCI `ADDITIONAL_TEMPLATES`), and a build step **proves** the template is inside every ISO by extracting `interactive-defaults.ks` from the finished image. At install time: the storage spoke is pre-configured - do **not** switch it to Automatic; Anaconda asks only for the LUKS passphrase |
+| 5 | Waydroid had to be initialized manually | Android images are now **baked into the image** (`/usr/share/waydroid-extra/images`, upstream's preinstalled path); `z13-waydroid-init.service` runs `waydroid init` automatically at first boot - no download, no manual init. `z13-waydroid-setup` remains for re-init/channel switches |
 | 6 | ELAN9008 stylus shows a faulty battery icon | Known HID battery misreport class (kernel BZ #201121 et al.); cosmetic - `z13-verify` keeps it as a WARN, the pen itself is unaffected |
 | 7 | Performance-mode switch failed | asusctl's profile switching rides the power-profiles-daemon D-Bus API (ArchWiki asusctl); the oobe now verifies `asusctl profile list` + performs a test switch, naming the services to check on failure |
 | 8 | Kernel message tool | `ksystemlog` layered (GUI log viewer) alongside `journalctl` |

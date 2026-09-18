@@ -6,6 +6,7 @@
 # passphrase interactively"). One passphrase covers both LUKS volumes.
 #
 # clearpart is pinned to nvme0n1 explicitly so a USB stick (the installer itself) is never wiped.
+append usr/share/anaconda/interactive-defaults.ks "# z13-layout v2: five-partition design pre-seeded (ESP /boot / RECOVERY /var, LUKS on / and /var)"
 append usr/share/anaconda/interactive-defaults.ks "clearpart --all --drives=nvme0n1"
 append usr/share/anaconda/interactive-defaults.ks "zerombr"
 append usr/share/anaconda/interactive-defaults.ks "part /boot/efi --fstype=efi --size=1024"
