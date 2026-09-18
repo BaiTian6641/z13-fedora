@@ -289,10 +289,12 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq xorriso squashfs-tools
           rm -rf /tmp/iso-verify && mkdir -p /tmp/iso-verify
-          echo '## ISO root listing' >> "$DIAG"
-          echo '```' >> "$DIAG"
-          xorriso -indev "$ISO" -lsl / >> "$DIAG" 2>&1
-          echo '```' >> "$DIAG"
+          {
++            echo '## ISO root listing'
++            echo '```'
++            xorriso -indev "$ISO" -lsl / 2>&1
++            echo '```'
++          } >> "$DIAG"
           rc=1
           KS=/tmp/iso-verify/interactive-defaults.ks
           for cand in LiveOS/squashfs.img images/install.img; do
@@ -318,10 +320,12 @@ jobs:
             rm -f /tmp/iso-verify/env.img
           done
           if [ "$rc" -eq 0 ]; then
-            echo '## interactive-defaults.ks (key lines)' >> "$DIAG"
-            echo '```' >> "$DIAG"
-            grep -nE "z13-layout|clearpart|zerombr|^part |ostreecontainer" "$KS" >> "$DIAG" 2>&1
-            echo '```' >> "$DIAG"
+            {
++              echo '## interactive-defaults.ks (key lines)'
++              echo '```'
++              grep -nE "z13-layout|clearpart|zerombr|^part |ostreecontainer" "$KS" 2>&1
++              echo '```'
++            } >> "$DIAG"
             if grep -q "z13-layout" "$KS"; then
               echo '- verdict: **PASS** - pre-seeded layout is inside the ISO' >> "$DIAG"
             else
