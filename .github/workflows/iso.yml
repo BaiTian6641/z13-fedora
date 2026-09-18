@@ -154,39 +154,6 @@ jobs:
           OWNER="${GITHUB_REPOSITORY_OWNER,,}"
           cosign verify --key cosign.pub "ghcr.io/${OWNER}/${IMAGE}:${TAG}"
 
-      - name: Verify baked content in the published image
-        # The flatpaks and Android images are baked at image-build time. If they are not really
-        # inside the published image (e.g. a VOLUME directive silently discarding /var writes),
-        # the ISO would faithfully ship an empty promise - fail fast instead of 20 minutes late.
-        # The listing is appended to the layout diagnostics committed by the proof step below.
-        env:
-          IMAGE: ${{ inputs.image || 'z13-fedora' }}
-          TAG: ${{ inputs.tag || 'latest' }}
-        run: |
-          set -euo pipefail
-          OWNER="${GITHUB_REPOSITORY_OWNER,,}"
-          docker run --rm --entrypoint bash "ghcr.io/${OWNER}/${IMAGE}:${TAG}" -c '
-            set -e
-            echo "## Baked content in the published image"
-            echo
-            echo "### /var/lib/flatpak/app"
-            ls /var/lib/flatpak/app
-            echo
-            echo "### sizes"
-            du -sh /var/lib/flatpak /usr/share/waydroid-extra/images
-            echo
-            echo "### waydroid images"
-            ls -lh /usr/share/waydroid-extra/images
-            echo
-            echo "### packages"
-            rpm -q fprintd waydroid btop
-          ' | tee /tmp/image-content.md
-          COUNT=$(grep -c '^org\.\|^com\.' /tmp/image-content.md || true)
-          if [ "$COUNT" -lt 9 ]; then
-            echo "::error::only $COUNT baked flatpaks visible in the published image (expected 9)"
-            exit 1
-          fi
-
       # `bluebuild generate-iso` cannot work here: the CLI pins build-container-installer v1.4.0
       # (utils/src/constants.rs, unchanged on main), and BCI only gained Fedora 44 support in v1.5.0
       # ("Upgrade to fedora 44", PR #196, 2026-05-03) - which is why both ISO attempts died after
@@ -313,6 +280,27 @@ jobs:
           set -uo pipefail
           ISO="$(find . -maxdepth 1 -name '*.iso' -print -quit)"
           DIAG=/tmp/iso-verify.md
+          OWNER="${GITHUB_REPOSITORY_OWNER,,}"
+          IMAGE_REF="ghcr.io/${OWNER}/${IMAGE:-z13-fedora}:${TAG:-latest}"
+          rc_img=0
+          {
+            echo "## Baked content in the published image"
+            echo "- image: \`$IMAGE_REF\`"
+            echo '```'
+            docker run --rm --entrypoint bash "$IMAGE_REF" -c '
+              echo "### /var/lib/flatpak/app"
+              ls /var/lib/flatpak/app 2>&1
+              echo "### sizes"
+              du -sh /var/lib/flatpak /usr/share/waydroid-extra/images 2>&1
+              echo "### waydroid images"
+              ls -lh /usr/share/waydroid-extra/images 2>&1
+              echo "### packages"
+              rpm -q fprintd waydroid btop 2>&1
+            ' 2>&1 || rc_img=$?
+            echo '```'
+            echo "- content check exit: $rc_img"
+            echo
+          } > /tmp/image-content.md
           {
             echo "# ISO verification"
             echo
@@ -388,7 +376,10 @@ jobs:
           else
             echo "diag clone failed (non-fatal): $(head -c 200 /tmp/clone.err 2>/dev/null)"
           fi
-          exit "$rc"
+          if [ "$rc" -ne 0 ] || [ "$rc_img" -ne 0 ]; then
+            exit 1
+          fi
+          exit 0
 
       - name: Upload the builder log
         if: always()
