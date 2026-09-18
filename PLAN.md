@@ -489,12 +489,17 @@ flashes via **EZ Flash** from a FAT32 USB; `fwupdmgr` coverage for GZ301ZC is un
 
 ### 7.3 Needs the network on first boot
 
-**Everything is baked into the image; first boot needs no network at all.** The system Flatpaks
-(ONLYOFFICE, Steam, ProtonPlus, VLC, Chromium, Krita, Rnote, Xournal++, Loupe) are installed
-at image-build time (`flatpak --system install` -> /var/lib/flatpak, carried onto the target by the
-installer). The one exception is VS Code: it is an extra-data flatpak whose apply_extra sandbox
-needs user namespaces an unprivileged build container cannot create, so it installs via the
-first-boot fallback service on the real machine instead, and the Waydroid Android images are baked into `/usr/share/waydroid-extra/images`
+**Everything is baked into the image; first boot needs no network at all.** Baking into
+`/var/lib/flatpak` does not work: BlueBuild's universal `post_build.sh` ends every build with
+`rm -rf /var/*` (confirmed by whiteout entries `var/.wh.lib` etc. in the final image layer) - which
+is also why the entire Universal Blue ecosystem uses first-boot services. Instead the system
+Flatpaks (ONLYOFFICE, Steam, ProtonPlus, VLC, Chromium, Krita, Rnote, Xournal++, Loupe) are staged
+at `/usr/share/z13/flatpak` (a complete flatpak system-dir via `FLATPAK_SYSTEM_DIR`), and
+`z13-apps-ensure.service` materializes the tree into `/var/lib/flatpak` at first boot
+(`cp -a --reflink=auto` + `restorecon`); origins stay `flathub`, so updates work normally. The one
+exception is VS Code: it is an extra-data flatpak whose apply_extra sandbox needs user namespaces
+an unprivileged build container cannot create, so it installs via the ensure service on the real
+machine instead, and the Waydroid Android images are baked into `/usr/share/waydroid-extra/images`
 (upstream's preinstalled-images path). The `default-flatpaks` first-boot service stays as a silent
 fallback (`notify: false`) in case a future installer ever stops carrying baked /var content.
 

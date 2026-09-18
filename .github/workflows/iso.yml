@@ -291,10 +291,10 @@ jobs:
             # ('failed to register layer: max depth exceeded'). BCI has its own >128-layer fix;
             # podman needs none.
             sudo podman run --rm --entrypoint bash "$IMAGE_REF" -c '
-              echo "### /var/lib/flatpak/app"
-              ls /var/lib/flatpak/app 2>&1
+              echo "### /usr/share/z13/flatpak/app (staged; /var is wiped by post_build.sh)"
+              ls /usr/share/z13/flatpak/app 2>&1
               echo "### sizes"
-              du -sh /var/lib/flatpak /usr/share/waydroid-extra/images 2>&1
+              du -sh /usr/share/z13/flatpak /usr/share/waydroid-extra/images 2>&1
               echo "### waydroid images"
               ls -lh /usr/share/waydroid-extra/images 2>&1
               echo "### packages"

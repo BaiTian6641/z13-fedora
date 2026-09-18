@@ -1,20 +1,26 @@
 ---
-# Applications. The system Flatpaks are BAKED into the image at build time (flatpak --system
-# install lands in /var/lib/flatpak, which the installer carries onto the target disk), so the
-# full app set is present at first boot with no network access. The default-flatpaks module
-# stays as a silent fallback (notify: false): if a future installer ever drops baked /var
-# content, its per-boot service reinstalls the same list; with everything present it is a
-# no-op.
+# Applications. The system Flatpaks are BAKED into the image at build time - but NOT in
+# /var/lib/flatpak: BlueBuild's universal post_build.sh ends every build with `rm -rf /var/*`,
+# which silently wiped the first attempt (confirmed via whiteout entries var/.wh.lib etc. in the
+# final image layer). They are staged at /usr/share/z13/flatpak (a complete flatpak system-dir
+# via FLATPAK_SYSTEM_DIR: repo + deployed apps + exports + flathub remote config), and
+# z13-apps-ensure.service materializes the tree into /var/lib/flatpak at first boot
+# (cp -a --reflink=auto + restorecon) - origins stay 'flathub', so updates work normally.
+# default-flatpaks stays as a silent network fallback.
 modules:
   - type: script
     snippets:
       - |
         set -euo pipefail
         # Root in the build container installs directly (no system-helper / dbus needed).
+        # FLATPAK_SYSTEM_DIR redirects the system installation to a staging path under /usr,
+        # because post_build.sh wipes /var at the end of every BlueBuild image build.
         # com.visualstudio.code is deliberately NOT baked: it is an extra-data flatpak whose
         # apply_extra script runs in a bubblewrap sandbox, and unprivileged build containers
         # cannot create user namespaces (bwrap: Operation not permitted). The first-boot
         # fallback service below installs it on the real machine, where bwrap works.
+        export FLATPAK_SYSTEM_DIR=/usr/share/z13/flatpak
+        mkdir -p "$FLATPAK_SYSTEM_DIR"
         flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
         flatpak install -y --system --noninteractive flathub \
           org.onlyoffice.desktopeditors \
