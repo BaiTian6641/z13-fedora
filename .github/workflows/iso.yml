@@ -287,7 +287,10 @@ jobs:
             echo "## Baked content in the published image"
             echo "- image: \`$IMAGE_REF\`"
             echo '```'
-            docker run --rm --entrypoint bash "$IMAGE_REF" -c '
+            # podman, not docker: this image has 278 layers and docker's overlay2 caps at 128
+            # ('failed to register layer: max depth exceeded'). BCI has its own >128-layer fix;
+            # podman needs none.
+            sudo podman run --rm --entrypoint bash "$IMAGE_REF" -c '
               echo "### /var/lib/flatpak/app"
               ls /var/lib/flatpak/app 2>&1
               echo "### sizes"
