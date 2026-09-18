@@ -44,7 +44,9 @@ modules:
                 m = json.load(r)["response"][0]
             zippath = "/tmp/" + m["filename"]
             print(f"-> {m['filename']} ({m['size']/1e9:.2f} GB, version {m['version']}, ASB {m.get('asb','?')})", flush=True)
-            urllib.request.urlretrieve(m["url"], zippath)
+            with urllib.request.urlopen(urllib.request.Request(m["url"], headers=UA), timeout=600) as r, open(zippath, "wb") as f:
+                for chunk in iter(lambda: r.read(1 << 24), b""):
+                    f.write(chunk)
             h = hashlib.sha256()
             with open(zippath, "rb") as f:
                 for chunk in iter(lambda: f.read(1 << 24), b""):

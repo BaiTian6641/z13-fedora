@@ -490,9 +490,11 @@ flashes via **EZ Flash** from a FAT32 USB; `fwupdmgr` coverage for GZ301ZC is un
 ### 7.3 Needs the network on first boot
 
 **Everything is baked into the image; first boot needs no network at all.** The system Flatpaks
-(ONLYOFFICE, VS Code, Steam, ProtonPlus, VLC, Chromium, Krita, Rnote, Xournal++, Loupe) are installed
+(ONLYOFFICE, Steam, ProtonPlus, VLC, Chromium, Krita, Rnote, Xournal++, Loupe) are installed
 at image-build time (`flatpak --system install` -> /var/lib/flatpak, carried onto the target by the
-installer), and the Waydroid Android images are baked into `/usr/share/waydroid-extra/images`
+installer). The one exception is VS Code: it is an extra-data flatpak whose apply_extra sandbox
+needs user namespaces an unprivileged build container cannot create, so it installs via the
+first-boot fallback service on the real machine instead, and the Waydroid Android images are baked into `/usr/share/waydroid-extra/images`
 (upstream's preinstalled-images path). The `default-flatpaks` first-boot service stays as a silent
 fallback (`notify: false`) in case a future installer ever stops carrying baked /var content.
 

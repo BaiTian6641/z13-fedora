@@ -11,10 +11,13 @@ modules:
       - |
         set -euo pipefail
         # Root in the build container installs directly (no system-helper / dbus needed).
+        # com.visualstudio.code is deliberately NOT baked: it is an extra-data flatpak whose
+        # apply_extra script runs in a bubblewrap sandbox, and unprivileged build containers
+        # cannot create user namespaces (bwrap: Operation not permitted). The first-boot
+        # fallback service below installs it on the real machine, where bwrap works.
         flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
         flatpak install -y --system --noninteractive flathub \
           org.onlyoffice.desktopeditors \
-          com.visualstudio.code \
           com.valvesoftware.Steam \
           com.vysp3r.ProtonPlus \
           org.videolan.VLC \
@@ -30,8 +33,10 @@ modules:
       - notify: false
         scope: system
         install:
-          - org.onlyoffice.desktopeditors   # 9.4.0
+          # Installs only what is missing; on devices from the new ISO that is just VS Code
+          # (extra-data, cannot be baked - see the script module above).
           - com.visualstudio.code           # VS Code (user-requested)
+          - org.onlyoffice.desktopeditors   # 9.4.0
           - com.valvesoftware.Steam          # gaming: Steam client (flatpak keeps the runtime out of the image)
           - com.vysp3r.ProtonPlus            # gaming: Proton-GE / compatibility-tool manager
           - org.videolan.VLC                 # media player for the odd codec KDE's stack lacks
