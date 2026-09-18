@@ -270,26 +270,85 @@ jobs:
 
       - name: Prove the pre-seeded partition layout is inside the ISO
         # The five-partition layout only reaches the installed system via interactive-defaults.ks
-        # inside the install environment. Extract that file out of the finished ISO and require
-        # our marker - if lorax silently dropped the template, the ISO must not ship.
+        # inside the install environment. Installer ISOs carry that environment in different
+        # images depending on lorax flavour (LiveOS/squashfs.img vs images/install.img, squashfs
+        # or ext4), so probe instead of assuming. Diagnostics are committed to .ci/iso-verify.md
+        # because run logs are not readable without a token - the repo is the reliable channel.
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
           ISO="$(find . -maxdepth 1 -name '*.iso' -print -quit)"
-          echo "verifying layout inside: $ISO"
+          DIAG=/tmp/iso-verify.md
+          {
+            echo "# ISO layout verification"
+            echo
+            echo "- iso: \`$ISO\`"
+            echo "- date: $(date -u +%FT%TZ)"
+          } > "$DIAG"
           sudo apt-get update -qq
           sudo apt-get install -y -qq xorriso squashfs-tools
           rm -rf /tmp/iso-verify && mkdir -p /tmp/iso-verify
-          xorriso -osirrox on -indev "$ISO" -extract /LiveOS/squashfs.img /tmp/iso-verify/squashfs.img >/dev/null
-          unsquashfs -q -f -d /tmp/iso-verify/root /tmp/iso-verify/squashfs.img \
-            usr/share/anaconda/interactive-defaults.ks >/dev/null
-          KS=/tmp/iso-verify/root/usr/share/anaconda/interactive-defaults.ks
-          grep -n "z13-layout" "$KS"
-          {
-            echo "### Pre-seeded installer layout"
-            echo '```'
-            grep -E "z13-layout|clearpart|zerombr|^part |ostreecontainer" "$KS"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo '## ISO root listing' >> "$DIAG"
+          echo '```' >> "$DIAG"
+          xorriso -indev "$ISO" -lsl / >> "$DIAG" 2>&1
+          echo '```' >> "$DIAG"
+          rc=1
+          KS=/tmp/iso-verify/interactive-defaults.ks
+          for cand in LiveOS/squashfs.img images/install.img; do
+            if xorriso -osirrox on -indev "$ISO" -extract "/$cand" "/tmp/iso-verify/env.img" 2>/dev/null; then
+              kind=$(file -b /tmp/iso-verify/env.img)
+              echo "- env image: /$cand ($kind)" >> "$DIAG"
+              case "$kind" in
+                *Squashfs*)
+                  if unsquashfs -q -f -d /tmp/iso-verify/root /tmp/iso-verify/env.img \
+                       usr/share/anaconda/interactive-defaults.ks >/dev/null 2>&1; then
+                    cp /tmp/iso-verify/root/usr/share/anaconda/interactive-defaults.ks "$KS" && rc=0
+                  fi
+                  ;;
+                *ext[234]*)
+                  if debugfs -R "dump /usr/share/anaconda/interactive-defaults.ks $KS" \
+                       /tmp/iso-verify/env.img >/dev/null 2>&1 && [ -s "$KS" ]; then
+                    rc=0
+                  fi
+                  ;;
+              esac
+              [ "$rc" -eq 0 ] && break
+            fi
+            rm -f /tmp/iso-verify/env.img
+          done
+          if [ "$rc" -eq 0 ]; then
+            echo '## interactive-defaults.ks (key lines)' >> "$DIAG"
+            echo '```' >> "$DIAG"
+            grep -nE "z13-layout|clearpart|zerombr|^part |ostreecontainer" "$KS" >> "$DIAG" 2>&1
+            echo '```' >> "$DIAG"
+            if grep -q "z13-layout" "$KS"; then
+              echo '- verdict: **PASS** - pre-seeded layout is inside the ISO' >> "$DIAG"
+            else
+              echo '- verdict: **FAIL** - file extracted but the z13-layout marker is missing' >> "$DIAG"
+              rc=2
+            fi
+          else
+            echo '- verdict: **FAIL** - could not extract interactive-defaults.ks from any known env image' >> "$DIAG"
+          fi
+          cat "$DIAG"
+          if git clone -q --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/ci-repo 2>/tmp/clone.err; then
+            mkdir -p /tmp/ci-repo/.ci
+            cp "$DIAG" /tmp/ci-repo/.ci/iso-verify.md || true
+            if (cd /tmp/ci-repo \
+                && git add .ci/iso-verify.md \
+                && git -c user.name="github-actions[bot]" \
+                      -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+                      commit -q -m "ci: ISO layout verification [skip ci]" \
+                && git push -q origin HEAD:main); then
+              echo "diagnostics committed to .ci/iso-verify.md"
+            else
+              echo "diag commit/push failed (non-fatal)"
+            fi
+          else
+            echo "diag clone failed (non-fatal): $(head -c 200 /tmp/clone.err 2>/dev/null)"
+          fi
+          exit "$rc"
 
       - name: Upload the builder log
         if: always()
