@@ -46,3 +46,10 @@ modules:
           - com.github.xournalpp.xournalpp  # pen/ink notes + PDF annotation
           - org.gnome.Loupe                 # image viewer (KDE ships Gwenview too)
       - scope: user                         # Flathub remote available to the user as well
+
+  # Converge the app set on the device: restorecon fixes build-time labels on baked content
+  # (container_file_t makes flatpak unable to read its own repo), missing apps are reinstalled.
+  - type: systemd
+    system:
+      enabled:
+        - z13-apps-ensure.service

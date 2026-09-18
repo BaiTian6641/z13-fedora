@@ -1,0 +1,18 @@
+[Unit]
+# Converges the baked flatpak set at first boot: fixes SELinux labels on baked /var/lib/flatpak
+# content (container_file_t from the image build breaks flatpak's own reads) and installs anything
+# missing. Retries every boot until the app set is complete, then becomes a fast no-op.
+Description=Ensure the z13 flatpak app set (labels + presence)
+After=network-online.target
+Wants=network-online.target
+# Complete = every app resolvable; while incomplete we want retries on later boots.
+ConditionPathExists=/var/lib/flatpak
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/z13/apps-ensure.sh
+# Never gate boot on a network install; 10 min ceiling for slow first-boot connections.
+TimeoutStartSec=600
+
+[Install]
+WantedBy=multi-user.target
