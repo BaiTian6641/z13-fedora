@@ -36,6 +36,20 @@ if ! flatpak remote-list --system --columns=name 2>/dev/null | grep -qx flathub;
   flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || say "remote-add failed (offline?)"
 fi
 
+# 2b) NVIDIA GL extensions for flatpaks. These are normally auto-installed from the HOST driver
+#     version at install time - but the bake ran in a container with no GPU, so they were never
+#     staged. Without them, GL flatpaks (Steam first among them) have no 32-bit NVIDIA path.
+if [ -d /sys/module/nvidia ]; then
+  NVVER=$(modinfo -F version nvidia 2>/dev/null | cut -d' ' -f1 | tr '.' '-')
+  if [ -n "$NVVER" ]; then
+    for ext in "org.freedesktop.Platform.GL.nvidia-$NVVER" "org.freedesktop.Platform.GL32.nvidia-$NVVER"; do
+      flatpak info --system "$ext" >/dev/null 2>&1 && continue
+      say "installing NVIDIA flatpak extension: $ext"
+      flatpak install -y --system --noninteractive flathub "$ext" || say "  (branch not on flathub yet - non-fatal)"
+    done
+  fi
+fi
+
 missing=""
 for app in $APPS; do
   flatpak info --system "$app" >/dev/null 2>&1 || missing="$missing $app"
