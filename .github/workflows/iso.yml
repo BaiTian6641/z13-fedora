@@ -299,6 +299,9 @@ jobs:
               ls -lh /usr/share/waydroid-extra/images 2>&1
               echo "### packages"
               rpm -q fprintd waydroid btop 2>&1
+              echo "### ujust wiring"
+              grep 99-z13 /usr/share/ublue-os/justfile 2>&1
+              just --justfile /usr/share/ublue-os/justfile --list 2>&1 | grep -c z13- || true
             ' 2>&1 || rc_img=$?
             echo '```'
             echo "- content check exit: $rc_img"

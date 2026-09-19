@@ -17,3 +17,18 @@ modules:
   - type: script
     snippets:
       - "chmod 0755 /usr/libexec/z13/*.sh"
+
+  # ujust only sees recipes the ublue-os-just package wired into /usr/share/ublue-os/justfile at
+  # package-build time (explicit `import` lines + an optional 60-custom.just). Dropping
+  # 99-z13.just into the just/ directory is NOT enough - it must be imported explicitly, or every
+  # `ujust z13-*` call fails with 'justfile does not contain recipe'. Also gate on syntax: a
+  # broken justfile in an immutable image cannot be repaired without another build.
+  - type: script
+    snippets:
+      - |
+        set -euo pipefail
+        just --justfile /usr/share/ublue-os/just/99-z13.just --list >/dev/null
+        JUSTFILE=/usr/share/ublue-os/justfile
+        touch "$JUSTFILE"
+        grep -q '99-z13.just' "$JUSTFILE" || echo 'import "/usr/share/ublue-os/just/99-z13.just"' >> "$JUSTFILE"
+        just --justfile "$JUSTFILE" --list >/dev/null
