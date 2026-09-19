@@ -58,9 +58,9 @@ if command -v waydroid >/dev/null 2>&1; then
   printf 'init service: %s\n' "$(systemctl is-active z13-waydroid-init.service 2>/dev/null || true)"
   printf 'container service: %s (enabled: %s)\n' "$(systemctl is-active waydroid-container.service 2>/dev/null)" "$(systemctl is-enabled waydroid-container.service 2>/dev/null)"
   timeout 10 waydroid status 2>/dev/null || echo "waydroid status timed out"
-  printf 'baked images: %s\n' "$(ls -lh /usr/share/waydroid-extra/images/*.img 2>/dev/null | awk '{print $5, $9}' | paste -sd' ' || echo missing)"
+  printf 'baked images: %s\n' "$(du -h /usr/share/waydroid-extra/images/*.img 2>/dev/null | paste -sd' ' || echo missing)"
   printf 'cfg images_path: %s\n' "$(grep -E 'images_path|system_ota' /var/lib/waydroid/waydroid.cfg 2>/dev/null | paste -sd' ' || echo 'no cfg - init not run')"
-  printf 'binder nodes: %s\n' "$(ls /dev/binder* /dev/binderfs/ 2>/dev/null | paste -sd' ' || echo none)"
+  printf 'binder nodes: %s\n' "$(find /dev -maxdepth 2 -name '*binder*' 2>/dev/null | paste -sd' ' || echo none)"
   echo '--- waydroid log (last 25 lines) ---'
   sudo tail -25 /var/lib/waydroid/waydroid.log 2>/dev/null || echo '(no log)'
   echo '--- container journal (last 25 lines) ---'
