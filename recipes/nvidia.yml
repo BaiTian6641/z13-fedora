@@ -10,6 +10,15 @@
 # Why nvidia-open: GA107 (RTX 3050 Laptop) is supported by the open kernel modules, and the open
 # module is REQUIRED by the optional dGPU Waydroid stack (the closed module has no DMA-BUF support).
 modules:
+  # Multilib skew guard: the akmods module pulls 32-bit (i686) mesa for NVIDIA/Steam, and rpm
+  # requires identical NVRs across arches. When Fedora's repos publish a new mesa ahead of the
+  # base image, the i686 install conflicts with the installed x86_64 build and the transaction
+  # fails (seen 2026-09-19: i686 26.2.3 vs base 26.2.2). Align mesa to repo-latest first.
+  - type: script
+    snippets:
+      - |
+        set -euo pipefail
+        dnf5 upgrade -y --refresh 'mesa*' || dnf5 upgrade -y --refresh mesa-dri-drivers mesa-vulkan-drivers
   - type: akmods
     base: main
     # No extra ublue kmods are needed on this device; the key is required by the module schema.
