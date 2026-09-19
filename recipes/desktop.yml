@@ -30,7 +30,7 @@ modules:
         - fprintd                           # ELAN 04f3:0c6e fingerprint reader (was missing -> silent skip)
         - wireguard-tools                   # wg client plumbing under NetworkManager
         - tailscale                         # optional mesh VPN: 'systemctl enable --now tailscaled'
-        - zerotier                          # optional mesh VPN (F44 renamed the package from zerotier-one)
+        - zerotier-one                      # optional mesh VPN; ZeroTier's own F44 repo (files/system/etc/yum.repos.d/zerotier.repo) - it is not in Fedora's repos at all
         # metric-compatible fonts so documents from Windows users keep their layout in ONLYOFFICE
         - google-carlito-fonts            # Calibri metrics
         - google-crosextra-caladea-fonts  # Cambria metrics

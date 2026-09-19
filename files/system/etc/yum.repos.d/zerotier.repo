@@ -1,0 +1,9 @@
+# ZeroTier's official Fedora repository (https://www.zerotier.com/download/ -> Red Hat/CentOS).
+# Neither 'zerotier' nor 'zerotier-one' exists in Fedora's own repos (koji/src.fedoraproject:
+# no such package) - earlier builds silently shipped without it under skip-unavailable.
+[zerotier]
+name=ZeroTier, Inc. RPM Release Repository
+baseurl=https://download.zerotier.com/redhat/fc/$releasever
+enabled=1
+gpgcheck=1
+gpgkey=https://download.zerotier.com/contact@zerotier.com.gpg
