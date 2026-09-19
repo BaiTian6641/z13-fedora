@@ -187,7 +187,7 @@ fi
 if [[ $found_mux -eq 1 ]]; then
   ok "a writable MUX control exists — Track B (dGPU Waydroid) is worth attempting; run 'ujust z13-mux' for details"
 else
-  warn "no MUX attribute found — dGPU Waydroid (Track B) is blocked on this kernel; run 'ujust z13-mux' for the full attribute list"
+  info "no MUX attribute found — Track A (iGPU Waydroid, the shipped path) is unaffected; 'ujust z13-mux' lists the inventory"
 fi
 
 # ---------------------------------------------------------------- NVIDIA
@@ -240,7 +240,7 @@ if grep -qiE 'keyboard|asus' <<<"$names"; then ok "keyboard present (folio attac
 
 # ---------------------------------------------------------------- sensors / audio / wireless
 if [[ $QUICK -eq 0 ]]; then
-  head "Sensors, audio, wireless"
+  section "Sensors, audio, wireless"
   if have monitor-sensor; then
     if timeout 5 monitor-sensor --accel 2>/dev/null | grep -qm1 'Accelerometer'; then
       ok "accelerometer data flowing (iio-sensor-proxy)"
@@ -285,16 +285,23 @@ fi
 # ---------------------------------------------------------------- waydroid
 section "Waydroid"
 if have waydroid; then
+  if [[ -f /usr/share/waydroid-extra/images/system.img && -f /usr/share/waydroid-extra/images/vendor.img ]]; then
+    ok "Android images baked into the image (/usr/share/waydroid-extra/images)"
+  else
+    bad "baked Android images missing from /usr/share/waydroid-extra/images"
+  fi
+  if [[ -f /var/lib/waydroid/waydroid.cfg ]]; then
+    ok "waydroid initialized ($(grep -m1 '^system_ota' /var/lib/waydroid/waydroid.cfg 2>/dev/null || echo cfg present))"
+  elif systemctl is-enabled --quiet z13-waydroid-init.service 2>/dev/null; then
+    warn "not initialized yet - z13-waydroid-init.service should do it at boot; check: systemctl status z13-waydroid-init.service"
+  else
+    bad "not initialized and z13-waydroid-init.service is not enabled"
+  fi
   st=$(timeout 10 waydroid status 2>/dev/null | sed -n 's/^Session:[[:space:]]*//p' | head -1)
-  if [[ -n "$st" ]]; then
+  if [[ "$st" == *RUNNING* ]]; then
     ok "waydroid session: $st"
   else
-    info "waydroid installed; session not running (start with: ujust z13-waydroid-setup)"
-  fi
-  if [[ -d /var/lib/waydroid/images ]]; then
-    info "Android images present in /var/lib/waydroid/images"
-  else
-    info "Android images not downloaded yet (ujust z13-waydroid-setup)"
+    info "session not running (start with the Waydroid icon or: waydroid session start)"
   fi
 else
   bad "waydroid package missing"
@@ -303,10 +310,27 @@ fi
 # ---------------------------------------------------------------- flatpaks
 section "Applications"
 if have flatpak; then
+  if [[ -d /usr/share/z13/flatpak/app ]]; then
+    ok "app set staged in the image (/usr/share/z13/flatpak, $(find /usr/share/z13/flatpak/app -mindepth 1 -maxdepth 1 2>/dev/null | wc -l) apps)"
+  else
+    warn "no staged app set in the image (/usr/share/z13/flatpak missing)"
+  fi
   if flatpak list --system --app 2>/dev/null | grep -qi onlyoffice; then
     ok "ONLYOFFICE installed (system flatpak)"
   else
-    warn "ONLYOFFICE not installed yet — first boot needs network for system flatpaks"
+    warn "ONLYOFFICE not installed - the ensure service converges it: journalctl -u z13-apps-ensure.service"
+  fi
+  if flatpak info --system com.visualstudio.code >/dev/null 2>&1; then
+    ok "VS Code installed (extra-data, installed on-device by the ensure service)"
+  else
+    info "VS Code not installed yet - cannot be baked; the ensure service installs it (needs network once)"
+  fi
+  if [[ -d /sys/module/nvidia ]]; then
+    if flatpak list --system --runtime 2>/dev/null | grep -qi 'GL32.nvidia'; then
+      ok "NVIDIA 32-bit flatpak GL extension present (Steam/game rendering path)"
+    else
+      warn "GL32.nvidia flatpak extension missing - the ensure service installs it on this boot; without it Steam has no 32-bit NVIDIA path"
+    fi
   fi
   info "system remotes: $(flatpak remotes --system 2>/dev/null | awk 'NR>1{print $1}' | paste -sd, -)"
 else
@@ -315,7 +339,7 @@ fi
 
 # ---------------------------------------------------------------- suspend (opt-in)
 if [[ $SUSPEND -eq 1 ]]; then
-  head "Suspend / resume (one cycle)"
+  section "Suspend / resume (one cycle)"
   if have rtcwake; then
     before=$(date +%s)
     if sudo rtcwake -m mem -s 20 >/dev/null 2>&1; then

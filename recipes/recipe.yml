@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: z13-fedora
-description: Fedora Atomic (KDE Plasma) for the ASUS ROG Flow Z13 2022 (GZ301ZC) — asusctl, NVIDIA RTX 3050 open kmod, Waydroid Android 16 + GMS, ONLYOFFICE.
+description: Fedora Atomic (KDE Plasma) for the ASUS ROG Flow Z13 2022 (GZ301ZC) — asusctl, NVIDIA RTX 3050 open kmod, Waydroid Android 13 (LineageOS 20) + GMS, ONLYOFFICE.
 base-image: ghcr.io/ublue-os/kinoite-main
 image-version: 44
 

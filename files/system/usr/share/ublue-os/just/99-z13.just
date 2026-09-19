@@ -21,7 +21,7 @@ z13-oobe:
     set -uo pipefail
     exec /usr/libexec/z13/oobe.sh
 
-# Initialize or refresh Waydroid with Android 16 QPR2 GAPPS images (flags: --force, --stock)
+# Initialize or refresh Waydroid with the official Android 13 GAPPS channel (flags: --force, --atv)
 z13-waydroid-setup *args:
     #!/usr/bin/env bash
     set -uo pipefail
@@ -45,11 +45,11 @@ z13-mux:
     set -uo pipefail
     exec /usr/libexec/z13/mux-spike.sh status
 
-# Show which GPU the compositor, the NVIDIA stack and Waydroid are using
-z13-osk mode:
-    # on-screen keyboard toggle: "off" while the folio keyboard is attached, "on" for tablet use
+# On-screen keyboard toggle: "off" while the folio keyboard is attached, "on" for tablet use
+z13-osk mode="status":
     exec /usr/libexec/z13/osk.sh {{mode}}
 
+# Show which GPU the compositor, the NVIDIA stack and Waydroid are using
 z13-gpu:
     #!/usr/bin/env bash
     set -uo pipefail

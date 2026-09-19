@@ -403,11 +403,11 @@ install can never be unlocked at boot. The manual recipe below remains the fallb
 | p2 | `/boot` | 2 GiB | ext4 | - | **no** (GRUB cannot read LUKS) |
 | p3 | `/` | 100 GiB | btrfs | - | yes (LUKS2) |
 | p4 | `/var` | everything left, minus 10 GiB | xfs | - | yes (LUKS2) |
-| p5 | `/var/mnt/recovery` | 10 GiB | ext4 | `RECOVERY` | **no** |
+| p5 | `/mnt/recovery` | 10 GiB | ext4 | `RECOVERY` | **no** |
 
 Two constraints drive that table:
 
-* `/var/mnt/recovery` is the only on-disk mount point Anaconda accepts for a non-root partition on Atomic
+* `/mnt/recovery` is the only on-disk mount point Anaconda accepts for a non-root partition on Atomic
   (the allowed set is `/`, `/boot`, `/boot/efi`, `/var` and sub-paths of `/var`). At runtime it shows up as
   `/mnt/recovery` — `/mnt` is a symlink to `/var/mnt`.
 * The recovery partition must stay **outside LUKS**: Fedora's LUKS2 uses argon2id, which GRUB cannot unlock,

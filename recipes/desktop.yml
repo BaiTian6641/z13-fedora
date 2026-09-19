@@ -8,12 +8,21 @@
 modules:
   - type: dnf
     install:
-      skip-unavailable: true
+      # Required packages: no skip-unavailable - a missing one must fail the build, not ship a
+      # silent gap (asusd.service, the oobe fingerprint prompt and z13-verify all reference
+      # these by name).
       packages:
-        # on-screen keyboard: plasma-keyboard is the Plasma 6.6+ OSK; maliit is the fallback if
-        # the 6.7 regressions (KDE bug 522675) bite on this image
+        # on-screen keyboard: plasma-keyboard is the Plasma 6.6+ OSK
         - plasma-keyboard
-        - maliit-keyboard
+        # diagnostics used by z13-verify / z13-gpu (they degrade gracefully, but the acceptance
+        # run is supposed to be informative out of the box)
+        - mesa-demos                          # glxinfo (PRIME offload render check)
+        - libva-utils                         # vainfo (iGPU video acceleration)
+        - vulkan-tools                        # vulkaninfo
+        - iio-sensor-proxy                    # monitor-sensor (auto-rotate check)
+        - alsa-utils                          # aplay (audio card check)
+        - pciutils                            # lspci (wireless inventory)
+        - usbutils                            # lsusb (ELAN fingerprint reader check)
         # hardware bring-up and daily tooling (user-reported gaps, 2026-09-17 session)
         - btop                              # interactive process/resource monitor
         - ksystemlog                        # kernel + service log viewer (GUI)
@@ -32,6 +41,14 @@ modules:
         # per-style subpackages above.
         - tuned
         - tuned-ppd
+
+  # Genuinely optional: maliit is only a fallback if Plasma 6.7's OSK regressions
+  # (KDE bug 522675) bite; nothing references it by name, so it may skip silently.
+  - type: dnf
+    install:
+      skip-unavailable: true
+      packages:
+        - maliit-keyboard
   - type: systemd
     system:
       # At build time these units exist because the packages above (and asusctl) are installed first.

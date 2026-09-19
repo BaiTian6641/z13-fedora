@@ -13,6 +13,8 @@ modules:
       copr:
         - lukenukem/asus-linux
     install:
-      skip-unavailable: true
+      # NO skip-unavailable here: asusctl is goal-critical (power management). If the COPR
+      # chroot is down, the build must fail loudly - not ship a laptop with no fan/profile
+      # control (the same failure class as the zerotier rename slipping through silently).
       packages:
         - asusctl

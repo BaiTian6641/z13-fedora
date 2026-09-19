@@ -9,6 +9,7 @@ set -uo pipefail
 
 say()  { printf '\n== %s\n' "$*"; }
 info() { printf '   %s\n' "$*"; }
+warn() { printf '   WARNING: %s\n' "$*" >&2; }
 
 say "Services"
 # Trust the unit state, not the exit code of sudo+systemctl.
@@ -125,11 +126,11 @@ info "active tuned profile: $(tuned-adm active 2>/dev/null | sed 's/^Current act
 say "platform_profile ownership (asusd vs tuned-ppd)"
 RON=/etc/asusd/asusd.ron
 if [[ -f "$RON" ]]; then
-  cp -n "$RON" "$RON.bak" 2>/dev/null || true
+  sudo cp -n "$RON" "$RON.bak" 2>/dev/null || true
   changed=0
   for key in change_platform_profile_on_ac change_platform_profile_on_battery platform_profile_linked_epp; do
-    if grep -q "$key" "$RON"; then
-      sed -i -E "s/^([[:space:]]*${key}[[:space:]]*:[[:space:]]*)true/\1false/" "$RON"
+    if sudo grep -q "$key" "$RON"; then
+      sudo sed -i -E "s/^([[:space:]]*${key}[[:space:]]*:[[:space:]]*)true/\1false/" "$RON"
       changed=1
     fi
   done
@@ -159,17 +160,6 @@ if command -v nvidia-smi >/dev/null 2>&1; then
   if nvidia-smi --query-compute-apps=process_name --format=csv,noheader 2>/dev/null | grep -qi kwin; then
     info "WARNING: kwin_wayland is on the dGPU; KWIN_DISABLE_VULKAN is set in the session guard — log out and back in"
   fi
-fi
-
-say "Fingerprint"
-if lsusb 2>/dev/null | grep -qi '04f3:0c6e'; then
-  if fprintd-list "$USER" 2>/dev/null | grep -qi finger; then
-    info "fingerprint already enrolled"
-  else
-    info "ELAN reader detected. Enrol it now with:  fprintd-enroll"
-  fi
-else
-  info "no ELAN fingerprint reader detected on USB — fingerprint login may be unsupported on this unit"
 fi
 
 say "Disk encryption (optional TPM2 auto-unlock)"
@@ -228,6 +218,9 @@ say "Fingerprint"
 # Two halves of usable fingerprint auth, per KDE/Arch + Fedora docs: enrol a finger with fprintd,
 # and let PAM use it for sudo/SDDM via authselect (discussion.fedoraproject.org#127928,
 # community.frame.work fingerprint guide).
+if ! lsusb 2>/dev/null | grep -qi '04f3:0c6e'; then
+  info "no ELAN fingerprint reader detected on USB - fingerprint login is unsupported on this unit"
+else
 if command -v authselect >/dev/null 2>&1 && authselect current 2>/dev/null | grep -qi fingerprint; then
   info "PAM fingerprint feature already enabled"
 else
@@ -251,5 +244,6 @@ if command -v fprintd-enroll >/dev/null 2>&1; then
   fi
 else
   warn "fprintd not installed"
+fi
 fi
 
