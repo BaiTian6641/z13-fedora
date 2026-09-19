@@ -53,10 +53,20 @@ printf 'platform_profile: %s (choices: %s)\n' "$(cat /sys/firmware/acpi/platform
 printf 'profile via tuned: %s\n' "$(tuned-adm active 2>/dev/null | sed 's/^Current active profile: //' || echo '?')"
 printf 'battery limit: %s%%\n' "$(cat /sys/class/power_supply/BAT*/charge_control_end_threshold 2>/dev/null | head -1 || echo 'n/a')"
 
-section "Android (criterion 7: Play Store installs an app)"
+section "Android / Waydroid"
 if command -v waydroid >/dev/null 2>&1; then
+  printf 'init service: %s\n' "$(systemctl is-active z13-waydroid-init.service 2>/dev/null || true)"
+  printf 'container service: %s (enabled: %s)\n' "$(systemctl is-active waydroid-container.service 2>/dev/null)" "$(systemctl is-enabled waydroid-container.service 2>/dev/null)"
   timeout 10 waydroid status 2>/dev/null || echo "waydroid status timed out"
-  printf 'images: %s\n' "$([[ -f /var/lib/waydroid/images/system.img ]] && echo present || echo 'not downloaded')"
+  printf 'baked images: %s\n' "$(ls -lh /usr/share/waydroid-extra/images/*.img 2>/dev/null | awk '{print $5, $9}' | paste -sd' ' || echo missing)"
+  printf 'cfg images_path: %s\n' "$(grep -E 'images_path|system_ota' /var/lib/waydroid/waydroid.cfg 2>/dev/null | paste -sd' ' || echo 'no cfg - init not run')"
+  printf 'binder nodes: %s\n' "$(ls /dev/binder* /dev/binderfs/ 2>/dev/null | paste -sd' ' || echo none)"
+  echo '--- waydroid log (last 25 lines) ---'
+  sudo tail -25 /var/lib/waydroid/waydroid.log 2>/dev/null || echo '(no log)'
+  echo '--- container journal (last 25 lines) ---'
+  sudo journalctl -u waydroid-container.service -b --no-pager 2>/dev/null | tail -25
+  echo '--- SELinux denials mentioning waydroid/lxc (this boot) ---'
+  sudo ausearch -m avc -ts boot 2>/dev/null | grep -iE 'waydroid|lxc|binder' | tail -10 || echo '(none)'
   printf 'certification id: %s\n' "$(sudo waydroid shell -- sh -c 'sqlite3 /data/data/*/*/gservices.db "select value from main where name = \"android_id\";"' 2>/dev/null | tr -d '\r' | head -1 || echo 'container not running')"
 else
   echo "waydroid not installed"
