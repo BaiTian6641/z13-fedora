@@ -5,8 +5,9 @@
 #     CONFIG_ANDROID_BINDER_DEVICES="binder,hwbinder,vndbinder"
 # and the RPM ships dev-binderfs.mount plus a patched waydroid-container.service.
 #
-# The Android images (Android 16 QPR2 / LineageOS 23.2 GAPPS, waydroid-atv channel) are BAKED
-# into the image at build time, into upstream's preinstalled-images path
+# The Android images (official channel: LineageOS 20 / Android 13 GAPPS - the one Waydroid 1.6.x
+# is developed against; the Android TV project's a16-qpr2 builds crash-looped on this device and
+# are a TV form factor anyway) are BAKED into the image, into upstream's preinstalled-images path
 # /usr/share/waydroid-extra/images (tools/config/__init__.py: preinstalled_images_paths).
 # On first boot z13-waydroid-init.service runs `waydroid init`, which detects the preinstalled
 # images (tools/actions/initializer.py), writes waydroid.cfg with OTA=None, applies the Z13
@@ -35,8 +36,8 @@ modules:
 
         DEST = "/usr/share/waydroid-extra/images"
         MANIFESTS = [
-            ("https://waydroid-atv.github.io/ota/a16-qpr2/system/lineage/waydroid_x86_64/GAPPS.json", "system.img"),
-            ("https://waydroid-atv.github.io/ota/a16-qpr2/vendor/waydroid_x86_64/MAINLINE.json", "vendor.img"),
+            ("https://ota.waydro.id/system/lineage/waydroid_x86_64/GAPPS.json", "system.img"),
+            ("https://ota.waydro.id/vendor/waydroid_x86_64/MAINLINE.json", "vendor.img"),
         ]
         UA = {"User-Agent": "bluebuild-z13/1.0"}
         for url, imgname in MANIFESTS:

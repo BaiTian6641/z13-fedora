@@ -27,6 +27,18 @@ z13-waydroid-setup *args:
     set -uo pipefail
     exec /usr/libexec/z13/waydroid-setup.sh "$@"
 
+# Wipe Android state and re-init from the baked images (needed after an image update changes
+# the baked channel - Android data from a different OS version cannot be reused)
+z13-waydroid-reset:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "stopping Waydroid and wiping /var/lib/waydroid (Android apps + data are lost)"
+    sudo systemctl stop waydroid-container.service 2>/dev/null || true
+    waydroid session stop 2>/dev/null || true
+    sudo rm -rf /var/lib/waydroid
+    sudo systemctl start z13-waydroid-init.service
+    echo "re-initialized from the baked images; start with the Waydroid icon"
+
 # Report the ASUS MUX state and the asus-armoury attribute inventory (read-only)
 z13-mux:
     #!/usr/bin/env bash

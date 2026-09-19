@@ -1,19 +1,22 @@
 #!/usr/bin/env bash
-# z13-waydroid-setup — initialize or refresh Waydroid with Android 16 QPR2 (LineageOS 23.2) GAPPS
-# images, then apply the props that make it comfortable on the Flow Z13.
+# z13-waydroid-setup — initialize or refresh Waydroid with the official channel images
+# (LineageOS 20 / Android 13 GAPPS), then apply the props that make it comfortable on the
+# Flow Z13. NOTE: on images with baked Android images (/usr/share/waydroid-extra/images),
+# `waydroid init` always prefers the baked set - channel flags only matter after those are
+# replaced by a new image build.
 #
 # Usage:
 #   z13-waydroid-setup              init if needed, then report certification status
 #   z13-waydroid-setup --force      wipe the Android data and re-init (destructive)
-#   z13-waydroid-setup --stock      use Waydroid's official OTA channel (Android 13 GAPPS) instead
-#                                 - the channel where ARM translation (libndk) is known-good
+#   z13-waydroid-setup --atv        experimental: Android TV project's Android 16 QPR2 channel
+#                                 (crash-looped on the Z13; TV form factor - kept for testing)
 #
 # Everything here is idempotent: re-running without --force only re-applies props.
 
 set -euo pipefail
 
-SYSTEM_OTA="https://waydroid-atv.github.io/ota/a16-qpr2/system"
-VENDOR_OTA="https://waydroid-atv.github.io/ota/a16-qpr2/vendor"
+SYSTEM_OTA="https://ota.waydro.id/system"
+VENDOR_OTA="https://ota.waydro.id/vendor"
 ROM_TYPE="lineage"
 SYSTEM_TYPE="GAPPS"
 FORCE=0
@@ -21,9 +24,9 @@ FORCE=0
 for arg in "$@"; do
   case "$arg" in
     --force) FORCE=1 ;;
-    --stock)
-      SYSTEM_OTA="https://ota.waydro.id/system"
-      VENDOR_OTA="https://ota.waydro.id/vendor"
+    --atv)
+      SYSTEM_OTA="https://waydroid-atv.github.io/ota/a16-qpr2/system"
+      VENDOR_OTA="https://waydroid-atv.github.io/ota/a16-qpr2/vendor"
       ;;
     -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
     *) printf 'unknown argument: %s\n' "$arg" >&2; exit 2 ;;
