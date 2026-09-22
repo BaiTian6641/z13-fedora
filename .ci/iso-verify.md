@@ -1,7 +1,7 @@
 # ISO verification
 
-- iso: `./z13-fedora-latest-20260921-257409f.iso`
-- date: 2026-09-21T12:56:54Z
+- iso: `./z13-fedora-latest-20260922-6705c53.iso`
+- date: 2026-09-22T11:50:48Z
 
 ## Baked content in the published image
 - image: `ghcr.io/baitian6641/z13-fedora:latest`
@@ -10,10 +10,10 @@ Trying to pull ghcr.io/baitian6641/z13-fedora:latest...
 Getting image source signatures
 Copying blob sha256:9a22d6339ce059f34d5401d6da5f7f6cd10a97a429f03b8b0f2226eca2193a63
 Copying blob sha256:b6fdd58ef5a6d2f66d63253fc9edef64f879d170ee6efda32e14eaf70b4dc240
-Copying blob sha256:62f6f8e7dac86b5635b3bdef3485bba251ec1b560610cfccec6a9106d7707cb8
-Copying blob sha256:792c489ebf860cc31216a47abf12c555cba4e2e09f295d74672822cb249e2ddf
 Copying blob sha256:856cf68e78c1c41e02df4da5d19f73d3f71e053bc523d235c6062897ea99843e
+Copying blob sha256:62f6f8e7dac86b5635b3bdef3485bba251ec1b560610cfccec6a9106d7707cb8
 Copying blob sha256:76ab50fa9ad96e1a555791ce12d5dd0674e98fbd74b1808bc6c86210b907442b
+Copying blob sha256:792c489ebf860cc31216a47abf12c555cba4e2e09f295d74672822cb249e2ddf
 Copying blob sha256:b7ebf2c5a2dbf1d121fb5842187df962af90db1f60e3cc82741ec95ecbba79e4
 Copying blob sha256:256da23a7c6652cad4d84dc825176f191b49bb02a1b38224d6a0f90cb5ca4ab3
 Copying blob sha256:60775f71d4cbff9ac97d0556f41dce59ab9bddeb00e9443f55c79c1689787750
@@ -265,31 +265,31 @@ Copying blob sha256:478f703d852dbc0bea5893e859ab2a7f33f280f31285d493b609b5249496
 Copying blob sha256:af6d993d833bede167f1f0d58a255fd53c6d940528da5f0b25e6c3ab5817d202
 Copying blob sha256:516cafcdcfbfd49817657b6719674d12bab000463b9e166d0f190612eb456c5d
 Copying blob sha256:324cc7db9e6968f2ce9e615e901477cb5ffebcdd3844dc079e3f6050a7321020
-Copying blob sha256:0dcba44e059c3d3a1206df2d54b7ddb3a1cb887a0f0d377dc6f77cca8b94f411
+Copying blob sha256:5ca51e514ca2da0ae2f7c68062a15881824388575708286d7361922133ae6882
 Copying blob sha256:bd9ddc54bea929a22b334e73e026d4136e5b73f5cc29942896c72e4ece69b13d
-Copying blob sha256:dafed84d4176716bd437048ae02ffe04a2b8484ee38dc34155151897c06d65de
-Copying blob sha256:f7c533ef8456e9daab87c6b67c4c3b10ee0b48892517f97b929741017c98f16a
-Copying blob sha256:8d17ed49b1febeb2b133fcc8a55a43c95c937d6bbd53a7fddfd36cadcef25300
-Copying blob sha256:72a45c77f015c1e5155d04f0586e04949598a59b80f9d3b5c57f6d5007f764cf
-Copying blob sha256:c13028b42122e76156211b02c98c7ac6f84316a7ffcbc495a722bf50860fcddc
+Copying blob sha256:192cd9414d775679ba6f678a0457bf42749ddf01cc313c5354b9dca3067f43a4
+Copying blob sha256:7ffd40357d6974601abcecfb58c01bd73411732577f005b953c52b081d7b5028
+Copying blob sha256:9679480e95facac91f9f7d06e5f53b4d037a73a5971604fbeed47e3f5fd37fe5
+Copying blob sha256:9b301993b4ad36ab3b35c3d9227707a51634736a2cfbbd600452b113d1bb3597
+Copying blob sha256:a749c55d3b408cd04b10ca5cc03f632ef30cf7ffba8a5b8bbc3445c1be017d7d
 Copying blob sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1
-Copying blob sha256:57d52a2591ac91a3adb98d60755a4c9b43ad4c3231d69aca7ec0ccdd8c9919e0
-Copying blob sha256:5edc80b29238eb23a1bd4c6ed924e3326bdac1c22ea687b69ff7a552c37616a3
-Copying blob sha256:101a474d9bd59473c480ef06c41471bf70c0c943d256e72277a4686cc79f75d6
-Copying blob sha256:6fd1d10ca5d7277a8adde17f569e903366c4ec29b711f4f7af2c3e243cf9ea43
-Copying blob sha256:eccd911c6f368011c7cfb1207de7e72ac02e6acb32fdfc851609dd459b44ac34
-Copying blob sha256:d1f996baa4c5552bc685269167749eaa4b94055ae2b60022443478e2ad2506e8
-Copying blob sha256:ecb635e811a2720f0db0beae170d0edcc37e6fb3bb031c0f7f565d7264622ee7
-Copying blob sha256:7a7023a1f3790fc9c332a4470414d5a5b922372d39055c662a3fd7e85e19c7d9
-Copying blob sha256:bc44643cedff45b36b6ff886883a421ad654f101ca85b174fcd30b8c9fe7e355
-Copying blob sha256:fe74514818c39746bfab7e182a1f2396da572f90c1b0a897de678b820ae09868
-Copying blob sha256:764bbbb6146b5c49fa77c1b3ccca60a65a6b10a87b82e29f637b9f14929097cc
-Copying blob sha256:31fb6d19a8e31b8bc3bd55a9525fe14832e442f8b5503c422429fa5cd3c0a3c6
-Copying blob sha256:bcc1e6ff76004de52ff041640cc9ec4eb33682d3f7ecc58bab343a281c3d3b9d
-Copying blob sha256:217e0a11a9a282de1130734a899ef799ffc03c4f55beac3e749e8fa4ef9950bd
-Copying blob sha256:79087672ef54189b6d3444acf1601e367565d339086bbc61f19ac9bfcceb3494
-Copying blob sha256:e359349203916b6aaaf1b6c05fc6368a6c1e71f78771a061370a19dc05f3e212
-Copying config sha256:4c92002507935ca542f183a6c0f46cb6cebb3f0016d34ad859bddcd22de63f09
+Copying blob sha256:db812d42427837581c5905ff6882dbad039a7359041ee168382a8d49a52d9a2d
+Copying blob sha256:7415b50d987f2a2e295fa4e0561de22bdce8e356d49cdc6e245df534d6100be5
+Copying blob sha256:f5a9bb8af388bd75d00773c34e5163018d7fcd9c78bafcf4e3b5eacb00c8c91a
+Copying blob sha256:73ea0b4091c4a938c81c6a2b97c243eab0f4449c6484ccf31612c8306270f906
+Copying blob sha256:1799361d876850e14eb8a0309d65c30f0f3b3b0b84b9c0eb07d38998004b14c9
+Copying blob sha256:7d3d2ec239ed694b11736f4e1675d26de134c456c9abe500a8b7f11ac3da0f49
+Copying blob sha256:1a5988a56e72887da83537d3046c2293a7b33baf3553e21d52ea5129cd0e2c7d
+Copying blob sha256:ae11c03fc76899296deb26b2888c6aeef3bf47c62a06556d96a277c048dab605
+Copying blob sha256:c9bd4b06097fb7556dd80a0b64da24be72da9d104fa41fc54792656d331e20df
+Copying blob sha256:344a36a3e97aaaa48034983f6dc0eb7d217ade178fd9917800c69b66d839ced4
+Copying blob sha256:a9f107797f576b994158735a77972c083139d6d5cdf058aa4bdfbdc060e15f9d
+Copying blob sha256:c369b765d86db03c69647d4f477e1c387c738e7904a4236601a4aa6e26f491a6
+Copying blob sha256:6864b248786631502759b6b99b96b7c8333ff09bc9a5c856fbffdabaf31a1751
+Copying blob sha256:49707019048476e156fb7dbad696bc4653722943583f2b754f74e620fc973789
+Copying blob sha256:6c81634217bd5b05444402d7c63406dff1ce4d25efcddf0dc18e138b183a7935
+Copying blob sha256:a9b837f92febbe1eb63f3cd3c01889660de7a3b1f3f50a1b649b15161103500d
+Copying config sha256:110d4f01a243d88671471f6ac95d54452ac16e1348f094533d35bf9172639eb7
 Writing manifest to image destination
 ### /usr/share/z13/flatpak/app (staged; /var is wiped by post_build.sh)
 com.github.flxzt.rnote
@@ -306,8 +306,8 @@ org.videolan.VLC
 3.0G	/usr/share/waydroid-extra/images
 ### waydroid images
 total 3.0G
--rw-r--r-- 1 root root 2.5G Sep 21 12:29 system.img
--rw-r--r-- 1 root root 536M Sep 21 12:29 vendor.img
+-rw-r--r-- 1 root root 2.5G Sep 22 11:20 system.img
+-rw-r--r-- 1 root root 536M Sep 22 11:20 vendor.img
 ### packages
 fprintd-1.94.5-5.fc44.x86_64
 waydroid-1.6.3-1.fc44.noarch
@@ -327,25 +327,25 @@ xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
 xorriso : NOTE : Loading ISO image tree from LBA 0
 xorriso : UPDATE :     618 nodes read in 1 seconds
 libisofs: NOTE : Found hidden El-Torito image for EFI.
-libisofs: NOTE : EFI image start and size: 6371379 * 2048 , 26488 * 512
+libisofs: NOTE : EFI image start and size: 6371472 * 2048 , 26488 * 512
 xorriso : NOTE : Detected El-Torito boot information which currently is set to be discarded
-Drive current: -indev './z13-fedora-latest-20260921-257409f.iso'
+Drive current: -indev './z13-fedora-latest-20260922-6705c53.iso'
 Media current: stdio file, overwriteable
 Media status : is written , is appendable
 Boot record  : El Torito , MBR protective-msdos-label grub2-mbr cyl-align-off GPT
-Media summary: 1 session, 6378017 data blocks, 12.2g data, 34.4g free
+Media summary: 1 session, 6378110 data blocks, 12.2g data, 34.4g free
 Volume id    : 'z13-x86_64-latest'
 total 8
--rw-r--r--    1 0        0              28 Sep 21 12:43 '.discinfo'
-drwxr-xr-x    1 0        0               0 Sep 21 12:49 'EFI'
+-rw-r--r--    1 0        0              28 Sep 22 11:36 '.discinfo'
+drwxr-xr-x    1 0        0               0 Sep 22 11:42 'EFI'
 -rw-r--r--    1 0        0            1295 May 13 00:00 'Fedora-Legal-README.txt'
 -rw-r--r--    1 0        0            1063 May 13 00:00 'LICENSE'
-drwxr-xr-x    1 0        0               0 Sep 21 12:49 'boot'
-drwxr-xr-x    1 0        0               0 Sep 21 12:49 'images'
--r--r--r--    1 0        0            1466 Sep 21 12:38 'sb_pubkey.der'
-drwxr-xr-x    1 0        0               0 Sep 21 12:51 'z13-fedora'
+drwxr-xr-x    1 0        0               0 Sep 22 11:42 'boot'
+drwxr-xr-x    1 0        0               0 Sep 22 11:42 'images'
+-r--r--r--    1 0        0            1466 Sep 22 11:31 'sb_pubkey.der'
+drwxr-xr-x    1 0        0               0 Sep 22 11:44 'z13-fedora'
 ```
-- env image: /images/install.img (Squashfs filesystem, little endian, version 4.0, xz compressed, 945442032 bytes, 38033 inodes, blocksize: 131072 bytes, created: Mon Sep 21 12:48:20 2026)
+- env image: /images/install.img (Squashfs filesystem, little endian, version 4.0, xz compressed, 945619486 bytes, 38038 inodes, blocksize: 131072 bytes, created: Tue Sep 22 11:41:28 2026)
 ## interactive-defaults.ks (key lines)
 ```
 9:ostreecontainer --url=/run/install/repo/z13-fedora --transport=oci --no-signature-verification
