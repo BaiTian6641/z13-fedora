@@ -1,25 +1,25 @@
 # ISO verification
 
-- iso: `./z13-fedora-latest-20260928-c7e85db.iso`
-- date: 2026-09-28T13:55:46Z
+- iso: `./z13-fedora-latest-20260929-c110831.iso`
+- date: 2026-09-29T13:01:00Z
 
 ## Baked content in the published image
 - image: `ghcr.io/baitian6641/z13-fedora:latest`
 ```
 Trying to pull ghcr.io/baitian6641/z13-fedora:latest...
 Getting image source signatures
-Copying blob sha256:3023e8ed4ff46d1eb3adafd0520d642a1e624412f088ebdad012d788755aa616
 Copying blob sha256:c595e64f3ff8b1064779e8e50f5e5b34b0463f12d83f066f10d708947ccd36b9
+Copying blob sha256:3023e8ed4ff46d1eb3adafd0520d642a1e624412f088ebdad012d788755aa616
 Copying blob sha256:76ab50fa9ad96e1a555791ce12d5dd0674e98fbd74b1808bc6c86210b907442b
-Copying blob sha256:792c489ebf860cc31216a47abf12c555cba4e2e09f295d74672822cb249e2ddf
-Copying blob sha256:f34118d2f85becce82dee5325b0664cfac643952c60e7b667df3c72304d4e1c3
+Copying blob sha256:b4779a9de4e408c24252f7dcbdb53a182f33ab48f8613d02e5a4bc54934777c0
 Copying blob sha256:b6fdd58ef5a6d2f66d63253fc9edef64f879d170ee6efda32e14eaf70b4dc240
+Copying blob sha256:792c489ebf860cc31216a47abf12c555cba4e2e09f295d74672822cb249e2ddf
 Copying blob sha256:b7ebf2c5a2dbf1d121fb5842187df962af90db1f60e3cc82741ec95ecbba79e4
 Copying blob sha256:256da23a7c6652cad4d84dc825176f191b49bb02a1b38224d6a0f90cb5ca4ab3
 Copying blob sha256:60775f71d4cbff9ac97d0556f41dce59ab9bddeb00e9443f55c79c1689787750
 Copying blob sha256:418415055ad8454f1f822daa1595396c28e51e74f4a85da02749b22002365103
 Copying blob sha256:1e70a374663de7142df8e9c7f3e157120b4a6d7d2b61b4da37ac2a1a9e93c094
-Copying blob sha256:cc0b9eb4a4a11088f3a406858799ea943c2ab64b7a4501d5dfcaeffc6fcf5c61
+Copying blob sha256:1de273846e073e255fdc5d319043c526e044a7ecc18cfefbd5fb7514cd853e57
 Copying blob sha256:e4106e0f179785d36e6deac306e2861941173ec5b9560eda0f1083381530b4b2
 Copying blob sha256:090a151c895c2c310c0db5fd206b082ceb4d4a034c17ea3b6330b204ed14cf74
 Copying blob sha256:3305cabe9406e93b9ec5e46f6d92d9c70d4b64d3637b42eff5162c951f1f6251
@@ -31,10 +31,10 @@ Copying blob sha256:ba5ee5732ab581161423ba902499d9ffb840650da35e166a715fc7f6cc42
 Copying blob sha256:d62a0008e1676b669ec23b2ad8fb4ef7585fffe79b350543d582aa3840a08667
 Copying blob sha256:c1cc419b6e0c0e1ab2977e4a4750af71b9d322f090d7c89abd734d71cda9a562
 Copying blob sha256:9717bfe7817df26b6fd7016728bb2bb07f6516f73c0839b056b9d2dd7103dbfe
-Copying blob sha256:b3bc51e3bbb714ba375c5181b2da48428d035027c7f1c55f2ee8f41b779ad18c
+Copying blob sha256:da7dcfdef77f4ddbc018f6890f57f0c22b210e730d1fb423911bd206d9cc54cd
 Copying blob sha256:c1cd76194111fb4664c2a3da9af7471e326d92f14aa9ff33db5919bdc7c6cfb8
+Copying blob sha256:41da8c52f3ebec00db5ef9b16efe176fb9c0bfcf7ff42f8095c359027127e9a4
 Copying blob sha256:e150c0a14efdc22e3dc6df70354289d2a88ca1925a65d8250fc0f3701512acf0
-Copying blob sha256:9818629a1b8b67a3d075517a678639ad3b3e5787c22306d293d23dfef5be05a6
 Copying blob sha256:00fd525de9468b3bb52b80c039ac67cd51fb9c779ffe2a91b1b4e570233cf718
 Copying blob sha256:edd8b73c65d13895539fd115c5475d8f6c72780fffe095f98745e4994a72a0b1
 Copying blob sha256:d8e1b7e5acc19906f9cb5879fa70e5b51c3d1849884f63e24fc15695926fbd79
@@ -130,7 +130,7 @@ Copying blob sha256:5ab8cf34e68d8840af1eb7d4a60769f29c98d16999521b6a3c2db2f257bb
 Copying blob sha256:50abcb81faec331c319ac0815354262f06069a6716c32576c5084a28ebb0ce80
 Copying blob sha256:94fba46b80ea6da1c12c131f95af13ec0792f0842bfbebbfb1edb17dc241202d
 Copying blob sha256:27c7d70f2194650757e583f108f231be57ee6939f73d2886bbc93134205eb75b
-Copying blob sha256:fefdd9ad1b88f03291cc40ec4ef85b96cf68f00e8c9348f92452ecae7821f567
+Copying blob sha256:d8cb67e30d0bc6c93b5309dfc9a5cef0d971cf2c1ad13ce9204f8c0d9e0b8997
 Copying blob sha256:f9cdb7e98ca3ab1fd07b6cdd30e3b45b79e7e2e7580d12e30dd6214457e725fa
 Copying blob sha256:93550cb70b0b24a70a72b654d16b9580cf0fb38800c2dc2b8ad3cbe10b6596d5
 Copying blob sha256:76a7ad1dd4d20bf2aaffa4a8d1e057c78d621400535a62d3d620629fd749e83a
@@ -149,10 +149,10 @@ Copying blob sha256:582e05bf1137c808237f5129950fd49df20d940ea7b24e4fb90904ad629f
 Copying blob sha256:e8a217566f54eb1a7f0d0d2ad016f662b428373a9d43d12018492a7214da522c
 Copying blob sha256:0d0b8184e4cb53bd6933ee1db79bdf40f1554766873da8f47626008e2082e6c0
 Copying blob sha256:cc096fe2e5697cabb093666619c0c10dd2c6a4f5249887bfd7d156e7c08ecb44
-Copying blob sha256:aeb3fcfbb93f54af92cc635506dfd259255d07903d0d25eb2543e7940e0c5722
 Copying blob sha256:8f55ee1724660514d380687e57fcfab850b55114a3ae6ce02ef27bdc28ef0d29
 Copying blob sha256:2f3f37733949bcd1c3fe8a73e5aac006b4c48b42b282e775f975e0d82fba6022
 Copying blob sha256:a62d11a9e27041fa23f2b65e0d6a8289c918660ca7c5e5883f7181c560179150
+Copying blob sha256:c623bef9b13642666cea0183d97eca5fef41e5b2efad70b72dd34810f0d5a84a
 Copying blob sha256:963565d951d57fb2114273dd95a84dc64a561fa5635f78181a586ea0660a4681
 Copying blob sha256:0cd50e5ed1e4a44802cd535f916e49e526a25765271947d596ad45ff76b37643
 Copying blob sha256:4526ebd64bb0e1ca63c4f10d50f53b321ce89d1b872d2ab46e51feca401a8271
@@ -160,13 +160,13 @@ Copying blob sha256:5bfad5506daabcea86d1d6aa7ca13cd728382b7390abe4d59d1b1af64993
 Copying blob sha256:8301f53831d05bd73c3e5b1b921da241bf390af79406085350c2b93beb9fd468
 Copying blob sha256:365b94ff2d34effdb3cdd8b79e49705ee0bb4491597478f6d864c0beb17054e4
 Copying blob sha256:0864978aa5a81781a5aab39ef744a62d5291a1876c0a7cda9b8846a3f0af153a
-Copying blob sha256:cee96318d5aa93dbe74d2448f1f1761c912e38142ec306604a01825b883b68f0
+Copying blob sha256:8180d0c0225822ffcc814074ba262005e1719146774185de3c85bba7fdf2a6f9
 Copying blob sha256:2b939908a3e7c25ebd3843568435fd4da0bf6b646db083e87757aba27ff69d5a
 Copying blob sha256:c0444e056679af7c181149f6d118f0cf7c1307f9b8eb9f739fc3c0f19de13843
 Copying blob sha256:1262bac793bacbd64a0adc8f4e96a6ef5637c22647713f3546ce1bd44d238f4f
 Copying blob sha256:b5e3893b6add73753fde568da1157f766d0b3afddd663a3b51cc00fea7a489ff
 Copying blob sha256:d1ea9fb98abe3041766b44530f9b979fc8b13eb2ae755b796820c7b599d8a802
-Copying blob sha256:431224d659f093b1e7ce914123a6b63df3a1b32818fc51cdd3675704612f97aa
+Copying blob sha256:f1968e7d72bb394b81416aad13bd05c86c3a303a182a732dbaed8fd6c2010512
 Copying blob sha256:c59715e42f01f03ffa3975886a892e00221264da6a38fb3a61a3f3411685b1f0
 Copying blob sha256:6a7d5b639649506398cb71979a22d2b7bee7dcdd1eded990a6ff4f6a53fed242
 Copying blob sha256:20bc8b138cfd1ed7901a1bd0564cb3f54e944d1ff609137b2aeb633e585ef71f
@@ -180,23 +180,23 @@ Copying blob sha256:260cd44abbaad4b38497b04353d9ad546ce33ebc15c7e99b79ca5f171fa0
 Copying blob sha256:40915f2ca2df5026e911295a80baa34a50902837e8d558360163663719557067
 Copying blob sha256:3707ebc96c48608cc560546f05d21f9b5a23a4ec25e29495b1bd1e356dcec430
 Copying blob sha256:3af7dc2e4df9602515c2b8abde1ce78de611a844da36945ba45a74baa6240bd5
-Copying blob sha256:22a19eeff9eb14f79a9a9e90d1224f99580b6164a501f6109e53593a99d3d994
-Copying blob sha256:bd45fad342ef24cfaeafd4044374b7c5892eea7698606b38a01a7f87b07d031d
-Copying blob sha256:ed74a544203c07b9161f404c8cec7d0d7bd5fab7b0da33fd2a5d178db0d135b4
-Copying blob sha256:895c29d943cf7801a118e43855a591aa1d573db559aaafc05a48887a8059c881
-Copying blob sha256:273cb6c7b80a4a8037dae78c8d7efb23eceaeab4451e4ef63d2a9d39625b2dff
-Copying blob sha256:0d2922c8d134283024b7ee9c429b255109dcf6061cb1290148f1bc93b3dd197d
-Copying blob sha256:6c13eebd8d841a2b143d0baeb31a03d324d2cb9f3d1976a60688c66f81c7d63e
-Copying blob sha256:9fce11d51d8eae57d62f0e154dfce8beb373ed9eaaf991d16d6342c33b4dcb71
-Copying blob sha256:779c55dc8c517a9a5ecd992192c6d8089efc9a1e894f59b4b27bee0030f3c705
-Copying blob sha256:17252100fe85f260d4f06f87136fc0858cc4dd3b2ee6c661f38a0d05922682be
-Copying blob sha256:99e6f82a826c980cab92d57b48bac727955919a30384134c063f82a2dea26b5e
-Copying blob sha256:77c3683f3266d5a6caae761a0e81fdf9edceb2e057d5bf7be40da8a31e38f0af
-Copying blob sha256:3833b40fdd59a14e8a0e50afcadfdbfb0a3ee2bce6639d9f25824da235d5a960
-Copying blob sha256:ac8e92319e0864684243d3ef48c7c5192c891947f8c3fbf56affd3cc52401ab6
-Copying blob sha256:9155039907ba4b1367476088f73c5b5ce1f4ddc204ea3768abcb94d5d307315f
-Copying blob sha256:ae7a7d909b2f11598253155c100a43cdc7a941b52af1f848b78d269bb775d33a
-Copying blob sha256:0af326cf0b84dfe16d18e82d838880a7340e1b0eb61586874c1e544492efb63e
+Copying blob sha256:563708fa705c3e6c583d48b850f1cba7b1928d720d8a2b33cfe015ff1bc8281a
+Copying blob sha256:132e3d8fd109704721b259895d86095007e6c18312dc2e074753eb30afacff78
+Copying blob sha256:bedbc2fc29a0dbd0459654885a4e1a577d8cde3b19cc3fc5459e96be9a809aae
+Copying blob sha256:de642e656fe63d3c200a05970444a1ca82f5dcb9b90ba389f164eab09a0b8e22
+Copying blob sha256:2711295f56bab20d39831315ad43bebc665c049e8450c1b8eaa81230f040fe9d
+Copying blob sha256:9efc1215039faa2d2e5a139aef9f8f62eeb793896a70a79d260c2c410b72b39c
+Copying blob sha256:e8fbdcd01a4fc35d9346a85c92cde38c7b70df1f5fc501400bdf15b31780c9ce
+Copying blob sha256:f0fdbd99c45ca9253d249c7d62713c2a9b1341e2a36a7fa37d0b7b6734ee1960
+Copying blob sha256:dda488635c7efea752f7b8629f404578f6994b42a625e7fa5627cbd7c26da84e
+Copying blob sha256:7e939b86cceb814ec71f195c67dd4a04379b10544bcf74b71873f8cf2e7517fa
+Copying blob sha256:93dab1be543ee7cd393587fae6f462fc45b844428413ffe2f880bd6554683719
+Copying blob sha256:2f115b730ce2edce8844a2d49f0f065be7b567081d1a3915f98d71429b3952e1
+Copying blob sha256:26dac099c8d92188e69a1c2b0213a2e710e637a4222bfd43b886cb1d49302afb
+Copying blob sha256:0f6c2c410154478bfb2e1af0fc6dd01703422311e00f3ebcf4d3f7ce0722a2ec
+Copying blob sha256:8f3196cf380ee5339008451b6650b1cee9e874ebade6f57455c93db432371f50
+Copying blob sha256:125c3d076b9789a1dc055ed86f6162fc69d48ec9c1a8253c9cb3f54d821cc923
+Copying blob sha256:0c44789724d8578657ad20269ecfd59a3a1257857c26319093c533e52d30e854
 Copying blob sha256:9407a28e210d5e4a40cabb172b0583c0b32efa95c218b2196510ec5ad9fd7cc1
 Copying blob sha256:e9e3b2f8a94d8b2cfe737bdc095a0960b6adf940124a4fda9f322f99814b7b41
 Copying blob sha256:1436b787c498da3643693105e92c5cf57ce7f23508943d1b351630c8f8e7fdbe
@@ -210,7 +210,7 @@ Copying blob sha256:7bcf2a300d348aaa444c7d71f01d20465dbf4246c1e0c2cd074255210ac8
 Copying blob sha256:842d3b22150fb1f38c9d938d29745f46548c45f00f32df92446e51dbd64b98c1
 Copying blob sha256:72e12e233d9956a3b2fa2c6677a9c40436fd278add0a170b5d5b32561a241a68
 Copying blob sha256:6080e915398be5c70c53b57882fa32719819ada33e0d71f86ca4bfc55968ffe8
-Copying blob sha256:9f0da738051abb8b2c0c13048c1a8ab0c0a44ef402b1ceceb20c34233e3c2764
+Copying blob sha256:4c4086aaee4a26d7f2f0929d1b09d3de223e1ef27377bde418ad3dc7567cd698
 Copying blob sha256:7c327d74add1016e413427e732eaafd455f0e40f54a97a7c8aca803acd247078
 Copying blob sha256:70e7181e184d3c7b2ad983bd59b7384c82f8487aa35ced5253c69a894e78652a
 Copying blob sha256:af4e73d43f4fb6547708334bd0db1f702cdca17d52691ea4f3fb06c7631f1bda
@@ -254,42 +254,42 @@ Copying blob sha256:81aee097da6e84d44d8c09c5ffe204da0674a5d4d017544341b8ff8714ed
 Copying blob sha256:86cd0d9004a935e76a4b7041dd87b40795dc047ded70cce9b11d01e3cb95bd9e
 Copying blob sha256:f991b7c5234eb15decb350e2f1df44b30d059ce3afac33febfba0b83703547e1
 Copying blob sha256:f1707ed79bbd728994e06fb29298921c8e8f89f6dba915a2c243c07cfc376032
-Copying blob sha256:f2ca336e50e493b283f55f4801d0dcdd674237e04bfdae9825bddd53ee58f227
-Copying blob sha256:b1d360c9bc710ea6b49fcdb7e3e41417e43af9754d5b5a2c0221ae1d870f0638
-Copying blob sha256:6d1c91a4e8d12abc6d9835aa9a6812b0461545e60d7a42d24ce7c3ec5d7ea7e6
-Copying blob sha256:4bac19794084a6567df1ec8f3be40920853dd8d7487f36a268c4d48f87cdecb9
+Copying blob sha256:440c3b0df1e002fc8c6c8f3de515073ada3f03b656327d19a4e3107a6a1f0542
+Copying blob sha256:96c3b80a87f6a1fa51f264a90890eec968f4abcc75c56def4fdeeb40cb021f90
+Copying blob sha256:d54a6fbdde26e92a0ba7a682ed1d11a2cfefbb53631f28ffedda3955464a3725
+Copying blob sha256:dee37d929723190a619de8a6278d468270cf4885f2d43b9c02a47fd4863567df
 Copying blob sha256:ea5fb7e044c21eacba0f1567d56cd4af4c75d5828d425474f05fa2f6d8de359b
-Copying blob sha256:1010c2ae3f0cd02de0edf5ea1887784a02e92e90054edf592381e45caeb1e227
+Copying blob sha256:82c0dbd21979535fd2630a32682edd0a702430666f827cf237b4b1d7bcf270bb
 Copying blob sha256:9728958465cbb2124bd86c1cb4e3f644b222330127187f1be1a9fb044b7c8980
 Copying blob sha256:4682ee988fbc3587f4fcfdd01d40ad64fe6229534d4005b36d47419ac0a62852
 Copying blob sha256:0272bc812022aac4566d621eb86bcd4bc03bd5e9aae1ae86c064f8d0bf8cb629
-Copying blob sha256:bc4e4cae27bd3ea89360b02e06501d46fba3d90f7e7a52004d5ff2b218f44cf2
+Copying blob sha256:40b729c0c85b70aa9dadc9beb3d56ca07ebb2de858584c183fb105afd8ebf669
 Copying blob sha256:324cc7db9e6968f2ce9e615e901477cb5ffebcdd3844dc079e3f6050a7321020
-Copying blob sha256:83e141db84dc989f62262802221eed72691476d0be9f18e0501010f2332aa255
+Copying blob sha256:6cc5e2c77f6402dd471f92a6bcc7e8df3721d4840c5fb6dee6e3fda31089b08f
 Copying blob sha256:bd9ddc54bea929a22b334e73e026d4136e5b73f5cc29942896c72e4ece69b13d
-Copying blob sha256:66b8669772e42edb082d654d21ba8a96961fb784253252e35ebaf71c36a53978
-Copying blob sha256:84a234b16dbe2b0d721935ff8eb51dd33835e8ec8e11a13b832e869fa1b91682
-Copying blob sha256:fe2275c42ae01907cde0662f5870cb9580f605036b22bc0309b2ceaf7d95ad18
-Copying blob sha256:b9639c12f20a48b6445b1aa96d0f05dc7b574298eb5fcea71cff1839ebd46b5d
-Copying blob sha256:b44ecb1fb0723eaabf8ad6978462ca0cb6157621351256119c5738b7200103e8
+Copying blob sha256:0eff8155450bb454dbb4783d568ed746a5f05e37adff44c52b72b3c0b6104a1d
+Copying blob sha256:225625a4f32a0344e3946aa04a51d42b900cda2e3de2463228e60811ef800842
+Copying blob sha256:e879b5812543108e57e034f83ce39d6e4ba660f95f4b4e5e25f08fa11bab7402
+Copying blob sha256:bbc82f0919206a53a1621ea81d380fd85ef3c9e0d5f5ab68332455be7941dfda
+Copying blob sha256:908da83175455c37e301f0072d2a8179fc7723fc1f7f2a7f53ecb51b8ef58651
 Copying blob sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1
-Copying blob sha256:2e13df21fb627f600b3bd6d8620dadcdd32e746d84eb191264e22e760e7a2424
-Copying blob sha256:1630d0a969c5674a36e484f81cc8e6b5703099ec712a31d144b6fd2763fdce16
-Copying blob sha256:c5a1a8b19b074d14c25990f036d20a15dcd24ec8291f868ccdc84d2ddb9e16fc
-Copying blob sha256:e8bfb6917d9bb26127cbb83316701a12e9d84ceed5a844d29bb4c9f4026ceb7e
-Copying blob sha256:a7cee97273f4e291c4e4c52d050b4f2ed3101757e90cf174cc2730e0217fe2f9
-Copying blob sha256:28de84babf65f6ae8dd4fdb0e81fe9c3d97b2d381dfe47108e6768015fd99d6c
-Copying blob sha256:3f5b7be5b584811ac44f1e3325bcc84e053d66e85ea07b8437f7a173f3bad785
-Copying blob sha256:551f8e4976ddb28c7d45941a2a6c81148dea0f91da8edba03c7d8bb446efa796
-Copying blob sha256:f643c5c1f32f3fd1dfcdb456e092ec3100ddf8a7abc5954e9468ddf450587085
-Copying blob sha256:aa79c58a9f0f4eca9dee162ea27b7ca26c2e35c47dbb0083825b7baa33d6405c
-Copying blob sha256:781960d8151ef5f643876976c7ca94716d832b8b3cc523fec1aed9c75c24ec8e
-Copying blob sha256:e8c2c04299ad99e16faab492de52092130df1d326d6146f8afe2102a630f739d
-Copying blob sha256:8b4c5c47c9791cccc41ffd26470c2e033436e57ac61111537be50b82a4c3842c
-Copying blob sha256:9eebac35a56bb5a3b212f0aa099507de002bb746aa08410cb0f745e7d989691f
-Copying blob sha256:b96f2b9a2e89e3443dc8e9d870f5df7a940c10a1ba6e00f7eff8ec1e88004574
-Copying blob sha256:4e9c42807c668d5605dd2c439aacee266f6982de2bd26bcf79a2a12fc9faa701
-Copying config sha256:a2d8cad9c97934e8b3382a002522673716103b6f68152ff3eba4717467265636
+Copying blob sha256:9ea7eb8d24c321f8dc4f020ef002ff47b88cbd659e471c7777ae9445711e0059
+Copying blob sha256:b1d0f8d87b25aa753b7b4792b9bfb50abf9804fde59815e99729aa8e5cae7b11
+Copying blob sha256:ad16688fe8621b7820b197fa5afd10ac228293854a86a85b4451201de77c3f68
+Copying blob sha256:5926b478739daeb70820b547a07b4eea12e5bab65157adc8d2757c094cd349ce
+Copying blob sha256:7aafc1737eeb7216f233e3231e709398ef7130688feadd27ebf0ef52879bea46
+Copying blob sha256:37d7c762d1d546357bf53dc3d61e5ca5fde3b829f47ce73db40c8580f3fe39ee
+Copying blob sha256:e81082a2b2f8c6e1f9ac73f95d1eda4be0210a445f51742db4d9fd1e4ba83c9c
+Copying blob sha256:30bfa36928a381848cd4dcedad73b4912e8fc4cf8744c6f27fa9575f0b0a75c3
+Copying blob sha256:4a9e4c54bbb5605241347dcdf381664b3ec78a9d2d03bfb9e3d2ac95663138c4
+Copying blob sha256:de419a05ce0e01c3dd34bc5b8aa6c389274c5da6b674565fb371f6dbe455af90
+Copying blob sha256:db75d2b856e1e7ac111b821b0c9fd2c90d6b65019a573829befd08bb78a34126
+Copying blob sha256:bfc3d4095c3dabe0cdf93c13c1da788cfed809f1f520dd5159f66e23b5a893e5
+Copying blob sha256:112fc2a993dcd73f881d3722b18dcee15d6d92ed6bc062771a6b1daad664f30f
+Copying blob sha256:c268079e5bdcaa81b284bb883e8a51483a352a801d523bf96b121e6b4414ab8b
+Copying blob sha256:822768efd98eb0d24a3d287d8d05deb86ffa208ec2d5a645fe3b1c462ba0ca3b
+Copying blob sha256:f00e8bd49382f485e407b6b13fbd6819a0685f9b73355210ca5d3acc84607837
+Copying config sha256:0d0b8ba8b348f473606b7718fbcc94e57b46e3047a1a57463d537dfddf2ae026
 Writing manifest to image destination
 ### /usr/share/z13/flatpak/app (staged; /var is wiped by post_build.sh)
 com.github.flxzt.rnote
@@ -306,8 +306,8 @@ org.videolan.VLC
 3.0G	/usr/share/waydroid-extra/images
 ### waydroid images
 total 3.0G
--rw-r--r-- 1 root root 2.5G Sep 28 13:26 system.img
--rw-r--r-- 1 root root 536M Sep 28 13:26 vendor.img
+-rw-r--r-- 1 root root 2.5G Sep 29 12:31 system.img
+-rw-r--r-- 1 root root 536M Sep 29 12:32 vendor.img
 ### packages
 fprintd-1.94.5-5.fc44.x86_64
 waydroid-1.6.3-1.fc44.noarch
@@ -327,25 +327,25 @@ xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
 xorriso : NOTE : Loading ISO image tree from LBA 0
 xorriso : UPDATE :     618 nodes read in 1 seconds
 libisofs: NOTE : Found hidden El-Torito image for EFI.
-libisofs: NOTE : EFI image start and size: 6384788 * 2048 , 26488 * 512
+libisofs: NOTE : EFI image start and size: 6386087 * 2048 , 26488 * 512
 xorriso : NOTE : Detected El-Torito boot information which currently is set to be discarded
-Drive current: -indev './z13-fedora-latest-20260928-c7e85db.iso'
+Drive current: -indev './z13-fedora-latest-20260929-c110831.iso'
 Media current: stdio file, overwriteable
 Media status : is written , is appendable
 Boot record  : El Torito , MBR protective-msdos-label grub2-mbr cyl-align-off GPT
-Media summary: 1 session, 6391426 data blocks, 12.2g data, 33.5g free
+Media summary: 1 session, 6392725 data blocks, 12.2g data, 33.5g free
 Volume id    : 'z13-x86_64-latest'
 total 8
--rw-r--r--    1 0        0              28 Sep 28 13:42 '.discinfo'
-drwxr-xr-x    1 0        0               0 Sep 28 13:48 'EFI'
+-rw-r--r--    1 0        0              28 Sep 29 12:45 '.discinfo'
+drwxr-xr-x    1 0        0               0 Sep 29 12:51 'EFI'
 -rw-r--r--    1 0        0            1295 May 13 00:00 'Fedora-Legal-README.txt'
 -rw-r--r--    1 0        0            1063 May 13 00:00 'LICENSE'
-drwxr-xr-x    1 0        0               0 Sep 28 13:48 'boot'
-drwxr-xr-x    1 0        0               0 Sep 28 13:48 'images'
--r--r--r--    1 0        0            1466 Sep 28 13:37 'sb_pubkey.der'
-drwxr-xr-x    1 0        0               0 Sep 28 13:49 'z13-fedora'
+drwxr-xr-x    1 0        0               0 Sep 29 12:51 'boot'
+drwxr-xr-x    1 0        0               0 Sep 29 12:51 'images'
+-r--r--r--    1 0        0            1466 Sep 29 12:41 'sb_pubkey.der'
+drwxr-xr-x    1 0        0               0 Sep 29 12:54 'z13-fedora'
 ```
-- env image: /images/install.img (Squashfs filesystem, little endian, version 4.0, xz compressed, 915287109 bytes, 38042 inodes, blocksize: 131072 bytes, created: Mon Sep 28 13:47:05 2026)
+- env image: /images/install.img (Squashfs filesystem, little endian, version 4.0, xz compressed, 915290833 bytes, 38042 inodes, blocksize: 131072 bytes, created: Tue Sep 29 12:50:31 2026)
 ## interactive-defaults.ks (key lines)
 ```
 9:ostreecontainer --url=/run/install/repo/z13-fedora --transport=oci --no-signature-verification
