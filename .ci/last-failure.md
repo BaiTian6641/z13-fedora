@@ -1,407 +1,407 @@
-# Last ISO failure
+# Last publish failure
 
-Run: https://github.com/BaiTian6641/z13-fedora/actions/runs/37626897151
-Commit: 9a164cc981ca7fa19e4f5a62b06a6911e625e9c5
+Run: https://github.com/BaiTian6641/z13-fedora/actions/runs/38139072306
+Commit: 89d4b22a426767d11aff62d95ce66ae367f711e7
 
 ```
-2026-10-07 13:18:12,688: Running %post for initscripts-10.27-2.fc44.x86_64
-2026-10-07 13:18:12,699: Running sysusers for openssh-server-10.2p1-14.fc44.x86_64
-2026-10-07 13:18:12,732: Running %pre for openssh-server-10.2p1-14.fc44.x86_64
-2026-10-07 13:18:12,735: Install openssh-server-10.2p1-14.fc44.x86_64
-2026-10-07 13:18:12,750: Running %post for openssh-server-10.2p1-14.fc44.x86_64
-2026-10-07 13:18:12,761: Install openssh-clients-10.2p1-14.fc44.x86_64
-2026-10-07 13:18:12,777: Running %post for openssh-clients-10.2p1-14.fc44.x86_64
-2026-10-07 13:18:12,790: Install cryptsetup-2.8.8-1.fc44.x86_64
-2026-10-07 13:18:12,803: Install audit-4.2.1-1.fc44.x86_64
-2026-10-07 13:18:12,868: Running %post for audit-4.2.1-1.fc44.x86_64
-2026-10-07 13:18:12,880: Install net-tools-2.0-0.77.20160912git.fc44.x86_64
-2026-10-07 13:18:12,929: Running %post for net-tools-2.0-0.77.20160912git.fc44.x86_64
-2026-10-07 13:18:12,940: Install ipmitool-1.8.19-12.fc44.x86_64
-2026-10-07 13:18:12,965: Install mt-st-1.8-3.fc44.x86_64
-2026-10-07 13:18:12,975: Running %post for mt-st-1.8-3.fc44.x86_64
-2026-10-07 13:18:12,986: Install spice-vdagent-0.23.0-2.fc44.x86_64
-2026-10-07 13:18:12,996: Running %post for spice-vdagent-0.23.0-2.fc44.x86_64
-2026-10-07 13:18:13,007: Install dump-1:0.4-0.62.b52.fc44.x86_64
-2026-10-07 13:18:13,178: Install rpm-plugin-selinux-6.0.2-1.fc44.x86_64
-2026-10-07 13:18:13,179: Install nano-default-editor-8.7.1-2.fc44.noarch
-2026-10-07 13:18:13,181: Install biosdevname-0.7.3-21.fc44.x86_64
-2026-10-07 13:18:13,192: Install efibootmgr-18-11.fc44.x86_64
-2026-10-07 13:18:13,204: Install mtr-2:0.96-1.fc44.x86_64
-2026-10-07 13:18:13,216: Install vim-minimal-2:9.2.1129-1.fc44.x86_64
-2026-10-07 13:18:13,259: Install ethtool-2:7.1-1.fc44.x86_64
-2026-10-07 13:18:13,273: Install grub2-efi-x64-cdboot-1:2.12-66.fc44.x86_64
-2026-10-07 13:18:13,286: Install grub2-efi-ia32-cdboot-1:2.12-66.fc44.x86_64
-2026-10-07 13:18:13,297: Install grub2-pc-modules-1:2.12-66.fc44.noarch
-2026-10-07 13:18:13,469: Install bzip2-1.0.8-23.fc44.x86_64
-2026-10-07 13:18:13,683: Install ftp-0.17-100.fc44.x86_64
-2026-10-07 13:18:13,695: Install gdisk-1.0.10-5.fc44.x86_64
-2026-10-07 13:18:13,709: Install gdb-gdbserver-17.2-4.fc44.x86_64
-2026-10-07 13:18:13,722: Install pigz-2.8-8.fc44.x86_64
-2026-10-07 13:18:13,733: Install prefixdevname-0.2.0-8.fc44.x86_64
-2026-10-07 13:18:13,739: Install less-704-4.fc44.x86_64
-2026-10-07 13:18:13,752: Install hexedit-1.6-10.fc44.x86_64
-2026-10-07 13:18:13,763: Install bridge-utils-1.7.1-15.fc44.x86_64
-2026-10-07 13:18:13,774: Install hdparm-9.65-10.fc44.x86_64
-2026-10-07 13:18:13,786: Install dmidecode-1:3.7-1.fc44.x86_64
-2026-10-07 13:18:13,811: Install vconfig-1.9-41.fc43.x86_64
-2026-10-07 13:18:13,822: Install default-fonts-other-sans-4.3-1.fc44.noarch
-2026-10-07 13:18:13,824: Install iwlwifi-mvm-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:13,898: Install iwlwifi-dvm-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:13,903: Install amd-gpu-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,012: Install atheros-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,075: Install brcmfmac-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,090: Install intel-gpu-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,108: Install intel-npu-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,111: Install iwlegacy-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,112: Install libertas-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,115: Install mediatek-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,123: Install mt7xxx-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,159: Install nvidia-gpu-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,275: Install nxpwireless-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,381: Install qcom-wwan-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,384: Install qed-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,396: Install realtek-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,480: Install tiwilink-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,488: Install amd-ucode-firmware-20260916-1.fc44.noarch
-2026-10-07 13:18:14,490: Install google-noto-sans-cjk-fonts-1:2.004-11.fc44.noarch
-2026-10-07 13:18:14,844: Install zd1211-firmware-1.5-20.fc44.noarch
-2026-10-07 13:18:14,845: Install spacemit-firmware-20240829-5.fc44.noarch
-2026-10-07 13:18:14,848: Install atmel-firmware-1.3-37.fc44.noarch
-2026-10-07 13:18:14,922: Running %posttrans for filesystem-3.18-52.fc44.x86_64
-2026-10-07 13:18:14,924: Running %posttrans for glibc-all-langpacks-2.43-9.fc44.x86_64
-2026-10-07 13:18:14,925: Running %posttrans for grub2-common-1:2.12-66.fc44.noarch
-2026-10-07 13:18:14,938: Running %posttrans for ca-certificates-2026.2.90_v9.0.317-1.fc44.noarch
-2026-10-07 13:18:15,958: Running %posttrans for dconf-0.49.0-5.fc44.x86_64
-2026-10-07 13:18:15,965: Running %posttrans for authselect-libs-1.7.1-1.fc44.x86_64
-2026-10-07 13:18:16,071: Running %posttrans for systemd-259.9-1.fc44.x86_64
-2026-10-07 13:18:16,075: Running %posttrans for systemd-resolved-259.9-1.fc44.x86_64
-2026-10-07 13:18:16,085: Running %posttrans for fontconfig-2.17.0-4.fc44.x86_64
-2026-10-07 13:18:16,090: Running %posttrans for crypto-policies-scripts-20251128-3.git19878fe.fc44.noarch
-2026-10-07 13:18:16,226: Running %posttrans for selinux-policy-targeted-44.11-1.fc44.noarch
-2026-10-07 13:18:33,018: Running %posttrans for container-selinux-4:2.251.0-1.fc44.noarch
-2026-10-07 13:18:33,025: Running %posttrans for passt-selinux-0^20261002.gcba3570-1.fc44.noarch
-2026-10-07 13:18:33,031: Running %posttrans for dnsconfd-selinux-1.7.5-4.fc44.noarch
-2026-10-07 13:18:33,036: Running %posttrans for wireplumber-0.5.18-1.fc44.x86_64
-2026-10-07 13:18:33,045: Running %posttrans for appstream-1.1.3-1.fc44.x86_64
-2026-10-07 13:18:33,074: Running %posttrans for systemd-udev-259.9-1.fc44.x86_64
-2026-10-07 13:18:33,083: Running %posttrans for kernel-core-7.2.8-200.fc44.x86_64
-2026-10-07 13:19:13,686: Running %posttrans for kernel-modules-core-7.2.8-200.fc44.x86_64
-2026-10-07 13:19:19,050: Running %posttrans for kernel-modules-7.2.8-200.fc44.x86_64
-2026-10-07 13:19:19,056: Running %posttrans for grub2-efi-x64-1:2.12-66.fc44.x86_64
-2026-10-07 13:19:19,068: Running %posttrans for shim-x64-16.1-7.x86_64
-2026-10-07 13:19:25,545: running /build-container-installer/lorax_templates/install_set_installer.tmpl
-2026-10-07 13:19:25,548: running /build-container-installer/lorax_templates/post_install_configure_upgrades.tmpl
-2026-10-07 13:19:25,549: running /build-container-installer/lorax_templates/install_include_post.tmpl
-2026-10-07 13:19:25,550: running /build-container-installer/lorax_templates/cache_copy_dnf.tmpl
-2026-10-07 13:19:25,556: running /build-container-installer/lorax_templates/post_secureboot_enroll_key.tmpl
-2026-10-07 13:19:25,558: running /github/workspace/files/lorax_templates/z13-layout.tmpl
-2026-10-07 13:19:25,558: writing .buildstamp file
-2026-10-07 13:19:25,558: writing debug data to pkglists and original-pkgsizes.txt
-2026-10-07 13:19:26,053: doing post-install configuration
-2026-10-07 13:19:26,058: running runtime-postinstall.tmpl
-2026-10-07 13:19:27,570: writing .discinfo file
-2026-10-07 13:19:27,570: backing up installroot
-2026-10-07 13:19:28,400: generating kernel module metadata
-2026-10-07 13:19:28,400: doing depmod and module-info for 7.2.8-200.fc44.x86_64
-2026-10-07 13:19:33,481: cleaning unneeded files
-2026-10-07 13:19:33,489: running runtime-cleanup.tmpl
-2026-10-07 13:19:35,168: verifying the installroot
-2026-10-07 13:19:37,253: creating the runtime image
-2026-10-07 13:23:02,544: preparing to build output tree and boot images
-2026-10-07 13:23:02,544: rebuilding initramfs images
-2026-10-07 13:23:02,544: dracut args = ['--xz', '--install', '/.buildstamp', '--no-early-microcode', '--add', 'fips']
-2026-10-07 13:23:02,544: anaconda args = ['--xz', '--install', '/.buildstamp', '--no-early-microcode', '--add', 'fips', '--add', 'anaconda pollcdrom qemu qemu-net prefixdevname-tools']
-2026-10-07 13:23:02,559: rebuilding boot/initramfs-7.2.8-200.fc44.x86_64.img
-2026-10-07 13:24:03,439: populating output tree and building boot images
-2026-10-07 13:24:03,454: running x86.tmpl
-2026-10-07 13:24:12,001: writing .treeinfo file
-make -w -C container z13-fedora
-make[1]: Entering directory '/build-container-installer/container'
-skopeo copy docker://ghcr.io/baitian6641/z13-fedora:latest oci:z13-fedora:latest
-Getting image source signatures
-Copying blob sha256:76ab50fa9ad96e1a555791ce12d5dd0674e98fbd74b1808bc6c86210b907442b
-Copying blob sha256:c595e64f3ff8b1064779e8e50f5e5b34b0463f12d83f066f10d708947ccd36b9
-Copying blob sha256:b6fdd58ef5a6d2f66d63253fc9edef64f879d170ee6efda32e14eaf70b4dc240
-Copying blob sha256:93fd1ceea582e234c40280bbac58956e2179fe277399582a048c3d062db3f1b2
-Copying blob sha256:792c489ebf860cc31216a47abf12c555cba4e2e09f295d74672822cb249e2ddf
-Copying blob sha256:2416b7cd2453c204b13d2dd2f476ecae4393ebc51b72a50347e1eccebfaefe11
-Copying blob sha256:b7ebf2c5a2dbf1d121fb5842187df962af90db1f60e3cc82741ec95ecbba79e4
-Copying blob sha256:256da23a7c6652cad4d84dc825176f191b49bb02a1b38224d6a0f90cb5ca4ab3
-Copying blob sha256:60775f71d4cbff9ac97d0556f41dce59ab9bddeb00e9443f55c79c1689787750
-Copying blob sha256:8f4bd04a21cbb19713e5071d62b59ae95ca4d7671a88e4ee191b766dc301add6
-Copying blob sha256:1e70a374663de7142df8e9c7f3e157120b4a6d7d2b61b4da37ac2a1a9e93c094
-Copying blob sha256:e413b02b02d712aba94d5f857c181cedce8bf4ca37421e04e290e4b78b4edca8
-Copying blob sha256:e4106e0f179785d36e6deac306e2861941173ec5b9560eda0f1083381530b4b2
-Copying blob sha256:ec6ec9c2cb0c6d302b24555b59eb555c83ce4e37a393e637443a36b591feeefc
-Copying blob sha256:3305cabe9406e93b9ec5e46f6d92d9c70d4b64d3637b42eff5162c951f1f6251
-Copying blob sha256:e7774273e8a1b1e48f8ebb1c5bb74dd465455c654c16de01d7f38ff1226fed71
-Copying blob sha256:d3d2066822422e559c1c8ddccde5b67f362f4be149ad298101f7cd95219d7e08
-Copying blob sha256:3fb23c747cebac6051539024b9f1ca77cf603d0df749a02fc39fbb9b813e8903
-Copying blob sha256:f5aa6e2474163a2d1b7378f2ccc3ca1a2fbe8cd75a375a1396463526c4cb408f
-Copying blob sha256:9a0babcd430db2105f9f019d7a2bcd6592ce07f5d9b9a1f826a2c357c59ad12b
-Copying blob sha256:d62a0008e1676b669ec23b2ad8fb4ef7585fffe79b350543d582aa3840a08667
-Copying blob sha256:c1cc419b6e0c0e1ab2977e4a4750af71b9d322f090d7c89abd734d71cda9a562
-Copying blob sha256:cbfd8489f423c3a1fdb7426a776a2f14d95d6d08fa695ffc17baa6685a05ba04
-Copying blob sha256:9717bfe7817df26b6fd7016728bb2bb07f6516f73c0839b056b9d2dd7103dbfe
-Copying blob sha256:0273ad5f6509d9448980f16223b31d9bf4283255e040902dd72b05140ebf1d06
-Copying blob sha256:c1cd76194111fb4664c2a3da9af7471e326d92f14aa9ff33db5919bdc7c6cfb8
-Copying blob sha256:41da8c52f3ebec00db5ef9b16efe176fb9c0bfcf7ff42f8095c359027127e9a4
-Copying blob sha256:e150c0a14efdc22e3dc6df70354289d2a88ca1925a65d8250fc0f3701512acf0
-Copying blob sha256:00fd525de9468b3bb52b80c039ac67cd51fb9c779ffe2a91b1b4e570233cf718
-Copying blob sha256:edd8b73c65d13895539fd115c5475d8f6c72780fffe095f98745e4994a72a0b1
-Copying blob sha256:d8e1b7e5acc19906f9cb5879fa70e5b51c3d1849884f63e24fc15695926fbd79
-Copying blob sha256:4117165f7249c892b3ee60f48585880077a4c22291da0eab551954accd46fa1f
-Copying blob sha256:9b1eda3ee347812b81adb3fe77dd35d13f1c6c3301b1f01ef699b33b1a686053
-Copying blob sha256:d720c0b9cd1fa80327b6c3dc094cf604541f439746be510b3e6948d2ddfcfbb4
-Copying blob sha256:d245b70580e506345383ce030bf48296d428ece457268c34089055ff813cab56
-Copying blob sha256:b03a98e2c464f52dc05944b74c397e744095a619e215b2cf347d4c047d80858a
-Copying blob sha256:c3a1046ed0ddf7a1dadce919289a23c60b37d2b31438b15a072f720243c30a13
-Copying blob sha256:f9ac0dfe2269487090210df55ef8dfe41ba9cd43e9bb219e325c998230d27302
-Copying blob sha256:1df140ad41474bd3c15a4f1f112b0995d21176b838efc79b51ad222e909d78ec
-Copying blob sha256:245ff39b5d5cb44805ff9adb50075cb12260ead61333629ea499e55c5a1d43ad
-Copying blob sha256:3f040b39c820d90b6bf66dec663bb9430cabd7e5fbe9fa71bae4dd5f6338b5f4
-Copying blob sha256:a4a11e7e524feb4df6b62ee0fbee2f3a6d08bf0744f71b72ceb3462cf3ce32c4
-Copying blob sha256:57a119b45687ed58f6b9acd6eed7a3a74ecb7e1c3abcf4d11de3355f78262cab
-Copying blob sha256:25f0a5a5b291621823b302e6085a8a2858dda98130dd5242901a50e636a4566e
-Copying blob sha256:cf19f591a9a34dd20852da0b6dfe20bebcf26c98247f66313252342339290536
-Copying blob sha256:39e5c8189f3d382d8762f6fe577c10fea692b25666c4a86d9510f385ac2c835e
-Copying blob sha256:c79d256bc4b72058996b551c2e4985974e4b68d53e9fd9dad14fa11cffb7ca87
-Copying blob sha256:db0971161611cdbb95e161d6e481cc04b42f9acdd7c19c003c0ff4db75f25207
-Copying blob sha256:57b7219267b7ea3ddc234bee18fb83d699efb8a4111e724ca3ebc032ff3c245f
-Copying blob sha256:f45322b429a48b0bf3642c4ecdd8993b819ad2bfa5e82a3860ab1259414e1b87
-Copying blob sha256:f971d86e6be5f068fb2ba5d8e879eaff35975c572339f702bfe3d2e62698dc36
-Copying blob sha256:9e988a69aef457496e979f8cd866eaaeaef24da046e7d0225fc21d738ea474c0
-Copying blob sha256:1a23460682ac62fb5e82a05a6af8fd3f38ee80242ad57e26d0b00ce11dfb3114
-Copying blob sha256:e36282b990452b1fb8f5e8abf0caaa7698c95e72ee6ca5d57ac3000ea70a1a58
-Copying blob sha256:564e159cbd50bdbd01af9f9775b4289d676af8a7da86d9a1621033f350b9ed7a
-Copying blob sha256:9c683fb5648e01849eca33dbedee692edb92587bad4eaf1f4ee487424dc82808
-Copying blob sha256:728ea8cd79623e3228910eed8a03fc1888c750a2b8aaa7ba0f8f3365f82b5e75
-Copying blob sha256:b07e135c6e6d9a665de3a2cebf7b3edd1c2a0115d7868579ab1858de77d9f396
-Copying blob sha256:b194e12c684d9f7f680b2c1b90f73e716fbb2fe27b0fc6867f7447f89cac6e9d
-Copying blob sha256:30a758281f8e0df49095b69dae932c3dcf5c595dec57f60523753c47091dc121
-Copying blob sha256:1523a6c20d73d7e6cbe14dfb35382eb2d263a29d49a55a253b01e7329c5c03cd
-Copying blob sha256:837a99e92a620724f3c3cbc644bcc6c9a20d2ea5bc2d0f1b254dc4d3b9dc3b21
-Copying blob sha256:b7ca8a99c691ed7ca57ad4e5bffd874f3fadc479f8b086747b17acfd73e90910
-Copying blob sha256:08b53059991535e869b07511df1308e4368e721174755f5c279f07de9f4adcba
-Copying blob sha256:95b1b966711edb7cbf3ba39370391e97d32e8a23846e7c16f323e426f06c736a
-Copying blob sha256:fc0687541de38ddcae3cc865cbb7fe04c4f20ceb9ef51ece5421e8e381d8c6a5
-Copying blob sha256:7f3a4b57e195022c7ea0199a4e8fa5dd429271015f8e0c801367470e98a18786
-Copying blob sha256:ccafd937f1ac5835e7acb754ebf562390ab1864b497bcf2fd7bb671efa92322a
-Copying blob sha256:29451c6646476132329b5e28b6e3eab9b0f3157464c2b394b645e8d9da71fb66
-Copying blob sha256:c9888008915fafc6307a9c2e2cc9383611ff5e7e383de940416c3acc4f25c593
-Copying blob sha256:dcf22108f58ab9ada01998296bc2f29b805024974e818c9bf6738d16e9332cd8
-Copying blob sha256:ad11f37d46db5d4457e26e7f670f7f74b86ec8b2e0d560a40967357004fa3f2b
-Copying blob sha256:160687e739ee25740d21f3d4ee450d8633c371251acc80a4242215554cff26cb
-Copying blob sha256:36c4c4eb46a836e47a62e01124ecd4270917e33765e449b5f48ac6cd8bb7ef15
-Copying blob sha256:50fa9fb9810b911e80ae2732052598430001e0797bd5094c4e253de41dae695d
-Copying blob sha256:8cb04cdbedde47512013b1837a0ca246027717ecfba646307f5b9fc29b961da8
-Copying blob sha256:88969f2ff1687d0b2ad89165239551d96f6f2d4bcf60d308bcdaadffb9963b02
-Copying blob sha256:377334d8aaed6cafbda8041765171f8ba1a79fb254c1c47519981c4569e4d961
-Copying blob sha256:eb8dc55d004486ae4cc2a7109c595369e3a9bcbbc12973420bc1db4489c6409f
-Copying blob sha256:8ed97316970c6cfbbc0fd530c70796a36bc46939c18fdae4e5c59fee5417e3cb
-Copying blob sha256:d438aede2be2c49314481b00d36b4922fe2b20cff6246be5a5eebab1294daefb
-Copying blob sha256:d84583aefe5861c90676ac74ea3b4ef1f5579cf4c4504c49d56d89fedcf2c9c3
-Copying blob sha256:1cbc51de15bbcb43c0eb467f4c14046759365ac929d9903c14508b2cab750f75
-Copying blob sha256:2e3fb4810bed198eb44a63396e03029fb34f0d0bcf27305419fce5bfecd8fd29
-Copying blob sha256:8048d771744de08ee78b216a96e3b987f965497400f5a510574154e441eb00e1
-Copying blob sha256:f41bd6b553ea702a499cce00f44bd98177fadec42352c31d1465b8be338bab6e
-Copying blob sha256:35269d272fd5b2509fe3dba6b65c84a58d553145af7f959006ad07648e882594
-Copying blob sha256:a105c20dffe2b2cbfb3b64aa19e9a74c245c164edd538ac085a5c29d5ac180d7
-Copying blob sha256:53b873a04f6af3429b7ff22c941b64e91e42f0f09562ac57e5127c955a51746f
-Copying blob sha256:60452095bb21eb15852346916a14ef32b3262e003872bf41a7318fc2ca3ac400
-Copying blob sha256:e894a9f94ca3c3adc24a7bda8dbb7214a467d2b5fd8c7446951810f3a89b464e
-Copying blob sha256:82b460d32b1f95ae8d6b2bba86e4fd7a5ca4518782a45f53087eaa3ac0f9f35d
-Copying blob sha256:0f1389cbb2aace84f2721266efd1a71c07e9b307aadb2d6e3a15be75719eda40
-Copying blob sha256:300816996d7941587e2e8e8dcc4dbca8a39ca4bebd8afb1ee3228ae34f0841d7
-Copying blob sha256:c57b7358277f343b0eb62142b51d484a323412debb4ce1f185afda6c86dfe846
-Copying blob sha256:2681d71a4872086ee76820706ce586cd703a59c89e1a9774dd0ddbb8a18b6209
-Copying blob sha256:cc17ca1b022ce4cdae76f56746929fb5489184e21dc3a7a8b147972887580ee4
-Copying blob sha256:6f9c7e9e65df350109c8cdc6abb257b72be7272c405e40cdc926c2c4a0df38c1
-Copying blob sha256:fa9454dcf4408ac45e54e61fd9d215b0c9d7da0c938ca079cb79609c1c6703ec
-Copying blob sha256:aaee3e07797102456c7bf3854579dd2f7f614dbe8eef4519e179004d195c78b3
-Copying blob sha256:6da43f5fb1fd4db931a3bbd1b7856e0e5dff656ddb137e67ab94fc9fd6be2388
-Copying blob sha256:0754c9b95d204368279bd47191234b11ada53016a857c8e23d4776a40068043a
-Copying blob sha256:1b119808e9562100ab496f39de3a87fe32b69a286c327e079a3fb5fd0a350c21
-Copying blob sha256:6e131e662b7a1bdde2365d128e9ae6703cac79b3c29d3b40b0c9c58b4b2dd9aa
-Copying blob sha256:75f19510ff7af3bded00389ac95bad3765293a45d603887167d5f0eb8104898e
-Copying blob sha256:a7fd35c1faa0e70c98bcf85f99717c3e430b93dc8bf67366f1c308d982dbaef4
-Copying blob sha256:11262e1386d31544457006f954b48c9903eeb0dbef43a3cbe120eacbb56ecb59
-Copying blob sha256:e41a06306f6d512a7a05fe33325451eabfad4a68b38593dfdd377c494f4d4644
-Copying blob sha256:2eeca473edcf9660ab68b10972c63f8e47f7663ba1096e27a4ece6396fa81c18
-Copying blob sha256:e510e6ebad085c54e249e7663341db9197050a65d92f64197f929ffdef016a60
-Copying blob sha256:805057d08f202f1ed9ac13d7642b8b8b40ca24935f2d009ba4449034bd41fdbe
-Copying blob sha256:0cbdc60157e230b4f5317b896aec805bdedfd9c93087c4dfdfe0f8357a2d4615
-Copying blob sha256:fe903f3194d028155fbbaf45c57eb863a6ab344c85f83329f6ec60c283555a4d
-Copying blob sha256:d51983ee00a78b94d6c811b5988d88fb71f88c32445b35ee8d66c1365582a0b0
-Copying blob sha256:80cfe1f509c8a73c22962f4cf717bc971f729eef23811a4090e2e6c99c4abe71
-Copying blob sha256:a9865ad601ee93b87959d4d633fe6e7bf3e1fbe4869cd109860ce577e1f94cb6
-Copying blob sha256:a7e66cd4c6c94d9d94f4ac57dc03b3c975017f8ef3cd891a1e65b591a05ccea1
-Copying blob sha256:b7fc8bfe8e2feac7054d7e06cf39e6fdbaea17594b8d2eefe3d13eca1b275a80
-Copying blob sha256:26a11d8b27ebaefda40ae2d35d9cdd464eba8ef186726a5085cc349791a49b16
-Copying blob sha256:5ab8cf34e68d8840af1eb7d4a60769f29c98d16999521b6a3c2db2f257bb7fac
-Copying blob sha256:50abcb81faec331c319ac0815354262f06069a6716c32576c5084a28ebb0ce80
-Copying blob sha256:94fba46b80ea6da1c12c131f95af13ec0792f0842bfbebbfb1edb17dc241202d
-Copying blob sha256:27c7d70f2194650757e583f108f231be57ee6939f73d2886bbc93134205eb75b
-Copying blob sha256:d8cb67e30d0bc6c93b5309dfc9a5cef0d971cf2c1ad13ce9204f8c0d9e0b8997
-Copying blob sha256:f9cdb7e98ca3ab1fd07b6cdd30e3b45b79e7e2e7580d12e30dd6214457e725fa
-Copying blob sha256:87849a36d492de1f2a202aaeb330c7920a24ff50a1d74a4752e3b2bb1302aa51
-Copying blob sha256:76a7ad1dd4d20bf2aaffa4a8d1e057c78d621400535a62d3d620629fd749e83a
-Copying blob sha256:f0fc3a3f93bdf143dd01438c7d3e85b96470fd0454d8e330462b8eeb0976fd53
-Copying blob sha256:ad85e00159c5c85bffb1edf90afab9f05b03119b58b8b75c94f455bb04943563
-Copying blob sha256:9a812beb4072106fc35b4d99f8f31116e6a05412a35323cc2f82c6a315e49f80
-Copying blob sha256:1df8c74a3267894b9d75ffd469c7cbe6f8e7416dfa5609eb988ef643291ab1fb
-Copying blob sha256:e11d147f01bb4bb8874cc545cc93895ea352a010d12efb7688c044f29742cb03
-Copying blob sha256:14b5dec38174dcf02deb08bfece35a9024c78bb304e7794dd59ce9e3611356f8
-Copying blob sha256:a68a92ad0723ba38f0478e35d5f644a32256d29600944fe19609bfc19a23cf5a
-Copying blob sha256:f1f097a7ffb2a0f11310da152e1bc86d0afd20060325951377591f3ecb621c64
-Copying blob sha256:d62501af9286a8693b2091912cd2b2199004dcb9e3db552adc59c73ababe837c
-Copying blob sha256:bd03a740f44d90ff55a012170635eb19e4d928034973867e19e84d072921b7d8
-Copying blob sha256:b3a7c1efe6f2ad321654dd0ab5e4fa489314faa42b50e5a8d07aa17e091a3cbb
-Copying blob sha256:582e05bf1137c808237f5129950fd49df20d940ea7b24e4fb90904ad629f7d66
-Copying blob sha256:e8a217566f54eb1a7f0d0d2ad016f662b428373a9d43d12018492a7214da522c
-Copying blob sha256:5d8a3524376c31f5d3d244121c01a5f2a17a68d427223b9d0663bffb54b8707a
-Copying blob sha256:cc096fe2e5697cabb093666619c0c10dd2c6a4f5249887bfd7d156e7c08ecb44
-Copying blob sha256:8f55ee1724660514d380687e57fcfab850b55114a3ae6ce02ef27bdc28ef0d29
-Copying blob sha256:2f3f37733949bcd1c3fe8a73e5aac006b4c48b42b282e775f975e0d82fba6022
-Copying blob sha256:a62d11a9e27041fa23f2b65e0d6a8289c918660ca7c5e5883f7181c560179150
-Copying blob sha256:c623bef9b13642666cea0183d97eca5fef41e5b2efad70b72dd34810f0d5a84a
-Copying blob sha256:963565d951d57fb2114273dd95a84dc64a561fa5635f78181a586ea0660a4681
-Copying blob sha256:0cd50e5ed1e4a44802cd535f916e49e526a25765271947d596ad45ff76b37643
-Copying blob sha256:023b714d7cfae567125cc8e7de23b779e0a952826d8767ee3277963753642e2d
-Copying blob sha256:5bfad5506daabcea86d1d6aa7ca13cd728382b7390abe4d59d1b1af64993554b
-Copying blob sha256:8301f53831d05bd73c3e5b1b921da241bf390af79406085350c2b93beb9fd468
-Copying blob sha256:365b94ff2d34effdb3cdd8b79e49705ee0bb4491597478f6d864c0beb17054e4
-Copying blob sha256:c6e08e2ca433b08ec023b4aa9f958845b975c648d63d5857044095059245515b
-Copying blob sha256:0afbff88eca858aea5520872744413d2b7c4d77fa5df0b8d8c561e3c357adf0b
-Copying blob sha256:8fbb980986a7fd41f816a0c0a48201f27e155aafded876339a5e12143cf2814c
-Copying blob sha256:a104de2324cb91fdb59742117783fa15e53e40bcb5f87b728d0b1d9662a9f629
-Copying blob sha256:59ddc1c8db929d13638a334bd42a7991f0ad52a19251dee4ef3687d1e32d04aa
-Copying blob sha256:09d7edc21ef511be88b30e2f4f6d9ff3a610bd78c847153ca8260373e4b2d7bf
-Copying blob sha256:8dd0352acddfa87f7530710a954f056120dabc221bde4f083d0d0674344e730c
-Copying blob sha256:1dd0ccb61621165bb9bc113228ec8600872726da3cabe39ca234f9b22d99a65a
-Copying blob sha256:1e803fb9b6d2ac69309ab5bd55136c98eeb6297aa61b0801482c24a513ae373a
-Copying blob sha256:d1b8233a740581856914c052a8b8c56a241306522d1c5195aefb8db74ac0aaf8
-Copying blob sha256:11dea29ef3830d22822c987dc24e6193a685871b8995224e22dc24cc9b9ff7e2
-Copying blob sha256:50532b11b0459274d04ed0abfeb59269d9fcf929b48361ee814619b6494ad4b4
-Copying blob sha256:954848fec6dcf256c732359bf9897fe3ead38435a167b7397b2c459b40a05a44
-Copying blob sha256:4e500c88e20c5f84fd7321557b2a24dc094ebba90248385377b4e35a45165258
-Copying blob sha256:ad319fbfe9cacbeed34b467cbe211551d937696b5bb12a6e4f40ff75392145e7
-Copying blob sha256:2acfb1626b527bbdc11b14769add6221ba3ba8b0a3863357302531c28622b586
-Copying blob sha256:260cd44abbaad4b38497b04353d9ad546ce33ebc15c7e99b79ca5f171fa02268
-Copying blob sha256:40915f2ca2df5026e911295a80baa34a50902837e8d558360163663719557067
-Copying blob sha256:3707ebc96c48608cc560546f05d21f9b5a23a4ec25e29495b1bd1e356dcec430
-Copying blob sha256:ef34de7b271487628254c5ef1aa14ed315991a83951a4a5d51ef30f859fe86a0
-Copying blob sha256:b3354db9b4ed62b490610f1cd10ece4b07306ca517f0cd7ad0f6a9338848f2e8
-Copying blob sha256:4e5b5459e3f3aa8a90b5036388d222ddd8b69c9dacd8af1dabec32c88fed2204
-Copying blob sha256:6c5576479c97deccf6f22e22fe3d731be225e38fe5014d9e50b30cce94376fb0
-Copying blob sha256:09670474b05a9bce91c683192b992408383ca3120a6d3ddb7eeaada723a25258
-Copying blob sha256:35d7fbafa3bb95f9306d5837123b827b51de4fae2d7b4abb69172ad3d33ea2d8
-Copying blob sha256:268397f3052e135caf08b634ca4c8d16a6ea5d676bdc4c872e80c8b2ec476990
-Copying blob sha256:07131dfb9654e79646838dcfdbc16114dc42bd65b61d0af34995bdb490db3b2f
-Copying blob sha256:4d222b2892df4baa2fdf27933b2927caac0475c04395672449b71a855dcc63d6
-Copying blob sha256:12389f495b774d4a2374c4f2cb9e8fbdb24096272286e73ca27155de611c8993
-Copying blob sha256:25a7f9cece9d5b23f046c78c47c597496a2abe588ae94f73da3d6b4a7fa0ca70
-Copying blob sha256:bc884d3295603c180a2d105432b745a971be5f1f36a70472db8913db3f12907d
-Copying blob sha256:9890e5b5473c599982d6c52eb85dcf9d8564e74f072ba6afad2f6e8e3cc01540
-Copying blob sha256:2809c1a4ed2d00456255c72b44acbaeaae5e7e9f233a948d5a605084fa017419
-Copying blob sha256:d92f6a0e805e0c07b75e22fb6370c229e4534ff57f041348374fe0bcc89b153c
-Copying blob sha256:8053c155b1b283bc681edc9605151f78d00a20abc9aca80f9063944ab182db4c
-Copying blob sha256:0c3e117f7d12538c934b075911fe186c855fe0882d199a560a706517e10137fb
-Copying blob sha256:328ebba22a1e799469407dfe6d03a1c04dff4cf9b81d424650e580621de0d89a
-Copying blob sha256:7caf19014e268dd965f21be924da2ff1e1f598894e05b6d112c137cdd7d4a04c
-Copying blob sha256:13b7e66e994d2d0d8f4bfb4d536e9ff789f6616b7bf3e4bbcbd7d8a7ee57fc2b
-Copying blob sha256:b0ed7d41606c257fde26d6c44f9ac8f822f0e03a086114acc18a898f8840e86a
-Copying blob sha256:c40b4319fc4586a18b1ea245a64f55eb72f5966978b7107dde57b9215e028c50
-Copying blob sha256:59b3c25387ba949b22b4b6c9251f236b7e3b5d08a1e921d7957142b3dbd6658d
-Copying blob sha256:c463aa42e747038083d3b720272d4dc543f113b1e9c9f220a9cf16f7587a6fc1
-Copying blob sha256:080da254b05c063de282c67c1f5369441be4f6595014e7249a537c3ed1cf1d3a
-Copying blob sha256:50ddeccec6b2a3f9bd168f73ba8b6d3245ae7b6e0300c97aaaa79c7fdebad9d6
-Copying blob sha256:931724e12d77362b069155ab6c563405bf1831822330d0252e8b8b4558ece375
-Copying blob sha256:730538437e7aae00efa8fcd8efd4bab9f1134c620d67b3b46ea5e9339f062c20
-Copying blob sha256:7550d5a96ebbb5510b47250bf470e1ed21116c13d2fb9a5570ba2aef59949a18
-Copying blob sha256:a29a1bb77dec14676d542102dc60a3c96b198dfde395376ebb23cd715f7a5a2d
-Copying blob sha256:6080e915398be5c70c53b57882fa32719819ada33e0d71f86ca4bfc55968ffe8
-Copying blob sha256:4c4086aaee4a26d7f2f0929d1b09d3de223e1ef27377bde418ad3dc7567cd698
-Copying blob sha256:7c327d74add1016e413427e732eaafd455f0e40f54a97a7c8aca803acd247078
-Copying blob sha256:70e7181e184d3c7b2ad983bd59b7384c82f8487aa35ced5253c69a894e78652a
-Copying blob sha256:2e4f46ac6f05b1ca16009a8999014d7b65cd96f9cf61e30b9598235a62e5d824
-Copying blob sha256:fdb73d5ee2d0c30e27728d5006cfdb84cc0272afef4f932be52a67bd244adc22
-Copying blob sha256:d9a28210afcb5c03cb68c17d1e55edd9729f0e19c375a3aa6a7747f7386857da
-Copying blob sha256:62355375f38459006aa2234ffab920747fe6434b8185b989125dbf8f53a5469d
-Copying blob sha256:02ddbac8a4c5f5d03de77ae7c7f207d9ba323a63df46dcc06bbf3b755c534507
-Copying blob sha256:58c580c911cbb7556fe83dc6cc4ede5bda98db2fc30565fee01af09534f0e6c3
-Copying blob sha256:13afcdd0a71e4409557626a7aaf177ddc707d83a7bdc762dab6dc140331b38e5
-Copying blob sha256:68aeb120d7f45214daf8afaefc8a17232fd44108b47d16fb6fd4fdf3c4698f46
-Copying blob sha256:19ebd554949d8c6d241ed435b970e40d0126f09da071ab3812073da4dfaf17b0
-Copying blob sha256:f15cd47f1c99a0565e79e577691df48e6f90cc0476e33723289ed0bcb59594ab
-Copying blob sha256:f81a911729ee29c6153bc5ff5be5072cbf5cb1fc79903319f1d72232176af682
-Copying blob sha256:8f464385371b809e29af9d8528cffb0fa84179575d09f8443baccf84ce7191ff
-Copying blob sha256:e1e1cf13fd5a4ef1610a5ef7d6750bbf69d7136ab1c1f721c7802961d015d8b9
-Copying blob sha256:2c642a8de441be76d25d823d7f98d8d3ecc43bf37f3aa2a5ea948fe61fef7024
-Copying blob sha256:90327522e3d2141dd460b138cb541a96c66b5ed63deb1d1f4391871eaec6e26f
-Copying blob sha256:ae8f15c87564308f7d1face5c9ed59a6979ee81c5213f811d06657f89db78a02
-Copying blob sha256:a1559a6d845f7704da74703096a4a795c0f7397f199a98ac4233e125e56a307b
-Copying blob sha256:71598214b6f22f30e18ce16b952dae2ffe584ecd55e681b7038bd8faa8f20e31
-Copying blob sha256:4883fbce17ce208b472a4dac010bed28e944ac6d9b042a21d685a57b235b86df
-Copying blob sha256:1f530179210445f0cd799582d2357d56cbc490b6d8c08f09dbbbd2c6840b8abc
-Copying blob sha256:b76870c6e893c0ca4120c0e6a7723ea15704b1bad95f5c79d59dc0f32c093f3d
-Copying blob sha256:421a07d41fca02522f515a10ee3c99bb7e0395e36f5e559ad0df76438c715a5d
-Copying blob sha256:efde723849705a65ea7fa57d029c0e312a9e6f2b8fda7ed6a99186a47c4741bf
-Copying blob sha256:ecf3a92093f34a893ba2f8ffa305b58731c7755cb5f2b134da9c143325913e8e
-Copying blob sha256:1a53ca11525a5d7e0b9db5931f2207888c3f16b077772b8e9233f3b465e4cf35
-Copying blob sha256:08b8797fb589d6288f6e74873da3f20eb8523226e6bad5c4273acd7f2d098c96
-Copying blob sha256:f042b8bfac289d0382f26900e403de5b634f9cfee8aef94457814147900fff33
-Copying blob sha256:5ea957961e8ce1b38eb2339ff9a5c6cebdc520bd8518a792ebbb8d691ab782b7
-Copying blob sha256:b24942bfb574ceaf10aa233bbefb5fbdebfc15296f29f778ea080edacf66a469
-Copying blob sha256:a795cd36dfd3dcaa260c2026633f2d7fcac4b34e7c10caf6e0a08980688e4d67
-Copying blob sha256:9ae15f33ccbd1e324e50501ada494d4c98161e118aad0038bccea8fc2829416b
-Copying blob sha256:454a9cd483b6c5b2fb043dae1c7240dbf3cb948706600bcad76b5012466258f6
-Copying blob sha256:32a5db27725adf27beba8bd2b50a5b7a57424602c23af5b3cfc4521a7f5fea8d
-Copying blob sha256:fe023cb4672416bbe108e7522a42fa70c24709495fdfaab93ff95a3ffd6bf353
-Copying blob sha256:7411cae639150cf42eb45f612cea2d059bfa7cf942fa5224685449a24a1bc7fe
-Copying blob sha256:bd530db17a93b6fda8bc8d9c048a78ab512c0c2096d83583592be061c2cf9c1f
-Copying blob sha256:47ca51f1f55b3fe9d6467c8fd385344b483552ecb025b2fa09bcd4fbda0e9fb8
-Copying blob sha256:90cc1c979102d4ef3cf325bf06bb79a3a62a44e489fc5aaedb51317ae6b422b5
-Copying blob sha256:90d48e0c22cc490c047861e737af73f94ffca3ef544c1bcde972aa1ca1d55714
-Copying blob sha256:86cd0d9004a935e76a4b7041dd87b40795dc047ded70cce9b11d01e3cb95bd9e
-Copying blob sha256:f991b7c5234eb15decb350e2f1df44b30d059ce3afac33febfba0b83703547e1
-Copying blob sha256:f1707ed79bbd728994e06fb29298921c8e8f89f6dba915a2c243c07cfc376032
-Copying blob sha256:347eaa8ee9546762f45e7c888e50f28a2d187d355ffa2db40b5e68425c82328e
-Copying blob sha256:b1d360c9bc710ea6b49fcdb7e3e41417e43af9754d5b5a2c0221ae1d870f0638
-Copying blob sha256:de83e7d4c333623cb0ff7736e27ffc9f6cda48118ec8c8185070267b14d8ad9b
-Copying blob sha256:27fd6c1e960cf0b536f0a979b1064df80d3400a968f1f76b5630de27c760b531
-Copying blob sha256:356890ba7d349be041db58184d59997a4d7e2b16e6b93ee4b4873f4bdcf6b23a
-Copying blob sha256:833b35a91895fc8e1671f76f584ed09384f7c76483f2d8fabe8b85049294ddc8
-Copying blob sha256:c87f5c54d374fcb61a32573bd4b85ea5e2b0b0e0be45863bcafb85bed043afe5
-Copying blob sha256:bfecfd9b30952227ee890cea4da52c237c45263dc4d23bffdf6301c8472261c1
-Copying blob sha256:539dadc0815c27271e37d6d320fac360432f0f041accd47e0bd2ae89b31c5246
-Copying blob sha256:324cc7db9e6968f2ce9e615e901477cb5ffebcdd3844dc079e3f6050a7321020
-Copying blob sha256:bc4531e317ffc8f1b0e1dac9d24652d1812f45642f15071f088122c5f632cbe6
-Copying blob sha256:bd9ddc54bea929a22b334e73e026d4136e5b73f5cc29942896c72e4ece69b13d
-Copying blob sha256:63ffc780e9456b644e635eb2a8ee14011f3d99eea9ea4a6898e9f9adb031d8d2
-Copying blob sha256:398a36c542f55a78c3df3ccf94ec1c93386a0271cd7bb7cac454906c3df9bea9
-Copying blob sha256:9a0ec277b993b30a04e9f7110a1cbbd43cfacef495d65d2a811c01652258d750
-Copying blob sha256:c4f11b9cbf8809e6284da353373a1354a2ed507c1f93a9653411781bc224f2dc
-Copying blob sha256:53a10f13c94260c4d51e4232766fbf2e847731d2512ef8a2ba1169bf6c72b564
-Copying blob sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1
-Copying blob sha256:a983f3db5f13ae71fa77faa6601f7034b72bfeeac34bdb872718d7f563e85e1b
-Copying blob sha256:c684b283655e9ab1289a3e6cc407c655a0ee904b2eaa09e46f8930a074d2f1fe
-Copying blob sha256:b618008ec9c86535c066a7686bdd92a633f832ce269b1cf3bb9fe4d0119d2fdf
-Copying blob sha256:ff7a84f0d987a70ab292dd9e78e61a7c60deadcbcef131bb32e9afe554a634d8
-Copying blob sha256:f14319e0ed145c3b0c69de3dfd0b09ae3351e0e9253012ccd7fbafb0d6a0973c
-Copying blob sha256:c9d9a52fd001508d37765268a7b37a9044bc4eaaca1692c1c270b00fb569b604
-Copying blob sha256:00e1a0406799fe1200866f56d44df355e675b0296e83f881bf63f31e2003ea15
-Copying blob sha256:a4f908b6431be519308f1fba927ee5cd04f73b07fb0fcfd6ac9778970a535b51
-Copying blob sha256:4e824b106859b41839c95b632ad2b574ec98a6c0f124a92c4ca63b43c5d6bb14
-Copying blob sha256:970d6c5771a9e9a0d265351e6052d540128d8abb0ef2981df85efc77c7b919e5
-Copying blob sha256:abbb5bed13fe856ae2f6665b4b987dbb2c129ec357d1e1c6888bb994018d8557
-Copying blob sha256:5cbb05f3e09f9a281aca06b81c11065c16c1eb45380ac2e4e729638f81fa34a2
-Copying blob sha256:9592226c9f5976af97fcc808bb40ddc5bb106ccd1c7937d532c2c52e5aae950d
-Copying blob sha256:44a30ef3fa4d55ce20c29f92ee77d395a0bba4619b69421686fd6645d7939684
-Copying blob sha256:488656ebe7a4622b4456258a413c047ea05c561033290e43d3616aac487ed192
-Copying blob sha256:ceffa750780685b2175d9c82473ddb8416ca66e8c53d9149f04955cd72f009ae
-time="2026-10-07T13:26:09Z" level=fatal msg="copying system image from manifest list: reading blob sha256:1e803fb9b6d2ac69309ab5bd55136c98eeb6297aa61b0801482c24a513ae373a: Get \"https://pkg-containers.githubusercontent.com/ghcrblobs06/blobs/sha256:1e803fb9b6d2ac69309ab5bd55136c98eeb6297aa61b0801482c24a513ae373a?se=2026-10-07T13%3A30%3A00Z&sig=6wwVNuGgeANtK5%2BAPGVcpjEhH91wMFrhQl23F49WWLg%3D&ske=2026-10-07T20%3A25%3A25Z&skoid=fb3d2a07-ec6c-4fe4-aced-9efe0fd2fe1a&sks=b&skt=2026-10-06T20%3A25%3A25Z&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skv=2025-01-05&sp=r&spr=https&sr=b&sv=2025-01-05&hmac=afe5c42a3f9f638608bfa0500e72ef5e6718db9994f570c3e172ea1c28edef93\": read tcp 172.17.0.2:35776->185.199.108.154:443: read: connection reset by peer"
-make[1]: *** [Makefile:2: z13-fedora] Error 1
-make[1]: Leaving directory '/build-container-installer/container'
-make: *** [Makefile:148: container/z13-fedora] Error 2
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 88.86 [27/41] Installing egl-wayland2-0:1.0.2 100% |  20.1 MiB/s | 102.9 KiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 88.87 [28/41] Installing egl-gbm-2:1.1.4-3.fc 100% |   7.3 MiB/s |  29.7 KiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 88.87 [29/41] Installing libvdpau-0:1.5-11.fc 100% |   3.5 MiB/s |  21.5 KiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 88.88 [30/41] Installing libglvnd-opengl-1:1. 100% |  31.4 MiB/s | 128.7 KiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 88.89 [31/41] Installing libglvnd-gles-1:1.7. 100% |  11.9 MiB/s |  85.5 KiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 88.91 [32/41] Installing nvidia-settings-3:61 100% |  55.5 MiB/s |   1.6 MiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 88.94 [33/41] Installing nvidia-xconfig-3:615 100% |  11.2 MiB/s | 195.4 KiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 88.95 [34/41] Installing nvidia-driver-cuda-3 100% |  71.6 MiB/s |   1.8 MiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 89.05 [35/41] Installing nvidia-container-too 100% |  49.1 MiB/s |   5.0 MiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 89.08 [36/41] Installing libnvidia-fbc-3:615. 100% |  57.3 MiB/s | 352.2 KiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 89.12 [37/41] Installing supergfxctl-0:5.2.7- 100% | 104.7 MiB/s |   5.5 MiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 89.12 [38/41] Installing libva-nvidia-driver- 100% |  41.0 MiB/s | 168.0 KiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 89.16 [39/41] Installing egl-wayland-0:1.1.23 100% |  12.4 MiB/s |  89.0 KiB |  00m00s
+[12:28:45 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 89.33 [40/41] Installing nvidia-driver-libs-3 100% | 387.3 MiB/s |  77.1 MiB |  00m00s
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.26 [41/41] Installing libnvidia-fbc-3:615. 100% | 156.5 KiB/s | 458.7 KiB |  00m03s
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.26 Warning: skipped OpenPGP checks for 18 packages from repository: @commandline
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.26 Complete!
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.27 ++ rpm -q --queryformat '%{VERSION}' kmod-nvidia
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.28 + KMOD_VERSION=615.78.08
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.28 ++ rpm -q --queryformat '%{VERSION}' nvidia-driver
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.30 + DRIVER_VERSION=615.78.08
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.30 + '[' 615.78.08 '!=' 615.78.08 ']'
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.30 + dnf5 config-manager setopt 'fedora-nvidia*.enabled=0' nvidia-container-toolkit.enabled=0
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.33 + dnf5 config-manager setopt copr:copr.fedorainfracloud.org:ublue-os:staging.enabled=0
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.36 + systemctl enable nvidia-cdi-refresh.service nvidia-cdi-refresh.path nvidia-persistenced.service
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.37 Created symlink '/etc/systemd/system/multi-user.target.wants/nvidia-persistenced.service' → '/usr/lib/systemd/system/nvidia-persistenced.service'.
+[12:28:48 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 92.37 + semodule --verbose --install /usr/share/selinux/packages/nvidia-container.pp
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 98.52 Attempting to install module '/usr/share/selinux/packages/nvidia-container.pp':
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 98.52 Ok: return value of 0.
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 98.52 Committing changes:
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 98.52 Ok: transaction number 22.
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 98.53 + sed -i s@omit_drivers@force_drivers@g /usr/lib/dracut/dracut.conf.d/99-nvidia.conf
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 98.54 + sed -i 's@ nvidia @ i915 amdgpu nvidia @g' /usr/lib/dracut/dracut.conf.d/99-nvidia.conf
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 98.54 + [[ Y = Y ]]
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 98.54 + dnf5 config-manager setopt fedora-multimedia.enabled=1
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 98.58 [32m============================= End 'akmods' Module =============================[0m
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #57 DONE 98.6s
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 [stage-5 11/22] RUN --mount=type=bind,from=stage-files,src=/files,dst=/tmp/files,rw --mount=type=bind,from=ghcr.io/blue-build/modules/dnf:latest,src=/modules,dst=/tmp/modules,rw --mount=type=bind,src=.bluebuild-scripts_513065f9,dst=/tmp/scripts/,ro --mount=type=cache,sharing=locked,dst=/var/cache/rpm-ostree,id=rpm-ostree-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/libdnf5,id=dnf-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/zypp,id=zypper-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/apk,id=apk-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/apt,id=apt-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/pacman,id=pacman-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/usr/lib/sysimage/cache/pacman,id=pacman-sysimage-cache-z13-fedora-44-stage-z13-fedora /tmp/scripts/run_module.sh 'dnf' '{"type":"dnf","install":{"packages":["waydroid","waydroid-selinux"]}}'
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 0.104 [33m============================== Start 'dnf' Module ==============================[0m
+[12:28:54 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 0.204 Updating and loading repositories:
+[12:28:55 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.275  ZeroTier, Inc. RPM Release Repository  100% |   6.7 KiB/s |   3.0 KiB |  00m00s
+[12:28:56 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.275  Fedora 44 - x86_64 - Updates Archive   100% |   7.5 KiB/s |   3.4 KiB |  00m00s
+[12:28:56 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.276  Fedora 44 - x86_64 - Updates           100% |  26.5 KiB/s |  24.0 KiB |  00m01s
+[12:28:56 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.277  negativo17 - Multimedia                100% |   9.5 KiB/s |   4.3 KiB |  00m00s
+[12:28:56 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.277  Fedora 44 - x86_64                     100% |  26.6 KiB/s |  24.1 KiB |  00m01s
+[12:28:56 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.277  Copr repo for akmods owned by ublue-os 100% |   4.4 KiB/s |   1.5 KiB |  00m00s
+[12:28:56 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.277  Copr repo for asus-linux owned by luke 100% |   4.8 KiB/s |   1.5 KiB |  00m00s
+[12:28:56 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.918 Repositories loaded.
+[12:28:56 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.918 Metadata cache created.
+[12:28:56 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.933 [32mInstalling packages:[0m
+[12:28:56 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.935 - [36mwaydroid[0m
+[12:28:56 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.937 - [36mwaydroid-selinux[0m
+[12:28:56 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 1.982 Updating and loading repositories:
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 2.541 Repositories loaded.
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003 Package           Arch   Version         Repository      Size
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003 Installing:
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003  waydroid         noarch 0:1.6.3-1.fc44  updates    692.7 KiB
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003  waydroid-selinux noarch 0:1.6.3-1.fc44  updates    145.9 KiB
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003 Installing dependencies:
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003  libgbinder       x86_64 0:1.1.47-1.fc44 updates    164.4 KiB
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003  libglibutil      x86_64 0:1.0.82-1.fc44 updates     86.2 KiB
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003  lxc              x86_64 0:6.0.6-1.fc44  fedora       1.3 MiB
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003  lxc-libs         x86_64 0:6.0.6-1.fc44  fedora       2.5 MiB
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003  lxc-templates    x86_64 0:6.0.6-1.fc44  fedora      48.6 KiB
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003  lxcfs            x86_64 0:6.0.6-1.fc44  fedora     230.6 KiB
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003  python3-gbinder  x86_64 0:1.3.0-2.fc44  fedora     474.9 KiB
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003 
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003 Transaction Summary:
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003  Installing:         9 packages
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003 
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003 Total size of inbound packages is 2 MiB. Need to download 2 MiB.
+[12:28:57 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 3.003 After this operation, 6 MiB extra will be used (install 6 MiB, remove 0 B).
+[12:28:59 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 4.419 [1/9] waydroid-0:1.6.3-1.fc44.noarch    100% | 741.7 KiB/s | 365.7 KiB |  00m00s
+[12:28:59 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 4.538 [2/9] python3-gbinder-0:1.3.0-2.fc44.x8 100% | 274.0 KiB/s | 167.7 KiB |  00m01s
+[12:28:59 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 4.781 [3/9] lxc-0:6.0.6-1.fc44.x86_64         100% | 430.8 KiB/s | 368.3 KiB |  00m01s
+[12:28:59 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 4.885 [4/9] lxcfs-0:6.0.6-1.fc44.x86_64       100% | 284.5 KiB/s |  98.4 KiB |  00m00s
+[12:28:59 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 4.945 [5/9] waydroid-selinux-0:1.6.3-1.fc44.n 100% | 473.5 KiB/s |  27.9 KiB |  00m00s
+[12:28:59 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 5.011 [6/9] libgbinder-0:1.1.47-1.fc44.x86_64 100% |   1.1 MiB/s |  71.7 KiB |  00m00s
+[12:28:59 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 5.076 [7/9] libglibutil-0:1.0.82-1.fc44.x86_6 100% | 636.3 KiB/s |  40.7 KiB |  00m00s
+[12:28:59 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 5.080 [8/9] lxc-libs-0:6.0.6-1.fc44.x86_64    100% |   1.6 MiB/s |   1.0 MiB |  00m01s
+[12:28:59 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 5.080 [9/9] lxc-templates-0:6.0.6-1.fc44.x86_ 100% |  71.6 KiB/s |  21.4 KiB |  00m00s
+[12:28:59 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 5.080 --------------------------------------------------------------------------------
+[12:28:59 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 5.080 [9/9] Total                             100% |   1.0 MiB/s |   2.2 MiB |  00m02s
+[12:28:59 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 5.082 Running transaction
+[12:29:00 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 5.925 [ 1/11] Verify package files            100% |   1.1 KiB/s |   9.0   B |  00m00s
+[12:29:00 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.096 [ 2/11] Prepare transaction             100% |  24.0   B/s |   9.0   B |  00m00s
+[12:29:00 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.198 [ 3/11] Installing lxc-libs-0:6.0.6-1.f 100% |  25.3 MiB/s |   2.6 MiB |  00m00s
+[12:29:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.207 [ 4/11] Installing lxc-templates-0:6.0. 100% |  16.4 MiB/s |  50.3 KiB |  00m00s
+[12:29:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.307 [ 5/11] Installing lxcfs-0:6.0.6-1.fc44 100% |   5.6 MiB/s | 233.4 KiB |  00m00s
+[12:29:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.335 [ 6/11] Installing lxc-0:6.0.6-1.fc44.x 100% |  14.8 MiB/s |   1.3 MiB |  00m00s
+[12:29:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.343 [ 7/11] Installing libglibutil-0:1.0.82 100% |  10.7 MiB/s |  87.5 KiB |  00m00s
+[12:29:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.349 [ 8/11] Installing libgbinder-0:1.1.47- 100% |  23.1 MiB/s | 165.7 KiB |  00m00s
+[12:29:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.377 [ 9/11] Installing python3-gbinder-0:1. 100% |  77.6 MiB/s | 476.9 KiB |  00m00s
+[12:29:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.634 [10/11] Installing waydroid-0:1.6.3-1.f 100% |   2.5 MiB/s | 721.7 KiB |  00m00s
+[12:29:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.634 >>> Running %post scriptlet: waydroid-0:1.6.3-1.fc44.noarch
+[12:29:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.634 >>> Finished %post scriptlet: waydroid-0:1.6.3-1.fc44.noarch
+[12:29:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.634 >>> Scriptlet output:
+[12:29:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.634 >>> Created symlink '/etc/systemd/system/multi-user.target.wants/waydroid-container.service' → '/usr/lib/systemd/system/waydroid-container.service'.
+[12:29:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 6.634 >>> 
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 19.81 [11/11] Installing waydroid-selinux-0:1 100% |  11.1 KiB/s | 146.4 KiB |  00m13s
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 19.81 >>> Running %post scriptlet: waydroid-selinux-0:1.6.3-1.fc44.noarch
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 19.81 >>> Finished %post scriptlet: waydroid-selinux-0:1.6.3-1.fc44.noarch
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 19.81 >>> Scriptlet output:
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 19.81 >>> libsemanage.semanage_rename: WARNING: rename(/etc/selinux/targeted/active, /etc/selinux/targeted/previous) failed: Invalid cross-device link, fall back to non-atomic semanage_copy_dir_flags()
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 19.81 >>> 
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 19.81 Complete!
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 19.83 [32m=============================== End 'dnf' Module ===============================[0m
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #58 DONE 19.9s
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 [stage-5 12/22] RUN --mount=type=bind,from=stage-files,src=/files,dst=/tmp/files,rw --mount=type=bind,from=ghcr.io/blue-build/modules/script:latest,src=/modules,dst=/tmp/modules,rw --mount=type=bind,src=.bluebuild-scripts_513065f9,dst=/tmp/scripts/,ro --mount=type=cache,sharing=locked,dst=/var/cache/rpm-ostree,id=rpm-ostree-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/libdnf5,id=dnf-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/zypp,id=zypper-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/apk,id=apk-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/apt,id=apt-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/pacman,id=pacman-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/usr/lib/sysimage/cache/pacman,id=pacman-sysimage-cache-z13-fedora-44-stage-z13-fedora /tmp/scripts/run_module.sh 'script' '{"type":"script","snippets":["set -euo pipefail\n# Bake the Android images. Manifests per upstream initializer.py URL composition:\n#   system: \u003cchannel\u003e/\u003crom\u003e/waydroid_\u003carch\u003e/\u003csystem_type\u003e.json\n#   vendor: \u003cchannel\u003e/waydroid_\u003carch\u003e/\u003cvendor_type\u003e.json      (MAINLINE on bare x86_64)\n# sha256 is verified against the manifest\u0027s \"id\" before anything lands in the image.\nmkdir -p /usr/share/waydroid-extra/images\npython3 - \u003c\u003c\u0027BAKE\u0027\nimport hashlib, json, os, sys, urllib.request, zipfile\n\nDEST = \"/usr/share/waydroid-extra/images\"\nMANIFESTS = [\n    (\"https://ota.waydro.id/system/lineage/waydroid_x86_64/GAPPS.json\", \"system.img\"),\n    (\"https://ota.waydro.id/vendor/waydroid_x86_64/MAINLINE.json\", \"vendor.img\"),\n]\nUA = {\"User-Agent\": \"bluebuild-z13/1.0\"}\nfor url, imgname in MANIFESTS:\n    with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=60) as r:\n        m = json.load(r)[\"response\"][0]\n    zippath = \"/tmp/\" + m[\"filename\"]\n    print(f\"-\u003e {m[\u0027filename\u0027]} ({m[\u0027size\u0027]/1e9:.2f} GB, version {m[\u0027version\u0027]}, ASB {m.get(\u0027asb\u0027,\u0027?\u0027)})\", flush=True)\n    with urllib.request.urlopen(urllib.request.Request(m[\"url\"], headers=UA), timeout=600) as r, open(zippath, \"wb\") as f:\n        for chunk in iter(lambda: r.read(1 \u003c\u003c 24), b\"\"):\n            f.write(chunk)\n    h = hashlib.sha256()\n    with open(zippath, \"rb\") as f:\n        for chunk in iter(lambda: f.read(1 \u003c\u003c 24), b\"\"):\n            h.update(chunk)\n    if h.hexdigest() != m[\"id\"]:\n        sys.exit(f\"sha256 mismatch for {m[\u0027filename\u0027]}: {h.hexdigest()} != {m[\u0027id\u0027]}\")\n    with zipfile.ZipFile(zippath) as z:\n        src = imgname if imgname in z.namelist() else z.namelist()[0]\n        with z.open(src) as f, open(os.path.join(DEST, imgname), \"wb\") as out:\n            for chunk in iter(lambda: f.read(1 \u003c\u003c 24), b\"\"):\n                out.write(chunk)\n    os.remove(zippath)\n    print(f\"   baked {imgname} (sha256 verified)\", flush=True)\nBAKE\nls -lh /usr/share/waydroid-extra/images/\n"]}'
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.096 [33m============================ Start 'script' Module ============================[0m
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 [32mRunning snippet:
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 [36mset -euo pipefail
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 # Bake the Android images. Manifests per upstream initializer.py URL composition:
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 #   system: <channel>/<rom>/waydroid_<arch>/<system_type>.json
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 #   vendor: <channel>/waydroid_<arch>/<vendor_type>.json      (MAINLINE on bare x86_64)
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 # sha256 is verified against the manifest's "id" before anything lands in the image.
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 mkdir -p /usr/share/waydroid-extra/images
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 python3 - <<'BAKE'
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 import hashlib, json, os, sys, urllib.request, zipfile
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 DEST = "/usr/share/waydroid-extra/images"
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 MANIFESTS = [
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126     ("https://ota.waydro.id/system/lineage/waydroid_x86_64/GAPPS.json", "system.img"),
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126     ("https://ota.waydro.id/vendor/waydroid_x86_64/MAINLINE.json", "vendor.img"),
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 ]
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 UA = {"User-Agent": "bluebuild-z13/1.0"}
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 for url, imgname in MANIFESTS:
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126     with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=60) as r:
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126         m = json.load(r)["response"][0]
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126     zippath = "/tmp/" + m["filename"]
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126     print(f"-> {m['filename']} ({m['size']/1e9:.2f} GB, version {m['version']}, ASB {m.get('asb','?')})", flush=True)
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126     with urllib.request.urlopen(urllib.request.Request(m["url"], headers=UA), timeout=600) as r, open(zippath, "wb") as f:
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126         for chunk in iter(lambda: r.read(1 << 24), b""):
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126             f.write(chunk)
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126     h = hashlib.sha256()
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126     with open(zippath, "rb") as f:
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126         for chunk in iter(lambda: f.read(1 << 24), b""):
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126             h.update(chunk)
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126     if h.hexdigest() != m["id"]:
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126         sys.exit(f"sha256 mismatch for {m['filename']}: {h.hexdigest()} != {m['id']}")
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126     with zipfile.ZipFile(zippath) as z:
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126         src = imgname if imgname in z.namelist() else z.namelist()[0]
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126         with z.open(src) as f, open(os.path.join(DEST, imgname), "wb") as out:
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126             for chunk in iter(lambda: f.read(1 << 24), b""):
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126                 out.write(chunk)
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126     os.remove(zippath)
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126     print(f"   baked {imgname} (sha256 verified)", flush=True)
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 BAKE
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 ls -lh /usr/share/waydroid-extra/images/
+[12:29:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.126 [0m
+[12:29:15 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 0.592 -> lineage-20.0-20260927-GAPPS-waydroid_x86_64-system.zip (1.19 GB, version 20.0, ASB ?)
+[12:29:53 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 39.00    baked system.img (sha256 verified)
+[12:29:53 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 39.28 -> lineage-20.0-20260927-MAINLINE-waydroid_x86_64-vendor.zip (0.19 GB, version 20.0, ASB ?)
+[12:30:00 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.35    baked vendor.img (sha256 verified)
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.58 total 3.0G
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.58 -rw-r--r-- 1 root root 2.5G Oct 11 12:29 system.img
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.58 -rw-r--r-- 1 root root 537M Oct 11 12:30 vendor.img
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 [32mFinished running snippet:
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 [36mset -euo pipefail
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 # Bake the Android images. Manifests per upstream initializer.py URL composition:
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 #   system: <channel>/<rom>/waydroid_<arch>/<system_type>.json
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 #   vendor: <channel>/waydroid_<arch>/<vendor_type>.json      (MAINLINE on bare x86_64)
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 # sha256 is verified against the manifest's "id" before anything lands in the image.
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 mkdir -p /usr/share/waydroid-extra/images
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 python3 - <<'BAKE'
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 import hashlib, json, os, sys, urllib.request, zipfile
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 DEST = "/usr/share/waydroid-extra/images"
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 MANIFESTS = [
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63     ("https://ota.waydro.id/system/lineage/waydroid_x86_64/GAPPS.json", "system.img"),
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63     ("https://ota.waydro.id/vendor/waydroid_x86_64/MAINLINE.json", "vendor.img"),
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 ]
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 UA = {"User-Agent": "bluebuild-z13/1.0"}
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 for url, imgname in MANIFESTS:
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63     with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=60) as r:
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63         m = json.load(r)["response"][0]
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63     zippath = "/tmp/" + m["filename"]
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63     print(f"-> {m['filename']} ({m['size']/1e9:.2f} GB, version {m['version']}, ASB {m.get('asb','?')})", flush=True)
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63     with urllib.request.urlopen(urllib.request.Request(m["url"], headers=UA), timeout=600) as r, open(zippath, "wb") as f:
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63         for chunk in iter(lambda: r.read(1 << 24), b""):
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63             f.write(chunk)
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63     h = hashlib.sha256()
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63     with open(zippath, "rb") as f:
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63         for chunk in iter(lambda: f.read(1 << 24), b""):
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63             h.update(chunk)
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63     if h.hexdigest() != m["id"]:
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63         sys.exit(f"sha256 mismatch for {m['filename']}: {h.hexdigest()} != {m['id']}")
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63     with zipfile.ZipFile(zippath) as z:
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63         src = imgname if imgname in z.namelist() else z.namelist()[0]
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63         with z.open(src) as f, open(os.path.join(DEST, imgname), "wb") as out:
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63             for chunk in iter(lambda: f.read(1 << 24), b""):
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63                 out.write(chunk)
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63     os.remove(zippath)
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63     print(f"   baked {imgname} (sha256 verified)", flush=True)
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 BAKE
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 ls -lh /usr/share/waydroid-extra/images/
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 [0m
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.63 [32mDone[0m
+[12:30:01 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 46.64 [32m============================= End 'script' Module =============================[0m
+[12:30:04 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #59 DONE 49.7s
+[12:30:04 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 
+[12:30:04 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #60 [stage-5 13/22] RUN --mount=type=bind,from=stage-files,src=/files,dst=/tmp/files,rw --mount=type=bind,from=ghcr.io/blue-build/modules/systemd:latest,src=/modules,dst=/tmp/modules,rw --mount=type=bind,src=.bluebuild-scripts_513065f9,dst=/tmp/scripts/,ro --mount=type=cache,sharing=locked,dst=/var/cache/rpm-ostree,id=rpm-ostree-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/libdnf5,id=dnf-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/zypp,id=zypper-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/apk,id=apk-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/apt,id=apt-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/pacman,id=pacman-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/usr/lib/sysimage/cache/pacman,id=pacman-sysimage-cache-z13-fedora-44-stage-z13-fedora /tmp/scripts/run_module.sh 'systemd' '{"type":"systemd","system":{"enabled":["z13-waydroid-init.service"]}}'
+[12:30:04 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #60 0.086 [33m============================ Start 'systemd' Module ============================[0m
+[12:30:04 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #60 0.122 Created symlink '/etc/systemd/system/multi-user.target.wants/z13-waydroid-init.service' → '/usr/lib/systemd/system/z13-waydroid-init.service'.
+[12:30:04 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #60 0.126 [32m============================= End 'systemd' Module =============================[0m
+[12:30:04 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #60 DONE 0.1s
+[12:30:04 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 
+[12:30:04 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 [stage-5 14/22] RUN --mount=type=bind,from=stage-files,src=/files,dst=/tmp/files,rw --mount=type=bind,from=ghcr.io/blue-build/modules/dnf:latest,src=/modules,dst=/tmp/modules,rw --mount=type=bind,src=.bluebuild-scripts_513065f9,dst=/tmp/scripts/,ro --mount=type=cache,sharing=locked,dst=/var/cache/rpm-ostree,id=rpm-ostree-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/libdnf5,id=dnf-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/zypp,id=zypper-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/apk,id=apk-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/apt,id=apt-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/pacman,id=pacman-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/usr/lib/sysimage/cache/pacman,id=pacman-sysimage-cache-z13-fedora-44-stage-z13-fedora /tmp/scripts/run_module.sh 'dnf' '{"type":"dnf","install":{"packages":["plasma-keyboard","mesa-demos","libva-utils","vulkan-tools","iio-sensor-proxy","alsa-utils","pciutils","usbutils","btop","ksystemlog","brightnessctl","fprintd","wireguard-tools","tailscale","zerotier-one","google-carlito-fonts","google-crosextra-caladea-fonts","google-arimo-fonts","liberation-sans-fonts","liberation-serif-fonts","tuned","tuned-ppd"]}}'
+[12:30:04 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 0.073 [33m============================== Start 'dnf' Module ==============================[0m
+[12:30:04 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 0.184 Updating and loading repositories:
+[12:30:05 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.229  ZeroTier, Inc. RPM Release Repository  100% |   6.8 KiB/s |   3.0 KiB |  00m00s
+[12:30:05 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.229  Fedora 44 - x86_64 - Updates Archive   100% |   7.6 KiB/s |   3.4 KiB |  00m00s
+[12:30:05 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.229  Fedora 44 - x86_64 - Updates           100% |  27.4 KiB/s |  24.0 KiB |  00m01s
+[12:30:05 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.229  negativo17 - Multimedia                100% |   9.6 KiB/s |   4.3 KiB |  00m00s
+[12:30:05 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.229  Fedora 44 - x86_64                     100% |  27.4 KiB/s |  24.1 KiB |  00m01s
+[12:30:05 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.229  Copr repo for akmods owned by ublue-os 100% |   5.7 KiB/s |   1.5 KiB |  00m00s
+[12:30:05 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.231  Copr repo for asus-linux owned by luke 100% |   5.9 KiB/s |   1.5 KiB |  00m00s
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.901 Metadata cache created.
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.901 Repositories loaded.
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.919 [32mInstalling packages:[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.921 - [36mplasma-keyboard[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.923 - [36mmesa-demos[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.924 - [36mlibva-utils[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.926 - [36mvulkan-tools[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.927 - [36miio-sensor-proxy[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.929 - [36malsa-utils[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.930 - [36mpciutils[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.932 - [36musbutils[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.933 - [36mbtop[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.935 - [36mksystemlog[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.936 - [36mbrightnessctl[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.938 - [36mfprintd[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.939 - [36mwireguard-tools[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.941 - [36mtailscale[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.943 - [36mzerotier-one[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.944 - [36mgoogle-carlito-fonts[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.946 - [36mgoogle-crosextra-caladea-fonts[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.948 - [36mgoogle-arimo-fonts[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.949 - [36mliberation-sans-fonts[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.951 - [36mliberation-serif-fonts[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.953 - [36mtuned[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 1.954 - [36mtuned-ppd[0m
+[12:30:06 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 2.000 Updating and loading repositories:
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 2.769 Repositories loaded.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "plasma-keyboard-1:6.7.5-1.fc44.x86_64" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "libva-utils-1:2.24.0-1.fc44.x86_64" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "vulkan-tools-1.4.341.0-1.fc44.x86_64" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "iio-sensor-proxy-3.8-2.fc44.x86_64" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "alsa-utils-1.2.16-1.fc44.x86_64" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "pciutils-3.15.0-1.fc44.x86_64" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "usbutils-019-2.fc44.x86_64" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "fprintd-1.94.5-5.fc44.x86_64" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "wireguard-tools-1.0.20260223-1.fc44.x86_64" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "liberation-sans-fonts-1:2.1.5-15.fc44.noarch" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "liberation-serif-fonts-1:2.1.5-15.fc44.noarch" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "tuned-2.28.0-1.fc44.noarch" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 Package "tuned-ppd-2.28.0-1.fc44.noarch" is already installed.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.164 
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166 Package                         Arch   Version                    Repository      Size
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166 Changing reason:
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  alsa-utils                     x86_64 0:1.2.16-1.fc44            @System      2.3 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166    External User -> User                                                              
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  fprintd                        x86_64 0:1.94.5-5.fc44            @System    829.1 KiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166    External User -> User                                                              
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  iio-sensor-proxy               x86_64 0:3.8-2.fc44               @System    156.5 KiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166    External User -> User                                                              
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  liberation-sans-fonts          noarch 1:2.1.5-15.fc44            @System      1.6 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166    External User -> User                                                              
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  liberation-serif-fonts         noarch 1:2.1.5-15.fc44            @System      1.5 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166    External User -> User                                                              
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  pciutils                       x86_64 0:3.15.0-1.fc44            @System    300.5 KiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166    External User -> User                                                              
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  plasma-keyboard                x86_64 1:6.7.5-1.fc44             @System      1.6 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166    External User -> User                                                              
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  tuned                          noarch 0:2.28.0-1.fc44            @System      1.7 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166    External User -> User                                                              
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  tuned-ppd                      noarch 0:2.28.0-1.fc44            @System      7.0 KiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166    External User -> User                                                              
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  usbutils                       x86_64 0:019-2.fc44               @System    327.5 KiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166    External User -> User                                                              
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  vulkan-tools                   x86_64 0:1.4.341.0-1.fc44         @System      1.6 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166    External User -> User                                                              
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166 Installing:
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  brightnessctl                  x86_64 0:0.5.1-16.fc44            fedora      29.0 KiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  btop                           x86_64 0:1.4.7-1.fc44             updates      1.8 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  google-arimo-fonts             noarch 0:1.31.0-23.fc44           fedora       2.3 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  google-carlito-fonts           noarch 0:1.103-0.28.20130920.fc44 fedora       2.6 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  google-crosextra-caladea-fonts noarch 1:1.002-0.22.20130214.fc44 fedora     251.4 KiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  ksystemlog                     x86_64 0:26.08.1-1.fc44           updates      6.3 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  mesa-demos                     x86_64 0:9.0.0-11.fc44            fedora      24.0 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  tailscale                      x86_64 0:1.98.8-1.fc44            updates     48.9 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  zerotier-one                   x86_64 0:1.16.2-1.fc40            zerotier    10.7 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166 Installing weak dependencies:
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  rocm-smi                       x86_64 0:7.1.1-4.fc44             updates      2.7 MiB
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166 
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166 Transaction Summary:
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  Installing:        10 packages
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166  Changing reason:   11 packages
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166 
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166 Total size of inbound packages is 27 MiB. Need to download 27 MiB.
+[12:30:07 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 3.166 After this operation, 100 MiB extra will be used (install 100 MiB, remove 0 B).
+[12:30:08 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 4.572 [ 1/10] brightnessctl-0:0.5.1-16.fc44.x 100% | 197.2 KiB/s |  21.7 KiB |  00m00s
+[12:30:09 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 4.642 [ 2/10] google-crosextra-caladea-fonts- 100% |   1.4 MiB/s |  98.8 KiB |  00m00s
+[12:30:09 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 4.751 [ 3/10] google-carlito-fonts-0:1.103-0. 100% |   2.7 MiB/s | 802.8 KiB |  00m00s
+[12:30:09 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 4.784 [ 4/10] google-arimo-fonts-0:1.31.0-23. 100% |   6.5 MiB/s | 944.8 KiB |  00m00s
+[12:30:09 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 4.812 [ 5/10] mesa-demos-0:9.0.0-11.fc44.x86_ 100% |  10.4 MiB/s |   3.7 MiB |  00m00s
+[12:30:09 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 5.417 [ 6/10] btop-0:1.4.7-1.fc44.x86_64      100% | 982.3 KiB/s | 654.2 KiB |  00m01s
+[12:30:10 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 5.672 [ 7/10] ksystemlog-0:26.08.1-1.fc44.x86 100% |   2.4 MiB/s |   2.1 MiB |  00m01s
+[12:30:10 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 5.849 [ 8/10] rocm-smi-0:7.1.1-4.fc44.x86_64  100% |   3.3 MiB/s | 590.3 KiB |  00m00s
+[12:30:10 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.128 [ 9/10] zerotier-one-0:1.16.2-1.fc40.x8 100% |   4.8 MiB/s |   3.4 MiB |  00m01s
+[12:30:10 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.165 [10/10] tailscale-0:1.98.8-1.fc44.x86_6 100% |  11.3 MiB/s |  15.2 MiB |  00m01s
+[12:30:10 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.165 --------------------------------------------------------------------------------
+[12:30:10 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.165 [10/10] Total                           100% |   9.2 MiB/s |  27.4 MiB |  00m03s
+[12:30:10 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.167 Running transaction
+[12:30:10 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.537 [11/11] https://download.zerotier.com/c 100% |   9.9 KiB/s |   3.1 KiB |  00m00s
+[12:30:10 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.537 --------------------------------------------------------------------------------
+[12:30:10 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.537 [11/11] Total                           100% |   9.2 MiB/s |  27.4 MiB |  00m03s
+[12:30:11 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.540 Importing OpenPGP key 0x23E52A61:
+[12:30:11 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.540  UserID     : "ZeroTier, Inc. (ZeroTier Support and Release Signing Key) <contact@zerotier.com>"
+[12:30:11 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.540  Fingerprint: 74A5E9C458E1A431F1DA57A71657198823E52A61
+[12:30:11 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.540  From       : https://download.zerotier.com/contact@zerotier.com.gpg
+[12:30:11 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 6.623 The key was successfully imported.
+[12:30:12 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 7.631 [ 1/23] Verify package files            100% | 103.0   B/s |  10.0   B |  00m00s
+[12:30:12 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 8.016 [ 2/23] Prepare transaction             100% |  25.0   B/s |  10.0   B |  00m00s
+[12:30:12 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 8.106 [ 3/23] Installing rocm-smi-0:7.1.1-4.f 100% |  48.4 MiB/s |   2.7 MiB |  00m00s
+[12:30:12 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 8.139 [ 4/23] Installing zerotier-one-0:1.16. 100% | 157.2 MiB/s |  10.7 MiB |  00m00s
+[12:30:12 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 8.341 [ 5/23] Installing tailscale-0:1.98.8-1 100% | 270.3 MiB/s |  48.9 MiB |  00m00s
+[12:30:12 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 8.460 [ 6/23] Installing ksystemlog-0:26.08.1 100% |  45.3 MiB/s |   6.3 MiB |  00m00s
+[12:30:12 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 8.502 [ 7/23] Installing btop-0:1.4.7-1.fc44. 100% |  55.1 MiB/s |   1.8 MiB |  00m00s
+[12:30:12 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 8.507 [ 8/23] Installing google-arimo-fonts-0 100% | 188.1 MiB/s |   2.3 MiB |  00m00s
+[12:30:12 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 8.517 [ 9/23] Installing google-crosextra-cal 100% |  61.9 MiB/s | 253.6 KiB |  00m00s
+[12:30:12 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 8.522 [10/23] Installing google-carlito-fonts 100% | 294.0 MiB/s |   2.6 MiB |  00m00s
+[12:30:12 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 8.561 [11/23] Installing brightnessctl-0:0.5. 100% |   1.5 MiB/s |  30.4 KiB |  00m00s
+[12:30:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 9.686 [12/23] Installing mesa-demos-0:9.0.0-1 100% |  21.1 MiB/s |  24.2 MiB |  00m01s
+[12:30:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 9.686 Complete!
+[12:30:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 9.707 [32m=============================== End 'dnf' Module ===============================[0m
+[12:30:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #61 DONE 9.7s
+[12:30:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 
+[12:30:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 [stage-5 15/22] RUN --mount=type=bind,from=stage-files,src=/files,dst=/tmp/files,rw --mount=type=bind,from=ghcr.io/blue-build/modules/dnf:latest,src=/modules,dst=/tmp/modules,rw --mount=type=bind,src=.bluebuild-scripts_513065f9,dst=/tmp/scripts/,ro --mount=type=cache,sharing=locked,dst=/var/cache/rpm-ostree,id=rpm-ostree-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/libdnf5,id=dnf-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/zypp,id=zypper-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/apk,id=apk-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/apt,id=apt-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/pacman,id=pacman-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/usr/lib/sysimage/cache/pacman,id=pacman-sysimage-cache-z13-fedora-44-stage-z13-fedora /tmp/scripts/run_module.sh 'dnf' '{"type":"dnf","install":{"skip-unavailable":true,"packages":["maliit-keyboard"]}}'
+[12:30:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 0.090 [33m============================== Start 'dnf' Module ==============================[0m
+[12:30:14 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 0.187 Updating and loading repositories:
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0  ZeroTier, Inc. RPM Release Repository  100% |   5.1 KiB/s |   3.0 KiB |  00m01s
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0  Fedora 44 - x86_64 - Updates Archive   100% |   5.7 KiB/s |   3.4 KiB |  00m01s
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0  Fedora 44 - x86_64 - Updates           ???% |   0.0   B/s |   0.0   B |  02m02s
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0 >>> Curl error (28): Timeout was reached for https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64 [Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds] - https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0 >>> Curl error (28): Timeout was reached for https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64 [Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds] - https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0 >>> Curl error (28): Timeout was reached for https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64 [Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds] - https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0 >>> Curl error (28): Timeout was reached for https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64 [Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds] - https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0 >>> Download failed: Curl error (28): Timeout was reached for https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64 [Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds],Cannot prepare internal mirrorlist: Parse error at line: 1 (Document is empty
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0 )
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0  negativo17 - Multimedia                100% |   7.2 KiB/s |   4.3 KiB |  00m01s
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0  Fedora 44 - x86_64                     100% | 202.0   B/s |  24.1 KiB |  02m02s
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0  Copr repo for akmods owned by ublue-os 100% |   3.6 KiB/s |   1.5 KiB |  00m00s
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0  Copr repo for asus-linux owned by luke 100% |   4.0 KiB/s |   1.5 KiB |  00m00s
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0 Failed to download metadata (metalink: "https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64") for repository "updates": Download failed: Curl error (28): Timeout was reached for https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64 [Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds]
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0 External command had a non-zero exit code
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 122.0 [31m============================= Failed 'dnf' Module =============================[0m
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m #62 ERROR: process "/bin/sh -c /tmp/scripts/run_module.sh 'dnf' '{\"type\":\"dnf\",\"install\":{\"skip-unavailable\":true,\"packages\":[\"maliit-keyboard\"]}}'" did not complete successfully: exit code: 1
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m ------
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  > [stage-5 15/22] RUN --mount=type=bind,from=stage-files,src=/files,dst=/tmp/files,rw --mount=type=bind,from=ghcr.io/blue-build/modules/dnf:latest,src=/modules,dst=/tmp/modules,rw --mount=type=bind,src=.bluebuild-scripts_513065f9,dst=/tmp/scripts/,ro --mount=type=cache,sharing=locked,dst=/var/cache/rpm-ostree,id=rpm-ostree-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/libdnf5,id=dnf-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/zypp,id=zypper-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/apk,id=apk-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/apt,id=apt-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/var/cache/pacman,id=pacman-cache-z13-fedora-44-stage-z13-fedora --mount=type=cache,sharing=locked,dst=/usr/lib/sysimage/cache/pacman,id=pacman-sysimage-cache-z13-fedora-44-stage-z13-fedora /tmp/scripts/run_module.sh 'dnf' '{"type":"dnf","install":{"skip-unavailable":true,"packages":["maliit-keyboard"]}}':
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 122.0 >>> Curl error (28): Timeout was reached for https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64 [Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds] - https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 122.0 >>> Download failed: Curl error (28): Timeout was reached for https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64 [Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds],Cannot prepare internal mirrorlist: Parse error at line: 1 (Document is empty
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 122.0 )
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 122.0  negativo17 - Multimedia                100% |   7.2 KiB/s |   4.3 KiB |  00m01s
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 122.0  Fedora 44 - x86_64                     100% | 202.0   B/s |  24.1 KiB |  02m02s
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 122.0  Copr repo for akmods owned by ublue-os 100% |   3.6 KiB/s |   1.5 KiB |  00m00s
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 122.0  Copr repo for asus-linux owned by luke 100% |   4.0 KiB/s |   1.5 KiB |  00m00s
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 122.0 Failed to download metadata (metalink: "https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64") for repository "updates": Download failed: Curl error (28): Timeout was reached for https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64 [Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds]
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 122.0 External command had a non-zero exit code
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 122.0 [31m============================= Failed 'dnf' Module =============================[0m
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m ------
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m 
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  [33m1 warning found (use docker --debug to expand):
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m [0m - FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 30)
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m Containerfile.Tep0gPKGzPo:183
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m --------------------
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  182 |     /tmp/scripts/run_module.sh 'dnf' '{"type":"dnf","install":{"packages":["plasma-keyboard","mesa-demos","libva-utils","vulkan-tools","iio-sensor-proxy","alsa-utils","pciutils","usbutils","btop","ksystemlog","brightnessctl","fprintd","wireguard-tools","tailscale","zerotier-one","google-carlito-fonts","google-crosextra-caladea-fonts","google-arimo-fonts","liberation-sans-fonts","liberation-serif-fonts","tuned","tuned-ppd"]}}'
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  183 | >>> RUN \
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  184 | >>> --mount=type=bind,from=stage-files,src=/files,dst=/tmp/files,rw \
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  185 | >>> --mount=type=bind,from=ghcr.io/blue-build/modules/dnf:latest,src=/modules,dst=/tmp/modules,rw \
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  186 | >>> --mount=type=bind,src=.bluebuild-scripts_513065f9,dst=/tmp/scripts/,ro \
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  187 | >>> --mount=type=cache,sharing=locked,dst=/var/cache/rpm-ostree,id=rpm-ostree-cache-z13-fedora-44-stage-z13-fedora \
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  188 | >>> --mount=type=cache,sharing=locked,dst=/var/cache/libdnf5,id=dnf-cache-z13-fedora-44-stage-z13-fedora \
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  189 | >>> --mount=type=cache,sharing=locked,dst=/var/cache/zypp,id=zypper-cache-z13-fedora-44-stage-z13-fedora \
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  190 | >>> --mount=type=cache,sharing=locked,dst=/var/cache/apk,id=apk-cache-z13-fedora-44-stage-z13-fedora \
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  191 | >>> --mount=type=cache,sharing=locked,dst=/var/cache/apt,id=apt-cache-z13-fedora-44-stage-z13-fedora \
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  192 | >>> --mount=type=cache,sharing=locked,dst=/var/cache/pacman,id=pacman-cache-z13-fedora-44-stage-z13-fedora \
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  193 | >>> --mount=type=cache,sharing=locked,dst=/usr/lib/sysimage/cache/pacman,id=pacman-sysimage-cache-z13-fedora-44-stage-z13-fedora \
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  194 | >>> /tmp/scripts/run_module.sh 'dnf' '{"type":"dnf","install":{"skip-unavailable":true,"packages":["maliit-keyboard"]}}'
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m  195 |     RUN \
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m --------------------
+[12:32:16 [38;5;27mg.i/b/z13-fedora:latest[0m] [1m=>[0m ERROR: failed to build: failed to solve: process "/bin/sh -c /tmp/scripts/run_module.sh 'dnf' '{\"type\":\"dnf\",\"install\":{\"skip-unavailable\":true,\"packages\":[\"maliit-keyboard\"]}}'" did not complete successfully: exit code: 1
+[12:32:16 [31mERROR[0m] [1m=>[0m Failed:
+  [31m×[0m Failed to build image ghcr.io/baitian6641/z13-fedora:latest
+
+  Try running with `[93m-vv[0m` for trace logging.
+  You can also open an issue at https://github.com/blue-build/cli/issues
+
 ```
